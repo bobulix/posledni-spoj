@@ -1,0 +1,51 @@
+# Každou noc stáhne jízdní řády PID, převede je pro aplikaci a uloží do větve "data".
+# Aplikace si soubory stahuje z https://raw.githubusercontent.com/bobulix/posledni-spoj/data/
+name: Příprava dat
+
+on:
+  schedule:
+    - cron: "17 2 * * *"   # každý den 2:17 UTC (4:17 letního času)
+  workflow_dispatch: {}     # ruční spuštění z karty Actions
+  push:
+    branches: [main]
+    paths: ["pipeline/**", ".github/workflows/data.yml"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: data
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalace knihoven
+        run: pip install pandas==2.2.3 numpy==2.1.3
+
+      - name: Stažení jízdních řádů PID
+        run: |
+          mkdir -p gtfs
+          curl -fsSL --retry 3 -o gtfs.zip https://data.pid.cz/PID_GTFS.zip
+          unzip -q gtfs.zip -d gtfs
+
+      - name: Převod dat
+        run: python pipeline/prep.py gtfs out
+
+      - name: Uložení do větve data
+        run: |
+          cd out
+          git init -q -b data
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -q -m "Data $(date -u +%Y-%m-%d)"
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" data
