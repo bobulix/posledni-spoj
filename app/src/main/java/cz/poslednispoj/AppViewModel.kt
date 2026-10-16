@@ -45,40 +45,67 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     private val prefs = app.getSharedPreferences("prefs", Context.MODE_PRIVATE)
 
     // ---- data ----
-    var meta: Meta? = null; private set
-    var day: Day? = null; private set
-    var trips: TripInfo? = null; private set
-    var walk: Walk? = null; private set
-    var change: IntArray = IntArray(0); private set
-    var nameIdx: Map<String, List<Int>> = emptyMap(); private set
-    var sortedNames: List<String> = emptyList(); private set
-    var tripMode: IntArray = IntArray(0); private set
-    var importance: IntArray = IntArray(0); private set
+    var meta: Meta? = null
+        private set
+    var day: Day? = null
+        private set
+    var trips: TripInfo? = null
+        private set
+    var walk: Walk? = null
+        private set
+    var change: IntArray = IntArray(0)
+        private set
+    var nameIdx: Map<String, List<Int>> = emptyMap()
+        private set
+    var sortedNames: List<String> = emptyList()
+        private set
+    var tripMode: IntArray = IntArray(0)
+        private set
+    var importance: IntArray = IntArray(0)
+        private set
 
     // ---- výsledek ----
-    var profile: Profile? = null; private set
-    var target: BooleanArray = BooleanArray(0); private set
-    var nowMin by mutableIntStateOf(-1); private set
+    var profile: Profile? = null
+        private set
+    var target: BooleanArray = BooleanArray(0)
+        private set
+    var nowMin by mutableIntStateOf(-1)
+        private set
 
     // ---- stav UI ----
-    var loading by mutableStateOf<String?>("Načítám jízdní řády…"); private set
-    var error by mutableStateOf<String?>(null); private set
-    var status by mutableStateOf(""); private set
-    var dest by mutableStateOf(PRAHA); private set
-    var arriveBy by mutableIntStateOf(19 * 60); private set
-    var dayKey by mutableStateOf(""); private set
-    var modeMask by mutableIntStateOf(prefs.getInt("modes", 15)); private set
-    var panelCollapsed by mutableStateOf(prefs.getBoolean("collapsed", false)); private set
-    var opacity by mutableStateOf(prefs.getFloat("opacity", 1f)); private set
-    var selected by mutableIntStateOf(-1); private set
-    var selK by mutableIntStateOf(0); private set
-    var sheetMini by mutableStateOf(false); private set
+    var loading by mutableStateOf<String?>("Načítám jízdní řády…")
+        private set
+    var error by mutableStateOf<String?>(null)
+        private set
+    var status by mutableStateOf("")
+        private set
+    var dest by mutableStateOf(PRAHA)
+        private set
+    var arriveBy by mutableIntStateOf(19 * 60)
+        private set
+    var dayKey by mutableStateOf("")
+        private set
+    var modeMask by mutableIntStateOf(prefs.getInt("modes", 15))
+        private set
+    var panelCollapsed by mutableStateOf(prefs.getBoolean("collapsed", false))
+        private set
+    var opacity by mutableStateOf(prefs.getFloat("opacity", 1f))
+        private set
+    var selected by mutableIntStateOf(-1)
+        private set
+    var selK by mutableIntStateOf(0)
+        private set
+    var sheetMini by mutableStateOf(false)
+        private set
     val expanded = mutableStateMapOf<Int, IntArray>() // úsek -> uzly celé trasy spoje
-    var journey: List<Leg> = emptyList(); private set
-    var journeyPaths: List<Pair<Boolean, IntArray>> = emptyList(); private set // (pěšky?, uzly)
+    var journey: List<Leg> = emptyList()
+        private set
+    var journeyPaths: List<Pair<Boolean, IntArray>> = emptyList() // (pěšky?, uzly)
+        private set
 
     /** Zvyšuje se při každé změně, kterou má překreslit mapová vrstva. */
-    var renderTick by mutableIntStateOf(0); private set
+    var renderTick by mutableIntStateOf(0)
+        private set
 
     private var computeJob: Job? = null
 
