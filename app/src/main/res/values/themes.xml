@@ -1,0 +1,7 @@
+<resources>
+    <style name="Theme.PosledniSpoj" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/paper</item>
+    </style>
+    <color name="paper">#EEF1EA</color>
+    <color name="ic_bg">#FFFFFF</color>
+</resources>

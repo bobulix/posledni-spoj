@@ -1,0 +1,58 @@
+# Sestaví aplikaci po každé změně kódu. Výsledek (APK + záznam sestavení) uloží do větve "build".
+name: Sestavení aplikace
+
+on:
+  push:
+    branches: [main]
+    paths: ["app/**", "*.gradle.kts", "gradle/**", "gradle.properties", ".github/workflows/android.yml"]
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: android
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Sestavení
+        id: build
+        continue-on-error: true
+        run: |
+          chmod +x gradlew
+          set -o pipefail
+          ./gradlew assembleDebug --no-daemon --stacktrace 2>&1 | tee build.log
+
+      - name: Uložení výsledku do větve build
+        if: always()
+        run: |
+          mkdir -p out
+          cp build.log out/ || true
+          if [ -f app/build/outputs/apk/debug/app-debug.apk ]; then cp app/build/outputs/apk/debug/app-debug.apk out/posledni-spoj.apk; fi
+          echo "commit: ${{ github.sha }}" > out/status.txt
+          echo "result: ${{ steps.build.outcome }}" >> out/status.txt
+          date -u >> out/status.txt
+          cd out
+          git init -q -b build
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -q -m "Sestavení ${{ github.sha }}: ${{ steps.build.outcome }}"
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" build
+
+      - name: Výsledek
+        if: steps.build.outcome != 'success'
+        run: exit 1
