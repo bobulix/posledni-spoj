@@ -31,6 +31,8 @@ jobs:
       - name: Sestavení
         id: build
         continue-on-error: true
+        env:
+          MAPY_API_KEY: ${{ secrets.MAPY_API_KEY }}
         run: |
           chmod +x gradlew
           set -o pipefail

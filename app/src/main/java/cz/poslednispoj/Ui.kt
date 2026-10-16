@@ -88,6 +88,9 @@ fun App(vm: AppViewModel, holder: MapHolder, onLocate: () -> Unit) {
     MaterialTheme(colorScheme = AppColors) {
         Box(Modifier.fillMaxSize().background(Paper)) {
             MapHost(holder, Modifier.fillMaxSize())
+            if (BuildConfig.MAPY_API_KEY.isNotBlank()) {
+                MapyAttribution(Modifier.align(Alignment.BottomStart).navigationBarsPadding().padding(start = 8.dp, bottom = 6.dp))
+            }
 
             TopPanel(vm, Modifier.align(Alignment.TopCenter).statusBarsPadding().padding(12.dp))
 
@@ -152,6 +155,7 @@ private fun TopPanel(vm: AppViewModel, modifier: Modifier) {
                 ModeChips(vm)
                 Legend(vm)
                 if (vm.status.isNotEmpty()) Text(vm.status, fontSize = 13.sp, color = Ink2)
+                Text("verze ${BuildConfig.VERSION_NAME}", fontSize = 11.sp, color = Ink2)
             }
         }
     }
@@ -514,4 +518,27 @@ private fun modeLabel(t: Int) = when (t) { 0 -> "Tram"; 1 -> "Metro"; 2 -> "Vlak
 private fun luminance(argb: Int): Double {
     val r = (argb shr 16) and 255; val g = (argb shr 8) and 255; val b = argb and 255
     return (0.299 * r + 0.587 * g + 0.114 * b) / 255.0
+}
+
+/** Povinné označení podkladu Mapy.com: logo (odkaz na mapy.com) a copyright (odkaz na podmínky). */
+@Composable
+private fun MapyAttribution(modifier: Modifier) {
+    val ctx = LocalContext.current
+    val open = { url: String -> ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
+    Row(modifier, verticalAlignment = Alignment.CenterVertically) {
+        coil.compose.AsyncImage(
+            model = coil.request.ImageRequest.Builder(ctx)
+                .data("https://api.mapy.com/img/api/logo.svg")
+                .decoderFactory(coil.decode.SvgDecoder.Factory())
+                .build(),
+            contentDescription = "Mapy.com",
+            modifier = Modifier.size(width = 100.dp, height = 30.dp).clickable { open("https://mapy.com/") },
+        )
+        Spacer(Modifier.width(6.dp))
+        Text(
+            "© Seznam.cz a.s. a další", fontSize = 11.sp, color = Ink,
+            modifier = Modifier.clip(RoundedCornerShape(4.dp)).background(Color.White.copy(alpha = 0.8f))
+                .clickable { open("https://api.mapy.com/copyright") }.padding(horizontal = 4.dp, vertical = 1.dp)
+        )
+    }
 }

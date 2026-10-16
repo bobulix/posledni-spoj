@@ -12,8 +12,12 @@ android {
         applicationId = "cz.poslednispoj"
         minSdk = 26
         targetSdk = 34
-        versionCode = 1
-        versionName = "0.1"
+        // číslo sestavení z GitHubu, lokálně 1
+        val build = (System.getenv("GITHUB_RUN_NUMBER") ?: "1").toInt()
+        versionCode = build
+        versionName = "0.2.$build"
+        // API klíč Mapy.com: z tajné hodnoty MAPY_API_KEY na GitHubu (lokálně z prostředí nebo prázdný)
+        buildConfigField("String", "MAPY_API_KEY", "\"" + (System.getenv("MAPY_API_KEY") ?: "") + "\"")
     }
 
     // Pevný ladicí klíč, aby šly nové verze instalovat přes staré (jen pro testování, ne pro Google Play).
@@ -40,6 +44,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -56,6 +61,8 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
     implementation("org.maplibre.gl:android-sdk:11.5.2")
+    implementation("io.coil-kt:coil-compose:2.7.0")
+    implementation("io.coil-kt:coil-svg:2.7.0")
 
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.json:json:20240303")

@@ -26,8 +26,54 @@ import org.maplibre.android.maps.MapLibreMap
 import org.maplibre.android.maps.MapView
 import org.maplibre.android.maps.Style
 
-/** Mapový podklad: OpenStreetMap + turistické trasy z Waymarked Trails. */
-private const val MAP_STYLE = """
+/**
+ * Mapový podklad: turistická mapa Mapy.com (je-li při sestavení k dispozici API klíč),
+ * jinak OpenStreetMap + turistické trasy z Waymarked Trails.
+ */
+private fun mapStyle(): String {
+    val key = BuildConfig.MAPY_API_KEY
+    if (key.isNotBlank()) return """
+{
+  "version": 8,
+  "sources": {
+    "mapy": {
+      "type": "raster",
+      "tiles": ["https://api.mapy.com/v1/maptiles/outdoor/256@2x/{z}/{x}/{y}?apikey=$key"],
+      "tileSize": 256,
+      "minzoom": 0,
+      "maxzoom": 18,
+      "attribution": "© Seznam.cz a.s. a další"
+    }
+  },
+  "layers": [ { "id": "mapy", "type": "raster", "source": "mapy" } ]
+}
+"""
+    return """
+{
+  "version": 8,
+  "sources": {
+    "osm": {
+      "type": "raster",
+      "tiles": ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
+      "tileSize": 256,
+      "maxzoom": 19,
+      "attribution": "© přispěvatelé OpenStreetMap"
+    },
+    "hiking": {
+      "type": "raster",
+      "tiles": ["https://tile.waymarkedtrails.org/hiking/{z}/{x}/{y}.png"],
+      "tileSize": 256,
+      "maxzoom": 18,
+      "attribution": "Turistické trasy © waymarkedtrails.org"
+    }
+  },
+  "layers": [
+    { "id": "osm", "type": "raster", "source": "osm" },
+    { "id": "hiking", "type": "raster", "source": "hiking", "paint": { "raster-opacity": 0.85 } }
+  ]
+}
+"""
+}
 {
   "version": 8,
   "sources": {
@@ -77,8 +123,13 @@ class MapHolder(private val ctx: Context, private val vm: AppViewModel) {
             m.uiSettings.isRotateGesturesEnabled = false
             m.uiSettings.isTiltGesturesEnabled = false
             m.uiSettings.isCompassEnabled = false
+            if (BuildConfig.MAPY_API_KEY.isNotBlank()) {
+                // logo a copyright Mapy.com zobrazujeme sami vlevo dole
+                m.uiSettings.isLogoEnabled = false
+                m.uiSettings.isAttributionEnabled = false
+            }
             m.cameraPosition = CameraPosition.Builder().target(LatLng(50.0, 14.45)).zoom(8.6).build()
-            m.setStyle(Style.Builder().fromJson(MAP_STYLE)) { if (wantLocation) enableLocation() }
+            m.setStyle(Style.Builder().fromJson(mapStyle())) { if (wantLocation) enableLocation() }
             m.addOnCameraMoveListener { overlay.updateTransform(m) }
             m.addOnCameraIdleListener { overlay.updateTransform(m) }
             m.addOnMapClickListener { ll ->
