@@ -56,9 +56,13 @@ jobs:
             adb shell input tap 988 2079
             sleep 8
             adb exec-out screencap -p > out/2-zoom.png
-            adb shell input tap 600 1700
+            adb shell input tap 385 1957
             sleep 4
             adb exec-out screencap -p > out/3-tap.png
+            # sbalit detail, aby byla vidět trasa
+            adb shell input tap 848 1285
+            sleep 3
+            adb exec-out screencap -p > out/4-route.png
             sleep 1
             adb logcat -d > out/logcat.txt
             adb logcat -d -b crash > out/crash.txt || true
