@@ -21,6 +21,11 @@ import kotlin.math.tan
  * a zvýrazněná cesta. Kreslí se sama, mapa pod ní dál reaguje na posun a přiblížení.
  */
 class OverlayView(ctx: Context, private val vm: AppViewModel) : View(ctx) {
+    companion object {
+        /** Velikost čtverce pro shlukování časů (dp). Větší = méně časů najednou. */
+        const val CLUSTER_DP = 64f
+    }
+
     private val dp = resources.displayMetrics.density
 
     // převod Web Mercator -> obrazovka: x = ax * mx + bx, y = ay * my + by
@@ -142,11 +147,22 @@ class OverlayView(ctx: Context, private val vm: AppViewModel) : View(ctx) {
             canvas.drawCircle(sx(i), sy(i), r, fill)
         }
 
-        // štítky s časy: nejdřív nádraží, pak frekventované zastávky
+        // štítky s časy: mapu dělíme na čtverce (připevněné k mapě, ne k obrazovce)
+        // a v každém ukážeme jen zastávku s nejpozdějším odjezdem; ostatní zůstanou jako tečky
         boxes.clear(); labelHits.clear()
         val imp = vm.importance
-        val lab = vis.filter { p.latest[it] >= 0 && !tgt[it] }.sortedWith(
-            compareByDescending<Int> { m.modes[it] and 4 }.thenByDescending { if (it < imp.size) imp[it] else 0 }
+        val cell = CLUSTER_DP * dp
+        val best = HashMap<Long, Int>()
+        for (i in vis) {
+            if (p.latest[i] < 0 || tgt[i]) continue
+            val key = (Math.floor(ax * mx[i] / cell).toLong() shl 32) xor (Math.floor(ay * my[i] / cell).toLong() and 0xFFFFFFFFL)
+            val cur = best[key]
+            if (cur == null || p.latest[i] > p.latest[cur] ||
+                (p.latest[i] == p.latest[cur] && (if (i < imp.size) imp[i] else 0) > (if (cur < imp.size) imp[cur] else 0))
+            ) best[key] = i
+        }
+        val lab = best.values.sortedWith(
+            compareByDescending<Int> { p.latest[it] }.thenByDescending { if (it < imp.size) imp[it] else 0 }
         )
         val maxLabels = if (sc > 0.004) 900 else 200
         val bigLabels = sc > 0.03
