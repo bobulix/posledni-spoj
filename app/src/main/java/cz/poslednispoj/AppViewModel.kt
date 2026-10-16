@@ -116,7 +116,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     private suspend fun load() {
         try {
             loading = "Načítám jízdní řády…"
-            val m = repo.loadMeta()
+            val m = withRetry { repo.loadMeta() }
             withContext(Dispatchers.Default) {
                 walk = Csa.buildWalk(m.size, m.walkFlat)
                 change = IntArray(m.size) { if ((m.modes[it] and 4) != 0) 4 else 2 }
@@ -142,7 +142,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         val m = meta ?: return
         try {
             loading = "Stahuji jízdní řády na ${dayLabel(dayKey)}…"
-            val (d, t) = repo.loadDay(m, dayKey)
+            val (d, t) = withRetry { repo.loadDay(m, dayKey) }
             withContext(Dispatchers.Default) {
                 tripMode = IntArray(d.nTrips) { if (it < t.route.size) Modes.ofRouteType(m.routeType[t.route[it]]) else Modes.OTHER }
                 val imp = IntArray(m.size)
@@ -259,6 +259,15 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         }
         val today = if (key == todayKey()) " (dnes)" else ""
         return "$short ${key.substring(6).toInt()}. ${key.substring(4, 6).toInt()}.$today"
+    }
+
+    /** Při výpadku sítě to zkusí znovu (po 2, 5 a 10 s), teprve pak ukáže chybu. */
+    private suspend fun <T> withRetry(block: suspend () -> T): T {
+        val waits = longArrayOf(2000, 5000, 10000)
+        for (w in waits) {
+            try { return block() } catch (e: Exception) { kotlinx.coroutines.delay(w) }
+        }
+        return block()
     }
 
     private fun todayKey(): String = SimpleDateFormat("yyyyMMdd", Locale.US).format(Date())

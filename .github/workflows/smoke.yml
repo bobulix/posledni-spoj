@@ -9,7 +9,7 @@ on:
   workflow_dispatch: {}
   push:
     branches: [main]
-    paths: [".github/workflows/smoke.yml"]
+    paths: [".github/workflows/smoke.yml", "app/**"]
 
 permissions:
   contents: write
@@ -38,6 +38,7 @@ jobs:
           target: google_apis
           arch: x86_64
           disable-animations: true
+          profile: pixel_6
           script: |
             mkdir -p out
             adb install -r app.apk
@@ -47,12 +48,15 @@ jobs:
             adb shell am start -n cz.poslednispoj/.MainActivity
             sleep 75
             adb exec-out screencap -p > out/1-start.png
-            adb shell input tap 540 1300
-            sleep 5
+            adb shell input tap 540 1500
+            sleep 3
+            adb shell input tap 620 1400
+            sleep 3
             adb exec-out screencap -p > out/2-tap.png
-            adb shell input swipe 540 1200 540 1200 100
-            adb shell input keyevent 4 || true
-            sleep 2
+            adb shell input tap 1000 140
+            sleep 3
+            adb exec-out screencap -p > out/3-collapsed.png
+            sleep 1
             adb logcat -d > out/logcat.txt
             adb logcat -d -b crash > out/crash.txt || true
             adb shell pidof cz.poslednispoj > out/pid.txt || echo "aplikace neběží" > out/pid.txt
