@@ -52,6 +52,8 @@ jobs:
             adb shell "input tap 540 1750 & sleep 0.08; input tap 540 1750"
             sleep 3
             adb shell "input tap 540 1750 & sleep 0.08; input tap 540 1750"
+            sleep 3
+            adb shell "input tap 540 1750 & sleep 0.08; input tap 540 1750"
             sleep 6
             adb exec-out screencap -p > out/2-zoom.png
             adb shell input tap 600 1700

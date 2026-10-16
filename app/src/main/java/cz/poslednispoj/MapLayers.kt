@@ -128,7 +128,7 @@ class MapLayers(private val vm: AppViewModel) {
                 PropertyFactory.iconImage("dot"),
                 PropertyFactory.iconColor(toColor(get("bg"))),
                 PropertyFactory.iconSize(get("s")),
-                PropertyFactory.iconOffset(Expression.array(get("off"))),
+                PropertyFactory.iconOffset(Expression.raw("[\"array\", \"number\", 2, [\"get\", \"off\"]]")),
                 PropertyFactory.iconAnchor(Property.ICON_ANCHOR_CENTER),
                 PropertyFactory.iconAllowOverlap(true), PropertyFactory.iconIgnorePlacement(true),
             ).withFilter(Expression.all(Expression.eq(get("k"), literal("dot")), Expression.eq(get("z0"), literal(z))))
