@@ -60,7 +60,7 @@ jobs:
             sleep 4
             adb exec-out screencap -p > out/3-tap.png
             # sbalit detail, aby byla vidět trasa
-            adb shell input tap 848 1285
+            adb shell input tap 815 1372
             sleep 3
             adb exec-out screencap -p > out/4-route.png
             sleep 1
