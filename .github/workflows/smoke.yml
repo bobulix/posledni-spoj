@@ -48,14 +48,15 @@ jobs:
             adb shell am start -n cz.poslednispoj/.MainActivity
             sleep 75
             adb exec-out screencap -p > out/1-start.png
-            adb shell input tap 540 1500
+            # dvojité klepnutí = přiblížení (2×)
+            adb shell "input tap 540 1750 & sleep 0.08; input tap 540 1750"
             sleep 3
-            adb shell input tap 620 1400
-            sleep 3
-            adb exec-out screencap -p > out/2-tap.png
-            adb shell input tap 1000 140
-            sleep 3
-            adb exec-out screencap -p > out/3-collapsed.png
+            adb shell "input tap 540 1750 & sleep 0.08; input tap 540 1750"
+            sleep 6
+            adb exec-out screencap -p > out/2-zoom.png
+            adb shell input tap 600 1700
+            sleep 4
+            adb exec-out screencap -p > out/3-tap.png
             sleep 1
             adb logcat -d > out/logcat.txt
             adb logcat -d -b crash > out/crash.txt || true

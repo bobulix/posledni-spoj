@@ -35,6 +35,7 @@ private fun mapStyle(): String {
     if (key.isNotBlank()) return """
 {
   "version": 8,
+  "glyphs": "https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf",
   "sources": {
     "mapy": {
       "type": "raster",
@@ -51,6 +52,7 @@ private fun mapStyle(): String {
     return """
 {
   "version": 8,
+  "glyphs": "https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf",
   "sources": {
     "osm": {
       "type": "raster",
@@ -75,10 +77,10 @@ private fun mapStyle(): String {
 """
 }
 
-/** Drží MapView a vrstvu s časy pohromadě (jeden FrameLayout, vrstva propouští dotyky na mapu). */
+/** Drží MapView a vrstvy s časy (kreslí je přímo mapa, takže drží na místě). */
 class MapHolder(private val ctx: Context, private val vm: AppViewModel) {
     val mapView: MapView
-    val overlay: OverlayView
+    val layers = MapLayers(vm)
     val root: FrameLayout
     var map: MapLibreMap? = null
         private set
@@ -88,12 +90,9 @@ class MapHolder(private val ctx: Context, private val vm: AppViewModel) {
         MapLibre.getInstance(ctx)
         mapView = MapView(ctx)
         mapView.onCreate(null)
-        overlay = OverlayView(ctx, vm)
         root = FrameLayout(ctx)
         val full = ViewGroup.LayoutParams.MATCH_PARENT
         root.addView(mapView, FrameLayout.LayoutParams(full, full))
-        root.addView(overlay, FrameLayout.LayoutParams(full, full))
-        overlay.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ -> map?.let { overlay.updateTransform(it) } }
         mapView.getMapAsync { m ->
             map = m
             m.uiSettings.isRotateGesturesEnabled = false
@@ -105,15 +104,16 @@ class MapHolder(private val ctx: Context, private val vm: AppViewModel) {
                 m.uiSettings.isAttributionEnabled = false
             }
             m.cameraPosition = CameraPosition.Builder().target(LatLng(50.0, 14.45)).zoom(8.6).build()
-            m.setStyle(Style.Builder().fromJson(mapStyle())) { if (wantLocation) enableLocation() }
-            m.addOnCameraMoveListener { overlay.updateTransform(m) }
-            m.addOnCameraIdleListener { overlay.updateTransform(m) }
+            m.setStyle(Style.Builder().fromJson(mapStyle())) { style ->
+                layers.install(style, ctx)
+                if (wantLocation) enableLocation()
+            }
             m.addOnMapClickListener { ll ->
                 val pt = m.projection.toScreenLocation(ll)
-                if (!overlay.tap(pt.x, pt.y) && !vm.sheetMini) vm.closeSheet()
+                val id = layers.hitTest(m, pt.x, pt.y, ctx.resources.displayMetrics.density)
+                if (id >= 0) vm.select(id) else if (!vm.sheetMini) vm.closeSheet()
                 true
             }
-            overlay.updateTransform(m)
         }
     }
 
@@ -171,7 +171,7 @@ fun rememberMapHolder(vm: AppViewModel): MapHolder {
     }
     // každá změna výsledku nebo výběru překreslí vrstvu
     LaunchedEffect(holder) {
-        snapshotFlow { vm.renderTick to vm.expanded.size }.collect { holder.overlay.invalidate() }
+        snapshotFlow { vm.renderTick to vm.expanded.size }.collect { holder.layers.update() }
     }
     return holder
 }
