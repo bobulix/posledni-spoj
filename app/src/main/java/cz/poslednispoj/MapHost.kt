@@ -74,30 +74,6 @@ private fun mapStyle(): String {
 }
 """
 }
-{
-  "version": 8,
-  "sources": {
-    "osm": {
-      "type": "raster",
-      "tiles": ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
-      "tileSize": 256,
-      "maxzoom": 19,
-      "attribution": "© přispěvatelé OpenStreetMap"
-    },
-    "hiking": {
-      "type": "raster",
-      "tiles": ["https://tile.waymarkedtrails.org/hiking/{z}/{x}/{y}.png"],
-      "tileSize": 256,
-      "maxzoom": 18,
-      "attribution": "Turistické trasy © waymarkedtrails.org"
-    }
-  },
-  "layers": [
-    { "id": "osm", "type": "raster", "source": "osm" },
-    { "id": "hiking", "type": "raster", "source": "hiking", "paint": { "raster-opacity": 0.85 } }
-  ]
-}
-"""
 
 /** Drží MapView a vrstvu s časy pohromadě (jeden FrameLayout, vrstva propouští dotyky na mapu). */
 class MapHolder(private val ctx: Context, private val vm: AppViewModel) {
