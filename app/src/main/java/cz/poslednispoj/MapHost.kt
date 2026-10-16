@@ -67,11 +67,10 @@ class MapHolder(private val ctx: Context, private val vm: AppViewModel) {
         mapView = MapView(ctx)
         mapView.onCreate(null)
         overlay = OverlayView(ctx, vm)
-        root = FrameLayout(ctx).apply {
-            val lp = { FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT) }
-            addView(mapView, lp())
-            addView(overlay, lp())
-        }
+        root = FrameLayout(ctx)
+        val full = ViewGroup.LayoutParams.MATCH_PARENT
+        root.addView(mapView, FrameLayout.LayoutParams(full, full))
+        root.addView(overlay, FrameLayout.LayoutParams(full, full))
         overlay.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ -> map?.let { overlay.updateTransform(it) } }
         mapView.getMapAsync { m ->
             map = m
