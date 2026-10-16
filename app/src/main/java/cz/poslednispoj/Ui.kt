@@ -39,6 +39,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -266,7 +267,11 @@ private fun ModeChips(vm: AppViewModel) {
             FilterChip(
                 selected = (vm.modeMask and bit) != 0,
                 onClick = { vm.toggleMode(bit) },
-                label = { Text(label) },
+                label = { Text((if ((vm.modeMask and bit) != 0) "✓ " else "") + label) },
+                colors = FilterChipDefaults.filterChipColors(
+                    selectedContainerColor = Ink, selectedLabelColor = Color.White,
+                    containerColor = Color.White, labelColor = Ink2,
+                ),
             )
         }
     }
