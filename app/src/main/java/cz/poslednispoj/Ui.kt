@@ -528,7 +528,10 @@ private fun MapyAttribution(modifier: Modifier) {
     Row(modifier, verticalAlignment = Alignment.CenterVertically) {
         coil.compose.AsyncImage(
             model = coil.request.ImageRequest.Builder(ctx)
-                .data("https://api.mapy.com/img/api/logo.svg")
+                .data(
+                    if (remember { ctx.assets.list("")?.contains("mapy-logo.svg") == true }) "file:///android_asset/mapy-logo.svg"
+                    else "https://api.mapy.com/img/api/logo.svg"
+                )
                 .decoderFactory(coil.decode.SvgDecoder.Factory())
                 .build(),
             contentDescription = "Mapy.com",
