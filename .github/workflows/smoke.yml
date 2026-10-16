@@ -1,0 +1,72 @@
+# Spustí aplikaci v emulátoru Androidu, počká na načtení dat a pořídí snímky obrazovky.
+# Výsledek (snímky + záznam logcat) uloží do větve "smoke".
+name: Zkouška v emulátoru
+
+on:
+  workflow_run:
+    workflows: ["Sestavení aplikace"]
+    types: [completed]
+  workflow_dispatch: {}
+  push:
+    branches: [main]
+    paths: [".github/workflows/smoke.yml"]
+
+permissions:
+  contents: write
+
+jobs:
+  smoke:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Stažení APK z větve build
+        run: |
+          curl -fsSL -o app.apk "https://raw.githubusercontent.com/${{ github.repository }}/build/posledni-spoj.apk"
+          ls -l app.apk
+
+      - name: Povolení KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Emulátor a snímky
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 33
+          target: google_apis
+          arch: x86_64
+          disable-animations: true
+          script: |
+            mkdir -p out
+            adb install -r app.apk
+            adb shell pm grant cz.poslednispoj android.permission.ACCESS_FINE_LOCATION || true
+            adb shell pm grant cz.poslednispoj android.permission.ACCESS_COARSE_LOCATION || true
+            adb logcat -c
+            adb shell am start -n cz.poslednispoj/.MainActivity
+            sleep 75
+            adb exec-out screencap -p > out/1-start.png
+            adb shell input tap 540 1300
+            sleep 5
+            adb exec-out screencap -p > out/2-tap.png
+            adb shell input swipe 540 1200 540 1200 100
+            adb shell input keyevent 4 || true
+            sleep 2
+            adb logcat -d > out/logcat.txt
+            adb logcat -d -b crash > out/crash.txt || true
+            adb shell pidof cz.poslednispoj > out/pid.txt || echo "aplikace neběží" > out/pid.txt
+
+      - name: Uložení výsledku do větve smoke
+        if: always()
+        run: |
+          mkdir -p out
+          echo "build commit: ${{ github.event.workflow_run.head_sha || github.sha }}" > out/status.txt
+          date -u >> out/status.txt
+          cd out
+          git init -q -b smoke
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -q -m "Zkouška v emulátoru"
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" smoke
