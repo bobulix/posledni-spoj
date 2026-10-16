@@ -33,7 +33,27 @@ class Meta(
     val size get() = names.size
 }
 
-class TripInfo(val route: IntArray, val head: Array<String>)
+class TripInfo(val route: IntArray, val head: Array<String>, val shape: IntArray)
+
+/** Skutečné trasy linek (encoded polyline, přesnost 1e-5), dekódují se až při použití. */
+class Shapes(private val enc: Array<String>) {
+    private val cache = HashMap<Int, Pair<DoubleArray, DoubleArray>>()
+    fun get(i: Int): Pair<DoubleArray, DoubleArray>? {
+        if (i < 0 || i >= enc.size) return null
+        return cache.getOrPut(i) { decode(enc[i]) }
+    }
+    private fun decode(s: String): Pair<DoubleArray, DoubleArray> {
+        val la = ArrayList<Double>(); val lo = ArrayList<Double>()
+        var idx = 0; var lat = 0; var lon = 0
+        fun next(): Int {
+            var res = 0; var shift = 0; var b: Int
+            do { b = s[idx++].code - 63; res = res or ((b and 0x1f) shl shift); shift += 5 } while (b >= 0x20)
+            return if ((res and 1) != 0) (res shr 1).inv() else res shr 1
+        }
+        while (idx < s.length) { lat += next(); lon += next(); la.add(lat / 1e5); lo.add(lon / 1e5) }
+        return la.toDoubleArray() to lo.toDoubleArray()
+    }
+}
 
 class DataRepo(private val ctx: Context) {
     private val root = File(ctx.filesDir, "data")
@@ -63,7 +83,20 @@ class DataRepo(private val ctx: Context) {
         val ja = JSONArray(tf.readText())
         val route = IntArray(ja.length()) { ja.getJSONArray(it).getInt(0) }
         val head = Array(ja.length()) { ja.getJSONArray(it).optString(1, "") }
-        d to TripInfo(route, head)
+        val shape = IntArray(ja.length()) { ja.getJSONArray(it).optInt(2, -1) }
+        d to TripInfo(route, head, shape)
+    }
+
+    /** Tvary tras; když se nepodaří stáhnout, vrací null (cesta se pak kreslí spojnicemi zastávek). */
+    suspend fun loadShapes(meta: Meta): Shapes? = withContext(Dispatchers.IO) {
+        try {
+            val dir = File(root, meta.generated); dir.mkdirs()
+            val f = File(dir, "shapes.bin")
+            if (!f.exists()) download(Config.DATA_URL + "shapes.bin", f)
+            val text = GZIPInputStream(f.inputStream().buffered()).use { String(it.readBytes()) }
+            val ja = JSONArray(text)
+            Shapes(Array(ja.length()) { ja.getString(it) })
+        } catch (e: Exception) { null }
     }
 
     private fun download(url: String, f: File) {

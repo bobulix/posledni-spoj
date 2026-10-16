@@ -20,6 +20,9 @@ import java.util.Locale
 
 const val PRAHA = "Praha (kamkoli do města)"
 
+/** Čára na mapě (zeměpisné souřadnice). */
+class GeoPath(val walk: Boolean, val lat: DoubleArray, val lon: DoubleArray)
+
 /** Pásma barev podle toho, kolik hodin před příjezdem je poslední odjezd. */
 class Bin(val hours: Int, val bg: Int, val fg: Int)
 
@@ -100,8 +103,12 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     val expanded = mutableStateMapOf<Int, IntArray>() // úsek -> uzly celé trasy spoje
     var journey: List<Leg> = emptyList()
         private set
-    var journeyPaths: List<Pair<Boolean, IntArray>> = emptyList() // (pěšky?, uzly)
+    var journeyPaths: List<GeoPath> = emptyList() // úseky cesty po skutečné trase
         private set
+    /** Rozbalené celé trasy spojů jako čáry (podle skutečné trasy, je-li k dispozici). */
+    var expandedLines: Map<Int, GeoPath> = emptyMap()
+        private set
+    private var shapes: Shapes? = null
 
     /** Zvyšuje se při každé změně, kterou má překreslit mapová vrstva. */
     var renderTick by mutableIntStateOf(0)
@@ -151,6 +158,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             }
             day = d; trips = t
             loading = null; error = null
+            if (shapes == null) viewModelScope.launch { shapes = repo.loadShapes(m) }
             recompute()
         } catch (e: Exception) {
             error = "Jízdní řády se nepodařilo stáhnout. (${e.message})"
@@ -217,19 +225,51 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         expanded.clear()
         val e = p.prof[i].getOrNull(k)
         journey = if (e != null) Csa.legsFrom(d, i, e) else emptyList()
+        val m = meta ?: return
         journeyPaths = journey.map { l ->
             when (l) {
-                is Leg.WalkLeg -> true to intArrayOf(l.from, l.to)
+                is Leg.WalkLeg -> pathOfNodes(m, true, intArrayOf(l.from, l.to))
                 is Leg.Ride -> {
-                    val r = Csa.tripRoute(d, l.trip)
-                    val (a, b) = Csa.legIndices(r, l)
-                    false to if (a >= 0 && b >= a) IntArray(b - a + 1) { r[a + it].node } else intArrayOf(l.from, l.to)
+                    val cut = shapeSegment(m, l.trip, l.from, l.to)
+                    if (cut != null) cut else {
+                        val r = Csa.tripRoute(d, l.trip)
+                        val (a, b) = Csa.legIndices(r, l)
+                        pathOfNodes(m, false, if (a >= 0 && b >= a) IntArray(b - a + 1) { r[a + it].node } else intArrayOf(l.from, l.to))
+                    }
                 }
             }
         }
+        expandedLines = emptyMap()
         renderTick++
     }
-    fun closeSheet() { selected = -1; journey = emptyList(); journeyPaths = emptyList(); expanded.clear(); renderTick++ }
+    fun closeSheet() { selected = -1; journey = emptyList(); journeyPaths = emptyList(); expanded.clear(); expandedLines = emptyMap(); renderTick++ }
+
+    private fun pathOfNodes(m: Meta, walk: Boolean, nodes: IntArray) =
+        GeoPath(walk, DoubleArray(nodes.size) { m.lat[nodes[it]] }, DoubleArray(nodes.size) { m.lon[nodes[it]] })
+
+    /** Výřez skutečné trasy jízdy mezi dvěma zastávkami (nejbližší body trasy). */
+    private fun shapeSegment(m: Meta, trip: Int, from: Int, to: Int): GeoPath? {
+        val si = trips?.shape?.getOrNull(trip) ?: return null
+        val (la, lo) = shapes?.get(si) ?: return null
+        if (la.size < 2) return null
+        fun nearest(node: Int, start: Int): Int {
+            var best = start; var bd = Double.MAX_VALUE
+            val cl = Math.cos(Math.toRadians(m.lat[node]))
+            for (k in start until la.size) {
+                val dy = la[k] - m.lat[node]; val dx = (lo[k] - m.lon[node]) * cl
+                val dd = dx * dx + dy * dy
+                if (dd < bd) { bd = dd; best = k }
+            }
+            return best
+        }
+        val a = nearest(from, 0)
+        val b = nearest(to, a)
+        if (b <= a) return null
+        val n = b - a + 1
+        return GeoPath(false,
+            DoubleArray(n + 2) { when (it) { 0 -> m.lat[from]; n + 1 -> m.lat[to]; else -> la[a + it - 1] } },
+            DoubleArray(n + 2) { when (it) { 0 -> m.lon[from]; n + 1 -> m.lon[to]; else -> lo[a + it - 1] } })
+    }
     fun toggleMini() { sheetMini = !sheetMini }
     fun expandSheet() { sheetMini = false }
     fun toggleRoute(legIndex: Int) {
@@ -237,7 +277,15 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         else {
             val l = journey.getOrNull(legIndex) as? Leg.Ride ?: return
             val d = day ?: return
-            expanded[legIndex] = Csa.tripRoute(d, l.trip).map { it.node }.toIntArray()
+            val nodes = Csa.tripRoute(d, l.trip).map { it.node }.toIntArray()
+            expanded[legIndex] = nodes
+        }
+        val m = meta
+        expandedLines = if (m == null) emptyMap() else expanded.mapValues { (li, nodes) ->
+            val l = journey.getOrNull(li) as? Leg.Ride
+            val si = if (l != null) trips?.shape?.getOrNull(l.trip) ?: -1 else -1
+            val sh = shapes?.get(si)
+            if (sh != null && sh.first.size >= 2) GeoPath(false, sh.first, sh.second) else pathOfNodes(m, false, nodes)
         }
         renderTick++
     }

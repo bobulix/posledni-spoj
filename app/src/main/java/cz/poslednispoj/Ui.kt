@@ -173,9 +173,23 @@ private fun TrailMark() {
 @Composable
 private fun RoundButton(label: String, description: String, onClick: () -> Unit) {
     Box(
-        Modifier.size(34.dp).clip(CircleShape).background(Paper).clickable(onClickLabel = description) { onClick() },
+        Modifier.size(44.dp).clip(CircleShape).background(Paper).clickable(onClickLabel = description) { onClick() },
         contentAlignment = Alignment.Center
-    ) { Text(label, fontSize = 16.sp, color = Ink) }
+    ) {
+        // šipky a křížek kreslíme čarou, aby byly dobře vidět
+        Canvas(Modifier.size(20.dp)) {
+            val w = size.width; val h = size.height; val sw = 2.6.dp.toPx()
+            val stroke = androidx.compose.ui.graphics.drawscope.Stroke(width = sw, cap = androidx.compose.ui.graphics.StrokeCap.Round,
+                join = androidx.compose.ui.graphics.StrokeJoin.Round)
+            val path = androidx.compose.ui.graphics.Path()
+            when (label) {
+                "▴" -> { path.moveTo(w * 0.15f, h * 0.68f); path.lineTo(w * 0.5f, h * 0.3f); path.lineTo(w * 0.85f, h * 0.68f) }
+                "▾" -> { path.moveTo(w * 0.15f, h * 0.32f); path.lineTo(w * 0.5f, h * 0.7f); path.lineTo(w * 0.85f, h * 0.32f) }
+                else -> { path.moveTo(w * 0.2f, h * 0.2f); path.lineTo(w * 0.8f, h * 0.8f); path.moveTo(w * 0.8f, h * 0.2f); path.lineTo(w * 0.2f, h * 0.8f) }
+            }
+            drawPath(path, Ink, style = stroke)
+        }
+    }
 }
 
 @Composable

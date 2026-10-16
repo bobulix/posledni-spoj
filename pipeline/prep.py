@@ -4,7 +4,8 @@ Použití: python prep.py <rozbalené GTFS> <výstupní složka> [YYYYMMDD,YYYYM
 Bez seznamu dnů zpracuje všechny dny, které feed pokrývá (feed_info.txt).
 Výstup: meta.json (zastávky, linky, pěší přechody, seznam dnů),
         conn_<den>.bin (gzip; spoje dne seřazené sestupně podle odjezdu),
-        trips_<den>.json (linka a směr každé jízdy).
+        trips_<den>.json (linka, směr a tvar trasy každé jízdy),
+        shapes.bin (gzip JSON; zjednodušené skutečné trasy linek jako encoded polyline).
 """
 import pandas as pd, numpy as np, json, sys, datetime, math, os
 SRC=sys.argv[1]; OUT=sys.argv[2]
@@ -73,6 +74,34 @@ meta={'nodes':[[r.name,round(r.lat,5),round(r.lon,5),int(r.praha),int(r.modes)] 
   'walk':walk.flatten().tolist(),'days':[],
   'generated':datetime.datetime.utcnow().strftime('%Y%m%dT%H%M%SZ')}
 
+# ---- skutečné trasy linek (shapes.txt), zjednodušené na ~8 m ----
+def _dp(pts,eps):
+    n=len(pts); keep=np.zeros(n,bool); keep[0]=keep[-1]=True; st=[(0,n-1)]
+    while st:
+        i,j=st.pop()
+        if j<=i+1: continue
+        a=pts[i]; b=pts[j]; ab=b-a; L=np.hypot(*ab); seg=pts[i+1:j]
+        dd=np.abs(ab[0]*(seg[:,1]-a[1])-ab[1]*(seg[:,0]-a[0]))/L if L>0 else np.hypot(*(seg-a).T)
+        k=int(np.argmax(dd))
+        if dd[k]>eps: mm=i+1+k; keep[mm]=True; st+=[(i,mm),(mm,j)]
+    return keep
+def _enc(v):
+    v=~(v<<1) if v<0 else (v<<1); out=''
+    while v>=0x20: out+=chr((0x20|(v&0x1f))+63); v>>=5
+    return out+chr(v+63)
+print('shapes...',flush=True)
+shp=pd.read_csv(os.path.join(SRC,'shapes.txt'),usecols=[0,1,2,3],dtype={'shape_id':str}).sort_values(['shape_id','shape_pt_sequence'])
+shidx={}; shlist=[]
+for sid,g in shp.groupby('shape_id',sort=False):
+    la_=g.shape_pt_lat.values; lo_=g.shape_pt_lon.values
+    k=_dp(np.stack([lo_*kx,la_*ky],1),8)
+    la=np.round(la_[k]*1e5).astype(int); lo=np.round(lo_[k]*1e5).astype(int)
+    s=_enc(int(la[0]))+_enc(int(lo[0]))
+    for i in range(1,len(la)): s+=_enc(int(la[i]-la[i-1]))+_enc(int(lo[i]-lo[i-1]))
+    shidx[sid]=len(shlist); shlist.append(s)
+import gzip as _gz
+with _gz.open(os.path.join(OUT,'shapes.bin'),'wb',9) as f: f.write(json.dumps(shlist).encode())
+
 WD=['monday','tuesday','wednesday','thursday','friday','saturday','sunday']
 for d in DATES:
     dt=datetime.datetime.strptime(d,'%Y%m%d'); wd=WD[dt.weekday()]
@@ -94,7 +123,7 @@ for d in DATES:
     import gzip
     with gzip.open(os.path.join(OUT,fn),'wb',9) as f:
         f.write(np.uint32(len(c)).tobytes()); f.write(arr.T.copy().tobytes()); f.write(c.f.values.astype(np.uint8).tobytes())
-    tinfo=[[ridx[r.route_id],r.trip_headsign] for r in tday.itertuples()]
+    tinfo=[[ridx[r.route_id],r.trip_headsign,shidx.get(r.shape_id,-1)] for r in tday.itertuples()]
     with open(os.path.join(OUT,f'trips_{d}.json'),'w') as f: json.dump(tinfo,f,ensure_ascii=False,separators=(',',':'))
     meta['days'].append([d,wd])
     print(d,'trips',len(tday),'conns',len(c),os.path.getsize(os.path.join(OUT,fn))//1024,'KB',flush=True)

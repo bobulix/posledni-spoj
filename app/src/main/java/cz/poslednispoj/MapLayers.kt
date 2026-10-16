@@ -269,13 +269,13 @@ class MapLayers(private val vm: AppViewModel) {
         val sel = vm.selected
         val selF = if (sel in 0 until m.size) listOf(Feature.fromGeometry(Point.fromLngLat(m.lon[sel], m.lat[sel]))) else emptyList()
         st.getSourceAs<GeoJsonSource>("sel")?.setGeoJson(FeatureCollection.fromFeatures(selF))
-        val jf = vm.journeyPaths.map { (walk, nodes) ->
-            val f = Feature.fromGeometry(LineString.fromLngLats(nodes.map { Point.fromLngLat(m.lon[it], m.lat[it]) }))
-            f.addNumberProperty("walk", if (walk) 1 else 0); f
+        val jf = vm.journeyPaths.map { g ->
+            val f = Feature.fromGeometry(LineString.fromLngLats(g.lat.indices.map { Point.fromLngLat(g.lon[it], g.lat[it]) }))
+            f.addNumberProperty("walk", if (g.walk) 1 else 0); f
         }
         st.getSourceAs<GeoJsonSource>("journey")?.setGeoJson(FeatureCollection.fromFeatures(jf))
-        val rf = vm.expanded.values.filter { it.size >= 2 }.map { nodes ->
-            Feature.fromGeometry(LineString.fromLngLats(nodes.map { Point.fromLngLat(m.lon[it], m.lat[it]) }))
+        val rf = vm.expandedLines.values.filter { it.lat.size >= 2 }.map { g ->
+            Feature.fromGeometry(LineString.fromLngLats(g.lat.indices.map { Point.fromLngLat(g.lon[it], g.lat[it]) }))
         }
         st.getSourceAs<GeoJsonSource>("routes")?.setGeoJson(FeatureCollection.fromFeatures(rf))
         val rp = vm.expanded.values.flatMap { it.asIterable() }.map { Feature.fromGeometry(Point.fromLngLat(m.lon[it], m.lat[it])) }
@@ -288,6 +288,10 @@ class MapLayers(private val vm: AppViewModel) {
         for (id in dotLayerIds) st.getLayerAs<SymbolLayer>(id)?.setProperties(PropertyFactory.iconOpacity(a))
         st.getLayerAs<CircleLayer>("stops-on")?.setProperties(PropertyFactory.circleOpacity(a))
         st.getLayerAs<CircleLayer>("stops-off")?.setProperties(PropertyFactory.circleOpacity(a))
+        // zvýrazněná cesta a rozbalené trasy se zprůhledňují spolu s časy
+        for (id in listOf("journey", "journey-walk", "routes")) st.getLayerAs<LineLayer>(id)?.setProperties(PropertyFactory.lineOpacity(a))
+        for (id in listOf("routepts", "sel")) st.getLayerAs<CircleLayer>(id)?.setProperties(
+            PropertyFactory.circleOpacity(a), PropertyFactory.circleStrokeOpacity(a))
     }
 
     /** Klepnutí: nejdřív štítek s časem (nebo jeho tečky), pak nejbližší tečka zastávky. Vrací id zastávky nebo -1. */
