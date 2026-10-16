@@ -44,7 +44,9 @@ jobs:
           mkdir -p out
           cp build.log out/ || true
           cp -r app/build/test-results out/ 2>/dev/null || true
-          if [ -f app/build/outputs/apk/debug/app-debug.apk ]; then cp app/build/outputs/apk/debug/app-debug.apk out/posledni-spoj.apk; fi
+          D=app/build/outputs/apk/debug
+          if [ -f $D/app-universal-debug.apk ]; then cp $D/app-universal-debug.apk out/posledni-spoj.apk; fi
+          if [ -f $D/app-arm64-v8a-debug.apk ]; then cp $D/app-arm64-v8a-debug.apk out/posledni-spoj-arm64.apk; fi
           echo "commit: ${{ github.sha }}" > out/status.txt
           echo "result: ${{ steps.build.outcome }}" >> out/status.txt
           date -u >> out/status.txt
@@ -55,6 +57,27 @@ jobs:
           git add .
           git commit -q -m "Sestavení ${{ github.sha }}: ${{ steps.build.outcome }}"
           git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" build
+
+      - name: Příprava souborů k vydání
+        if: steps.build.outcome == 'success'
+        run: |
+          mkdir -p rel
+          cp out/posledni-spoj-arm64.apk rel/posledni-spoj.apk
+          cp out/posledni-spoj.apk rel/posledni-spoj-univerzalni.apk
+
+      - name: Vydání ke stažení do telefonu
+        if: steps.build.outcome == 'success'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v0.2.${{ github.run_number }}
+          name: Poslední spoj 0.2.${{ github.run_number }}
+          body: |
+            Instalace do telefonu: stáhni posledni-spoj.apk a otevři ho.
+            (posledni-spoj-univerzalni.apk je pro starší telefony a emulátor.)
+          make_latest: "true"
+          files: |
+            rel/posledni-spoj.apk
+            rel/posledni-spoj-univerzalni.apk
 
       - name: Výsledek
         if: steps.build.outcome != 'success'
