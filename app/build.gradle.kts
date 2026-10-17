@@ -15,7 +15,7 @@ android {
         // číslo sestavení z GitHubu, lokálně 1
         val build = (System.getenv("GITHUB_RUN_NUMBER") ?: "1").toInt()
         versionCode = build
-        versionName = "0.2.$build"
+        versionName = "0.3.$build"
         // API klíč Mapy.com: z tajné hodnoty MAPY_API_KEY na GitHubu (lokálně z prostředí nebo prázdný)
         buildConfigField("String", "MAPY_API_KEY", "\"" + (System.getenv("MAPY_API_KEY") ?: "") + "\"")
     }

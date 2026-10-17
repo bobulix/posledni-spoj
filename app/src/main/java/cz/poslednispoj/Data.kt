@@ -13,7 +13,7 @@ import java.util.zip.GZIPInputStream
 
 object Config {
     /** Odkud se stahují data připravená noční úlohou na GitHubu (větev "data"). */
-    const val DATA_URL = "https://raw.githubusercontent.com/bobulix/posledni-spoj/data/"
+    const val DATA_URL = "https://raw.githubusercontent.com/bobulix/posledni-spoj/national/"
 }
 
 /** Zastávky, linky, pěší přechody a seznam dnů, pro které jsou jízdní řády. */
@@ -36,7 +36,7 @@ class Meta(
     val size get() = names.size
 }
 
-class TripInfo(val route: IntArray, val head: Array<String>, val shape: IntArray)
+class TripInfo(val route: IntArray, val head: Array<String>, val shape: IntArray, val label: Array<String>)
 
 /** Skutečné trasy linek (encoded polyline, přesnost 1e-5), dekódují se až při použití. */
 class Shapes(private val enc: Array<String>) {
@@ -63,31 +63,42 @@ class DataRepo(private val ctx: Context) {
 
     suspend fun loadMeta(): Meta = withContext(Dispatchers.IO) {
         root.mkdirs()
-        val f = File(root, "meta.json")
+        val f = File(root, "meta.json.gz")
         try {
-            download(Config.DATA_URL + "meta.json", f)
+            download(Config.DATA_URL + "meta.json.gz", f)
         } catch (e: Exception) {
             if (!f.exists()) throw e // bez signálu použijeme naposledy stažená data
         }
-        parseMeta(f.readText())
+        parseMeta(GZIPInputStream(f.inputStream().buffered()).use { String(it.readBytes(), Charsets.UTF_8) })
+    }
+
+    private var tt: Timetable? = null
+    private var ttGen = ""
+    private var tinfo: TripInfo? = null
+
+    /** Jízdní řád celého období; stahuje se jednou pro každou verzi dat. */
+    @Synchronized
+    private fun timetable(meta: Meta): Pair<Timetable, TripInfo> {
+        val cur = tt; val ti = tinfo
+        if (cur != null && ti != null && ttGen == meta.generated) return cur to ti
+        val dir = File(root, meta.generated); dir.mkdirs()
+        root.listFiles()?.forEach { if (it.isDirectory && it.name != meta.generated) it.deleteRecursively() }
+        val f = File(dir, "timetable.bin")
+        if (!f.exists()) download(Config.DATA_URL + "timetable.bin", f)
+        val t = try {
+            Timetable.parse(GZIPInputStream(f.inputStream().buffered()).use { it.readBytes() })
+        } catch (e: Exception) { f.delete(); throw e }
+        val info = TripInfo(t.tRoute, Array(t.nTrip) { t.strings[t.tHead[it]] }, t.tShape,
+            Array(t.nTrip) { if (t.tLabel[it] >= 0) t.strings[t.tLabel[it]] else "" })
+        tt = t; tinfo = info; ttGen = meta.generated
+        return t to info
     }
 
     suspend fun loadDay(meta: Meta, day: String): Pair<Day, TripInfo> = withContext(Dispatchers.IO) {
-        val dir = File(root, meta.generated)
-        dir.mkdirs()
-        // starší sady dat smažeme
-        root.listFiles()?.forEach { if (it.isDirectory && it.name != meta.generated) it.deleteRecursively() }
-        val cf = File(dir, "conn_$day.bin")
-        val tf = File(dir, "trips_$day.json")
-        if (!cf.exists()) download(Config.DATA_URL + "conn_$day.bin", cf)
-        if (!tf.exists()) download(Config.DATA_URL + "trips_$day.json", tf)
-        val bytes = GZIPInputStream(cf.inputStream().buffered()).use { it.readBytes() }
-        val d = Csa.parseDay(bytes)
-        val ja = JSONArray(tf.readText())
-        val route = IntArray(ja.length()) { ja.getJSONArray(it).getInt(0) }
-        val head = Array(ja.length()) { ja.getJSONArray(it).optString(1, "") }
-        val shape = IntArray(ja.length()) { ja.getJSONArray(it).optInt(2, -1) }
-        d to TripInfo(route, head, shape)
+        val (t, info) = timetable(meta)
+        val di = meta.days.indexOfFirst { it.first == day }
+        require(di >= 0 && di < t.days.size) { "den $day není v datech" }
+        t.buildDay(di) to info
     }
 
     /** Tvary tras; když se nepodaří stáhnout, vrací null (cesta se pak kreslí spojnicemi zastávek). */
@@ -137,7 +148,9 @@ class DataRepo(private val ctx: Context) {
             val a = routes.getJSONArray(i)
             rName[i] = a.getString(0); rType[i] = a.getInt(1)
             rSrc[i] = a.optInt(3, 0); rId[i] = a.optString(4, "")
-            rCol[i] = try { (0xFF000000.toInt()) or a.getString(2).toInt(16) } catch (e: Exception) { 0xFF888888.toInt() }
+            rCol[i] = try { (0xFF000000.toInt()) or a.getString(2).toInt(16) } catch (e: Exception) {
+                when (rType[i]) { 2 -> 0xFF2A4F8F.toInt(); 0 -> 0xFF8C2A1C.toInt(); else -> 0xFF5E6B60.toInt() }
+            }
         }
         val w = o.getJSONArray("walk")
         val walk = IntArray(w.length()) { w.getInt(it) }

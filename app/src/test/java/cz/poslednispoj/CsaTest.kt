@@ -27,21 +27,27 @@ class CsaTest {
         val metaBytes = fetch(Config.DATA_URL + "meta.json")
         assumeTrue("data nejsou k dispozici", metaBytes != null)
         val o = JSONObject(String(metaBytes!!))
-        val dayKey = o.getJSONArray("days").getJSONArray(0).getString(0)
-        val conn = fetch(Config.DATA_URL + "conn_$dayKey.bin")
-        assumeTrue("spoje nejsou k dispozici", conn != null)
+        val ttBytes = fetch(Config.DATA_URL + "timetable.bin")
+        assumeTrue("jízdní řád není k dispozici", ttBytes != null)
+        val t0 = System.currentTimeMillis()
+        val tt = Timetable.parse(GZIPInputStream(ttBytes!!.inputStream()).readBytes())
+        val t1 = System.currentTimeMillis()
         val nodes = o.getJSONArray("nodes")
         val n = nodes.length()
         val target = BooleanArray(n) { nodes.getJSONArray(it).getInt(3) == 1 }
         val change = IntArray(n) { if ((nodes.getJSONArray(it).getInt(4) and 4) != 0) 4 else 2 }
         val w = o.getJSONArray("walk")
         val walk = Csa.buildWalk(n, IntArray(w.length()) { w.getInt(it) })
-        val day = Csa.parseDay(GZIPInputStream(conn!!.inputStream()).readBytes())
+        val day = tt.buildDay(0)
+        val t2 = System.currentTimeMillis()
         val by = 19 * 60
         val p = Csa.profile(day, walk, n, target, by, change, null)
+        println("jízd ${tt.nTrip}, spojů dne ${day.n}, čtení ${t1 - t0} ms, sestavení dne ${t2 - t1} ms, výpočet ${System.currentTimeMillis() - t2} ms")
+        for (k in 1 until day.n) assertTrue("spoje nejsou seřazené", day.dep[k] <= day.dep[k - 1])
 
         val reach = p.latest.count { it >= 0 }
-        assertTrue("málo dosažitelných zastávek: $reach", reach > 2500)
+        println("dosažitelných zastávek: $reach")
+        assertTrue("málo dosažitelných zastávek: $reach", reach > 10000)
         var checked = 0
         for (i in 0 until n) {
             val prof = p.prof[i]

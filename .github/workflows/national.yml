@@ -1,7 +1,9 @@
-# Celostátní data (zkušebně): stáhne krajská i celostátní data, sloučí je a uloží do větve "national".
+# Celostátní data pro aplikaci (od verze 0.3): stáhne krajská i celostátní data, sloučí je a uloží do větve "national".
 name: Celostátní data
 
 on:
+  schedule:
+    - cron: "37 1 * * *"   # každou noc (3:37 letního času)
   workflow_dispatch: {}
   push:
     branches: [main]

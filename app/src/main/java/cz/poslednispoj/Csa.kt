@@ -11,7 +11,87 @@ class Day(
     val trip: IntArray,
     val flag: ByteArray, // 1 = lze nastoupit v u, 2 = lze vystoupit ve v
     val nTrips: Int,
+    val tt: Timetable? = null, // jízdní řád, ze kterého byl den sestaven (pro trasy jízd)
 )
+
+/**
+ * Jízdní řád na celé období (formát 3): jízdy se skládají ze vzorů (posloupnost uzlů)
+ * a profilů (jízdní doby od prvního odjezdu); jízda = profil + čas odjezdu.
+ * Pro každý den je bitová maska jízd, které ten den jedou.
+ */
+class Timetable(
+    val patLen: IntArray, val patStart: IntArray, val patNodes: IntArray, val patFlags: ByteArray,
+    val profPat: IntArray, val profStart: IntArray, val profOff: IntArray,
+    val nTrip: Int, val tProf: IntArray, val tStart: IntArray, val tRoute: IntArray,
+    val tHead: IntArray, val tShape: IntArray, val tLabel: IntArray,
+    val strings: Array<String>, val days: List<ByteArray>,
+) {
+    fun runs(day: Int, t: Int) = (days[day][t shr 3].toInt() and (1 shl (t and 7))) != 0
+
+    /** Zastavení jízdy t (uzel, příjezd, odjezd). */
+    fun stops(t: Int): List<RouteStop> {
+        val q = tProf[t]; val p = profPat[q]; val s0 = patStart[p]; val o0 = profStart[q]; val st = tStart[t]
+        return (0 until patLen[p]).map { k -> RouteStop(patNodes[s0 + k], st + profOff[o0 + 2 * k], st + profOff[o0 + 2 * k + 1]) }
+    }
+
+    /** Spoje jednoho dne seřazené sestupně podle odjezdu (a příjezdu). */
+    fun buildDay(di: Int): Day {
+        var n = 0
+        for (t in 0 until nTrip) if (runs(di, t)) n += patLen[profPat[tProf[t]]] - 1
+        require(n < (1 shl 23)) { "příliš mnoho spojů" }
+        val key = LongArray(n)
+        val su = IntArray(n); val sv = IntArray(n); val sd = IntArray(n); val sa = IntArray(n); val sr = IntArray(n); val sf = ByteArray(n)
+        var c = 0
+        for (t in 0 until nTrip) {
+            if (!runs(di, t)) continue
+            val q = tProf[t]; val p = profPat[q]; val s0 = patStart[p]; val len = patLen[p]; val o0 = profStart[q]; val st = tStart[t]
+            for (k in 0 until len - 1) {
+                su[c] = patNodes[s0 + k]; sv[c] = patNodes[s0 + k + 1]
+                sd[c] = st + profOff[o0 + 2 * k + 1]; sa[c] = st + profOff[o0 + 2 * k + 2]
+                sr[c] = t; sf[c] = ((patFlags[s0 + k].toInt() and 1) or (patFlags[s0 + k + 1].toInt() and 2)).toByte()
+                key[c] = ((sd[c].toLong() * 4096 + sa[c]) shl 23) or c.toLong()
+                c++
+            }
+        }
+        key.sort()
+        val u = IntArray(n); val v = IntArray(n); val dep = IntArray(n); val arr = IntArray(n); val trip = IntArray(n); val flag = ByteArray(n)
+        for (j in 0 until n) {
+            val i = (key[n - 1 - j] and 0x7FFFFF).toInt()
+            u[j] = su[i]; v[j] = sv[i]; dep[j] = sd[i]; arr[j] = sa[i]; trip[j] = sr[i]; flag[j] = sf[i]
+        }
+        return Day(n, u, v, dep, arr, trip, flag, nTrip, this)
+    }
+
+    companion object {
+        fun parse(bytes: ByteArray): Timetable {
+            val bb = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN)
+            require(bytes.size > 4 && String(bytes, 0, 4) == "PSJ3") { "neznámý formát jízdního řádu" }
+            bb.position(4)
+            fun u16(n: Int) = IntArray(n) { bb.short.toInt() and 0xFFFF }
+            fun i32(n: Int) = IntArray(n) { bb.int }
+            val nPat = bb.int
+            val patLen = u16(nPat)
+            val patStart = IntArray(nPat + 1); for (i in 0 until nPat) patStart[i + 1] = patStart[i] + patLen[i]
+            val patNodes = u16(patStart[nPat])
+            val patFlags = ByteArray(patStart[nPat]); bb.get(patFlags)
+            val nProf = bb.int
+            val profPat = i32(nProf)
+            val profStart = IntArray(nProf + 1); for (i in 0 until nProf) profStart[i + 1] = profStart[i] + 2 * patLen[profPat[i]]
+            val profOff = u16(profStart[nProf])
+            val nTrip = bb.int
+            val tProf = i32(nTrip); val tStart = u16(nTrip); val tRoute = i32(nTrip)
+            val tHead = i32(nTrip); val tShape = i32(nTrip); val tLabel = i32(nTrip)
+            val sl = bb.int
+            val sb = ByteArray(sl); bb.get(sb)
+            val ja = org.json.JSONArray(String(sb, Charsets.UTF_8))
+            val strings = Array(ja.length()) { ja.getString(it) }
+            val nDays = bb.int
+            val bytesPerDay = (nTrip + 7) / 8
+            val days = (0 until nDays).map { ByteArray(bytesPerDay).also { a -> bb.get(a) } }
+            return Timetable(patLen, patStart, patNodes, patFlags, profPat, profStart, profOff, nTrip, tProf, tStart, tRoute, tHead, tShape, tLabel, strings, days)
+        }
+    }
+}
 
 /** Pěší přechody mezi blízkými zastávkami (sousednost v CSR podobě). */
 class Walk(val start: IntArray, val to: IntArray, val dur: IntArray)
@@ -142,6 +222,7 @@ object Csa {
 
     /** Celá trasa jízdy se zastávkami a časy. */
     fun tripRoute(day: Day, t: Int): List<RouteStop> {
+        day.tt?.let { return it.stops(t) }
         val cs = ArrayList<Int>()
         for (i in 0 until day.n) if (day.trip[i] == t) cs.add(i)
         cs.sortWith(compareBy<Int>({ day.dep[it] }, { day.arr[it] }))
