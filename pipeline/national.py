@@ -233,10 +233,13 @@ E['node'] = A.root.values[E.row.values]
 log('zastavení celkem', len(E))
 
 # --- deduplikace jízd (pro každý den zvlášť, po úrovních priority) ---
-CELL = 400
-def ev_keys(rows, dep, dm=0, dx=0, dy=0):
+# Jízda je duplikát, pokud se aspoň polovina jejích zastavení shoduje s JEDNOU už přijatou jízdou
+# stejného druhu (vlak / ostatní): místo do ~200–600 m (buňky 200 m + sousední) a odjezd ±1 min.
+CELL = 200
+TRAINCLS = (TRdf.type.values == 2).astype(np.int64)
+def ev_keys(rows, dep, cls, dx=0, dy=0):
     cxx = np.floor(X[rows] / CELL).astype(np.int64) + dx; cyy = np.floor(Y[rows] / CELL).astype(np.int64) + dy
-    return ((cxx * 4000 + cyy) * 3000 + (dep // 60 + dm))
+    return (((cxx * 40000 + cyy) * 3000 + dep // 60) * 2 + cls)
 
 Eg = E.g.values; Erow = E.row.values; Edep = E.dep.values
 assert (np.diff(Eg) >= 0).all()
@@ -252,48 +255,43 @@ for day in dates:
         a = s['act'][day]; o = toff[si]
         active[o:o + len(s['trips'])] = s['trips'].service_id.isin(a).values
     keep = np.zeros(len(TRdf), bool)
-    acc_keys = np.zeros(0, np.int64); acc_g = np.zeros(0, np.int64)
+    acc = []  # DataFrame(k, b) přijatých událostí
     st_row = {'den': day}
     for p in sorted(TRdf.prio[active].unique()):
         cand = np.where(active & (TRdf.prio.values == p))[0]
-        # zastavení kandidátů
-        sel = np.zeros(len(E), bool)
-        lo = starts[cand]; hi = starts[cand + 1]
-        idx = np.concatenate([np.arange(a, b) for a, b in zip(lo, hi)]) if len(cand) else np.zeros(0, np.int64)
-        g = Eg[idx]; rows = Erow[idx]; dep = Edep[idx]
-        if len(acc_keys):
-            k = ev_keys(rows, dep)
-            hit = np.zeros(len(idx), bool); best = np.full(len(idx), -1, np.int64)
-            sk = np.argsort(acc_keys); ak = acc_keys[sk]; ag = acc_g[sk]
+        lens = starts[cand + 1] - starts[cand]
+        idx = np.concatenate([np.arange(a, b) for a, b in zip(starts[cand], starts[cand + 1])]) if len(cand) else np.zeros(0, np.int64)
+        g = Eg[idx]; rows = Erow[idx]; dep = Edep[idx]; cls = TRAINCLS[g]
+        k = ev_keys(rows, dep, cls)
+        dup = np.zeros(0, np.int64)
+        if acc:
+            AC = pd.concat(acc, ignore_index=True)
+            ev = np.arange(len(idx))
+            hits = []
             for dm in (-1, 0, 1):
-                kk = k + dm
-                pos = np.searchsorted(ak, kk); pos = np.minimum(pos, len(ak) - 1)
-                h = ak[pos] == kk
-                best = np.where(h & ~hit, ag[pos], best); hit |= h
-            cnt = pd.Series(hit.astype(int)).groupby(g).agg(['sum', 'size'])
-            dup = cnt.index.values[(cnt['sum'] >= 2) & (cnt['sum'] * 2 >= cnt['size'])]
+                q = pd.DataFrame({'k': k + dm * 2, 'e': ev})
+                hits.append(q.merge(AC, on='k')[['e', 'b']])
+            H = pd.concat(hits, ignore_index=True).drop_duplicates()
+            H['g'] = g[H.e.values]
+            pc = H.groupby(['g', 'b']).size().rename('n').reset_index().sort_values('n', ascending=False).drop_duplicates('g')
+            size = pd.Series(lens, index=cand)
+            pc['size'] = size.loc[pc.g.values].values
+            d = pc[(pc.n >= 2) & (pc.n * 2 >= pc['size'])]
+            dup = d.g.values
+            if 100 <= p < 200:
+                for gg, bb in zip(d.g.values, d.b.values):
+                    if TRAINCLS[bb]: label_from[int(bb)] = int(gg)
             if day == DBG_DAY:
-                bdf = pd.DataFrame({'g': g, 'b': best}); bdf = bdf[bdf.b >= 0]
-                bm = bdf.groupby('g').b.agg(lambda s: s.value_counts().index[0])
-                for gg, r in cnt.iterrows():
-                    dbg.append((int(gg), int(p), int(r['sum']), int(r['size']), int(bm.get(gg, -1))))
-            # krajské vlaky předají označení
-            if p >= 100 and p < 200 and len(dup):
-                bdf = pd.DataFrame({'g': g, 'b': best})
-                bdf = bdf[(bdf.b >= 0) & bdf.g.isin(dup)]
-                for gg, bb in bdf.groupby('g').b.agg(lambda s: s.value_counts().index[0]).items():
-                    label_from[int(bb)] = int(gg)
-        else:
-            dup = np.zeros(0, np.int64)
+                for r in pc.itertuples(): dbg.append((int(r.g), int(p), int(r.n), int(r.size), int(r.b)))
         ok = np.setdiff1d(cand, dup)
         keep[ok] = True
         st_row[f'p{p}'] = f'{len(ok)}/{len(cand)}'
-        # přidání událostí přijatých jízd (posunuté do sousedních buněk)
         m = np.isin(g, ok)
         if m.any():
-            r2 = rows[m]; d2 = dep[m]; g2 = g[m]
-            nk = [ev_keys(r2, d2, 0, dx, dy) for dx in (-1, 0, 1) for dy in (-1, 0, 1)]
-            acc_keys = np.concatenate([acc_keys] + nk); acc_g = np.concatenate([acc_g] + [g2] * 9)
+            r2 = rows[m]; d2 = dep[m]; g2 = g[m]; c2 = cls[m]
+            for dx in (-1, 0, 1):
+                for dy in (-1, 0, 1):
+                    acc.append(pd.DataFrame({'k': ev_keys(r2, d2, c2, dx, dy), 'b': g2}))
     day_trips[day] = np.where(keep)[0]
     st_row['jízd'] = int(keep.sum())
     stats.append(st_row)
