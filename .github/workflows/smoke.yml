@@ -48,6 +48,16 @@ jobs:
             adb shell am start -n cz.poslednispoj/.MainActivity
             sleep 75
             adb exec-out screencap -p > out/1-start.png
+            # našeptávač cíle
+            adb shell input tap 360 456
+            sleep 2
+            adb shell input text "vsenory"
+            sleep 3
+            adb exec-out screencap -p > out/1b-search.png
+            adb shell input keyevent 111
+            sleep 1
+            adb shell input keyevent 4
+            sleep 2
             # přiblížení tlačítkem + (3×)
             adb shell input tap 988 2079
             sleep 2
