@@ -40,24 +40,24 @@ class Timetable(
         for (t in 0 until nTrip) if (runs(di, t)) n += patLen[profPat[tProf[t]]] - 1
         require(n < (1 shl 23)) { "příliš mnoho spojů" }
         val key = LongArray(n)
-        val su = IntArray(n); val sv = IntArray(n); val sd = IntArray(n); val sa = IntArray(n); val sr = IntArray(n); val sf = ByteArray(n)
+        val su = IntArray(n); val sv = IntArray(n); val sr = IntArray(n); val sf = ByteArray(n)
         var c = 0
         for (t in 0 until nTrip) {
             if (!runs(di, t)) continue
             val q = tProf[t]; val p = profPat[q]; val s0 = patStart[p]; val len = patLen[p]; val o0 = profStart[q]; val st = tStart[t]
             for (k in 0 until len - 1) {
                 su[c] = patNodes[s0 + k]; sv[c] = patNodes[s0 + k + 1]
-                sd[c] = st + profOff[o0 + 2 * k + 1]; sa[c] = st + profOff[o0 + 2 * k + 2]
+                val d = st + profOff[o0 + 2 * k + 1]; val a = st + profOff[o0 + 2 * k + 2]
                 sr[c] = t; sf[c] = ((patFlags[s0 + k].toInt() and 1) or (patFlags[s0 + k + 1].toInt() and 2)).toByte()
-                key[c] = ((sd[c].toLong() * 4096 + sa[c]) shl 23) or c.toLong()
+                key[c] = ((d.toLong() * 4096 + a) shl 23) or c.toLong()
                 c++
             }
         }
         key.sort()
         val u = IntArray(n); val v = IntArray(n); val dep = IntArray(n); val arr = IntArray(n); val trip = IntArray(n); val flag = ByteArray(n)
         for (j in 0 until n) {
-            val i = (key[n - 1 - j] and 0x7FFFFF).toInt()
-            u[j] = su[i]; v[j] = sv[i]; dep[j] = sd[i]; arr[j] = sa[i]; trip[j] = sr[i]; flag[j] = sf[i]
+            val kk = key[n - 1 - j]; val i = (kk and 0x7FFFFF).toInt(); val da = (kk ushr 23).toInt()
+            u[j] = su[i]; v[j] = sv[i]; dep[j] = da / 4096; arr[j] = da % 4096; trip[j] = sr[i]; flag[j] = sf[i]
         }
         return Day(n, u, v, dep, arr, trip, flag, nTrip, this)
     }
