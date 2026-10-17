@@ -91,6 +91,18 @@ for name, kind, ref in SOURCES:
         with urllib.request.urlopen(req, timeout=300) as r, open(path, 'wb') as o:
             o.write(r.read())
         entry.update(summarize(name, path))
+        # vzorky souborů pro párování linek mezi zdroji
+        z = zipfile.ZipFile(path)
+        samp = {}
+        for fn in ['routes.txt', 'trips.txt', 'calendar.txt', 'route_sub_agencies.txt', 'agency.txt', 'stops.txt', 'feed_info.txt']:
+            if fn in z.namelist():
+                with z.open(fn) as fh:
+                    lines = []
+                    for k, line in enumerate(io.TextIOWrapper(fh, encoding='utf-8-sig')):
+                        if k >= 12: break
+                        lines.append(line.rstrip())
+                samp[fn] = lines
+        entry['samples'] = samp
     except Exception as e:
         entry['error'] = repr(e)
     print(json.dumps(entry, ensure_ascii=False)[:2000], flush=True)
