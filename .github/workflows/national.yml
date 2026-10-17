@@ -1,0 +1,59 @@
+# Celostátní data (zkušebně): stáhne krajská i celostátní data, sloučí je a uloží do větve "national".
+name: Celostátní data
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [main]
+    paths: ["pipeline/national.py", ".github/workflows/national.yml"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: national
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Instalace knihoven
+        run: pip install pandas==2.2.3 numpy==2.1.3
+      - name: Stažení zdrojů
+        run: |
+          mkdir -p src
+          get() {  # get <klíč> <url> [povinný]
+            if curl -fsSL --retry 3 --max-time 900 -A "Mozilla/5.0 posledni-spoj" -o "$1.zip" "$2"; then
+              mkdir -p "src/$1" && unzip -q -o "$1.zip" -d "src/$1" && rm "$1.zip" && echo "$1 OK" && ls -l "src/$1"
+            else
+              echo "$1 NEDOSTUPNÉ"; [ -z "$3" ] || exit 1
+            fi
+          }
+          get PID https://data.pid.cz/PID_GTFS.zip 1
+          get JMK https://kordis-jmk.cz/gtfs/gtfs.zip
+          get IDZK https://hoermalmeister.github.io/gtfs-rehost/idzk/id-zk-all.zip
+          get DPMO https://www.dpmo.cz/doc/dpmo-olomouc-cz.zip
+          get PMDP https://jizdnirady.pmdp.cz/jr/gtfs
+          get DPMLJ https://www.dpmlj.cz/gtfs.zip
+          get CZPTT https://data.jr.ggu.cz/results/latest/CZPTT_GTFS.zip 1
+          get JDF https://data.jr.ggu.cz/results/latest/JDF_merged_GTFS.zip 1
+          df -h . ; du -sh src/*
+      - name: Sloučení
+        run: python pipeline/national.py src out 14 2>&1 | tee out-log.txt
+      - name: Uložení do větve national
+        if: always()
+        run: |
+          mkdir -p out && cp out-log.txt out/log.txt || true
+          cd out
+          git init -q -b national
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -q -m "Celostátní data $(date -u +%Y-%m-%d)"
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" national
