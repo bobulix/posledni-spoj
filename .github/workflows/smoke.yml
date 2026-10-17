@@ -55,8 +55,6 @@ jobs:
             sleep 3
             adb exec-out screencap -p > out/1b-search.png
             adb shell input keyevent 111
-            sleep 1
-            adb shell input keyevent 4
             sleep 2
             # přiblížení tlačítkem + (3×)
             adb shell input tap 988 2079
@@ -73,6 +71,9 @@ jobs:
             adb shell input tap 815 1372
             sleep 3
             adb exec-out screencap -p > out/4-route.png
+            adb shell input tap 815 1372
+            sleep 2
+            adb exec-out screencap -p > out/5-detail.png
             sleep 1
             adb logcat -d > out/logcat.txt
             adb logcat -d -b crash > out/crash.txt || true
