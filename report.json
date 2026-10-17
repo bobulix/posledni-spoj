@@ -1,0 +1,1680 @@
+{
+ "sources": [
+  {
+   "name": "PID",
+   "atlas_file": "atlas/feeds/data.pid.cz.dmfr.json",
+   "license": {
+    "spdx_identifier": "CC-BY-4.0",
+    "url": "https://pid.cz/o-systemu/opendata",
+    "use_without_attribution": "no",
+    "create_derived_product": "yes"
+   },
+   "url": "http://data.pid.cz/PID_GTFS.zip",
+   "size_mb": 50.0,
+   "files": [
+    "agency.txt",
+    "calendar.txt",
+    "calendar_dates.txt",
+    "fare_attributes.txt",
+    "fare_rules.txt",
+    "feed_info.txt",
+    "levels.txt",
+    "pathways.txt",
+    "routes.txt",
+    "route_stops.txt",
+    "route_sub_agencies.txt",
+    "shapes.txt",
+    "stops.txt",
+    "stop_times.txt",
+    "transfers.txt",
+    "trips.txt",
+    "vehicle_allocations.txt",
+    "vehicle_boardings.txt",
+    "vehicle_categories.txt",
+    "vehicle_couplings.txt"
+   ],
+   "agencies": 1,
+   "agency_names": [
+    "Pražská integrovaná doprava"
+   ],
+   "stops": 20134,
+   "stops_no_coords": 0,
+   "routes": 890,
+   "route_types": [
+    [
+     "3",
+     745
+    ],
+    [
+     "2",
+     91
+    ],
+    [
+     "0",
+     39
+    ],
+    [
+     "11",
+     6
+    ],
+    [
+     "4",
+     5
+    ],
+    [
+     "1",
+     3
+    ],
+    [
+     "7",
+     1
+    ]
+   ],
+   "trips": 91423,
+   "stop_times": 1838852,
+   "bbox": [
+    49.013668,
+    12.831547,
+    50.956219,
+    15.908509
+   ],
+   "dates": [
+    "20251213",
+    "20261212"
+   ],
+   "has_shapes": true,
+   "sample_stops": [
+    "Boletická",
+    "Boletická",
+    "Břetislavka",
+    "Břetislavka",
+    "Břetislavka",
+    "Břetislavka",
+    "Arbesovo náměstí",
+    "Arbesovo náměstí"
+   ],
+   "sample_routes": [
+    [
+     "A",
+     "Nemocnice Motol - Petřiny - Skalka - Depo Hostivař",
+     "99"
+    ],
+    [
+     "B",
+     "Zličín - Černý Most",
+     "99"
+    ],
+    [
+     "C",
+     "Letňany - Ládví - Háje",
+     "99"
+    ],
+    [
+     "1",
+     "Sídliště Petřiny - Výstaviště",
+     "99"
+    ],
+    [
+     "2",
+     "Sídliště Petřiny - Náměstí Bratří Synků",
+     "99"
+    ],
+    [
+     "3",
+     "Březiněveská - Nádraží Braník - Sídliště Modřany",
+     "99"
+    ],
+    [
+     "4",
+     "Radlická - Čechovo náměstí",
+     "99"
+    ],
+    [
+     "5",
+     "Slivenec - Vozovna Žižkov",
+     "99"
+    ]
+   ],
+   "samples": {
+    "routes.txt": [
+     "route_id,agency_id,route_short_name,route_long_name,route_type,route_url,route_color,route_text_color,is_night,is_regional,is_substitute_transport",
+     "L991,99,A,\"Nemocnice Motol - Petřiny - Skalka - Depo Hostivař\",1,\"https://pid.cz/linka/A\",00A562,FFFFFF,0,0,0",
+     "L992,99,B,\"Zličín - Černý Most\",1,\"https://pid.cz/linka/B\",F8B322,000000,0,0,0",
+     "L993,99,C,\"Letňany - Ládví - Háje\",1,\"https://pid.cz/linka/C\",CF003D,FFFFFF,0,0,0",
+     "L1,99,1,\"Sídliště Petřiny - Výstaviště\",0,\"https://pid.cz/linka/1\",7A0603,FFFFFF,0,0,0",
+     "L2,99,2,\"Sídliště Petřiny - Náměstí Bratří Synků\",0,\"https://pid.cz/linka/2\",7A0603,FFFFFF,0,0,0",
+     "L3,99,3,\"Březiněveská - Nádraží Braník - Sídliště Modřany\",0,\"https://pid.cz/linka/3\",7A0603,FFFFFF,0,0,0",
+     "L4,99,4,\"Radlická - Čechovo náměstí\",0,\"https://pid.cz/linka/4\",7A0603,FFFFFF,0,0,0",
+     "L5,99,5,\"Slivenec - Vozovna Žižkov\",0,\"https://pid.cz/linka/5\",7A0603,FFFFFF,0,0,0",
+     "L6,99,6,\"Nádraží Holešovice - Kubánské náměstí\",0,\"https://pid.cz/linka/6\",7A0603,FFFFFF,0,0,0",
+     "L7,99,7,\"Kotlářka - Lehovec\",0,\"https://pid.cz/linka/7\",7A0603,FFFFFF,0,0,0",
+     "L8,99,8,\"Nádraží Podbaba - Starý Hloubětín\",0,\"https://pid.cz/linka/8\",7A0603,FFFFFF,0,0,0"
+    ],
+    "trips.txt": [
+     "route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed,exceptional,sub_agency_id,headsign_icons",
+     "L991,0000011-1,991_11915_260207,\"Nemocnice Motol\",,0,,L991V1,1,1,0,1,",
+     "L991,0000011-1,991_11916_260207,\"Depo Hostivař\",,1,,L991V2,1,1,0,1,",
+     "L991,0000011-1,991_11917_260207,\"Nemocnice Motol\",,0,,L991V3,1,1,0,1,",
+     "L991,0000011-1,991_11918_260207,\"Depo Hostivař\",,1,,L991V2,1,1,0,1,",
+     "L991,0000011-1,991_11919_260207,\"Nemocnice Motol\",,0,,L991V3,1,1,0,1,",
+     "L991,0000011-1,991_11920_260207,\"Depo Hostivař\",,1,,L991V2,1,1,0,1,",
+     "L991,1111111-1,991_11660_260202,\"Nemocnice Motol\",,0,,L991V3,1,1,0,1,",
+     "L991,0000011-1,991_11921_260207,\"Depo Hostivař\",,1,,L991V2,1,1,0,1,",
+     "L991,0000011-1,991_11922_260207,\"Nemocnice Motol\",,0,,L991V3,1,1,0,1,",
+     "L991,0000011-1,991_11923_260207,\"Depo Hostivař\",,1,,L991V2,1,1,0,1,",
+     "L991,0000011-1,991_11924_260207,\"Nemocnice Motol\",,0,,L991V3,1,1,0,1,"
+    ],
+    "calendar.txt": [
+     "service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date",
+     "0000011-1,0,0,0,0,0,1,1,20261017,20261028",
+     "1111111-1,1,1,1,1,1,1,1,20261017,20261028",
+     "1111111-2,1,1,1,1,1,1,1,20261017,20261030",
+     "1111111-3,1,1,1,1,1,1,1,20261017,20261030",
+     "1111100-1,1,1,1,1,1,0,0,20261019,20261027",
+     "1111100-2,1,1,1,1,1,0,0,20261019,20261030",
+     "1111100-3,1,1,1,1,1,0,0,20261029,20261030",
+     "0000010-1,0,0,0,0,0,1,0,20261017,20261028",
+     "1111111-4,1,1,1,1,1,1,1,20261017,20261028",
+     "0000011-2,0,0,0,0,0,1,1,20261017,20261025",
+     "0000010-2,0,0,0,0,0,1,0,20261017,20261024"
+    ],
+    "route_sub_agencies.txt": [
+     "route_id,route_licence_number,sub_agency_id,sub_agency_name",
+     "L991,199991,1,\"Dopravní podnik hl. m. Prahy, akciová společnost\"",
+     "L992,199992,1,\"Dopravní podnik hl. m. Prahy, akciová společnost\"",
+     "L993,199993,1,\"Dopravní podnik hl. m. Prahy, akciová společnost\"",
+     "L1,199001,1,\"Dopravní podnik hl. m. Prahy, akciová společnost\"",
+     "L2,199002,1,\"Dopravní podnik hl. m. Prahy, akciová společnost\"",
+     "L3,199003,1,\"Dopravní podnik hl. m. Prahy, akciová společnost\"",
+     "L4,199004,1,\"Dopravní podnik hl. m. Prahy, akciová společnost\"",
+     "L5,199005,1,\"Dopravní podnik hl. m. Prahy, akciová společnost\"",
+     "L6,199006,1,\"Dopravní podnik hl. m. Prahy, akciová společnost\"",
+     "L7,199007,1,\"Dopravní podnik hl. m. Prahy, akciová společnost\"",
+     "L8,199008,1,\"Dopravní podnik hl. m. Prahy, akciová společnost\""
+    ],
+    "agency.txt": [
+     "agency_id,agency_name,agency_url,agency_timezone,agency_lang,agency_phone,agency_email",
+     "99,\"Pražská integrovaná doprava\",\"https://pid.cz\",Europe/Prague,cs,\"+420234704560\",\"info@pid.cz\""
+    ],
+    "stops.txt": [
+     "stop_id,stop_name,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,wheelchair_boarding,level_id,platform_code,asw_node_id,asw_stop_id,zone_region_type",
+     "U1Z1P,\"Boletická\",50.132732,14.513702,\"P\",,0,,0,,A,1,1,1",
+     "U1Z2P,\"Boletická\",50.133011,14.513584,\"P\",,0,,0,,B,1,2,1",
+     "U3Z1P,\"Břetislavka\",50.123241,14.389533,\"P\",,0,,0,,A,3,1,1",
+     "U3Z1,\"Břetislavka\",50.123241,14.389533,\"B\",,0,,0,,A,3,1,1",
+     "U3Z2P,\"Břetislavka\",50.123013,14.389885,\"P\",,0,,0,,B,3,2,1",
+     "U3Z2,\"Břetislavka\",50.123013,14.389885,\"B\",,0,,0,,B,3,2,1",
+     "U4Z1P,\"Arbesovo náměstí\",50.076248,14.404202,\"P\",,0,,1,,A,4,1,1",
+     "U4Z2P,\"Arbesovo náměstí\",50.075886,14.403978,\"P\",,0,,1,,B,4,2,1",
+     "U4Z3P,\"Arbesovo náměstí\",50.076405,14.405704,\"P\",,0,,0,,C,4,3,1",
+     "U4Z4P,\"Arbesovo náměstí\",50.076561,14.405448,\"P\",,0,,0,,D,4,4,1",
+     "U5Z1P,\"Nové Vokovice\",50.100658,14.340714,\"P\",,0,,0,,A,5,1,1"
+    ],
+    "feed_info.txt": [
+     "feed_publisher_name,feed_publisher_url,feed_lang,feed_start_date,feed_end_date,feed_contact_email",
+     "\"ROPID\",\"https://pid.cz\",cs,20261017,20261030,\"opendata@pid.cz\""
+    ]
+   }
+  },
+  {
+   "name": "IDS-JMK",
+   "atlas_file": "atlas/feeds/data.brno.cz.dmfr.json",
+   "license": {
+    "spdx_identifier": "CC-BY-4.0",
+    "url": "https://data.brno.cz/datasets/379d2e9a7907460c8ca7fda1f3e84328/about"
+   },
+   "url": "https://kordis-jmk.cz/gtfs/gtfs.zip",
+   "size_mb": 8.2,
+   "files": [
+    "api.txt",
+    "agency.txt",
+    "calendar.txt",
+    "calendar_dates.txt",
+    "routes.txt",
+    "stop_times.txt",
+    "stops.txt",
+    "transfers.txt",
+    "trips.txt"
+   ],
+   "agencies": 1,
+   "agency_names": [
+    "IDS JMK (Data from: KORDIS JMK, DPMB)"
+   ],
+   "stops": 10909,
+   "stops_no_coords": 0,
+   "routes": 346,
+   "route_types": [
+    [
+     "3",
+     290
+    ],
+    [
+     "2",
+     28
+    ],
+    [
+     "800",
+     14
+    ],
+    [
+     "0",
+     13
+    ],
+    [
+     "4",
+     1
+    ]
+   ],
+   "trips": 56134,
+   "stop_times": 964731,
+   "bbox": [
+    8.801416,
+    15.546522,
+    49.65112,
+    17.629908
+   ],
+   "dates": [
+    "20261016",
+    "20261213"
+   ],
+   "has_shapes": false,
+   "sample_stops": [
+    "Hevlín, škola",
+    "Hevlín, cihelna",
+    "Hrabětice",
+    "Šanov, u mostu",
+    "Šanov, požární zbrojnice",
+    "Hrušovany nad Jevišovkou, žel. st.",
+    "Hrabětice, rozcestí",
+    "Hrušovany nad Jevišovkou, statek"
+   ],
+   "sample_routes": [
+    [
+     "LOĎ",
+     "Bystrc - Rokle - Veverská Bítýška",
+     "99"
+    ],
+    [
+     "104",
+     "Brno - Pohořelice - Vlasatice - Hrušovany nad Jevišovkou - Hevlín - Laa an der Thaya",
+     "99"
+    ],
+    [
+     "105",
+     "Brno - Modřice - Pohořelice - Pasohlávky - Dolní Dunajovice - Mikulov",
+     "99"
+    ],
+    [
+     "106",
+     "Brno - Slavkov u Brna - Žarošice - Dražůvky - Kyjov",
+     "99"
+    ],
+    [
+     "107",
+     "Vyškov - Rousínov - Brno",
+     "99"
+    ],
+    [
+     "108",
+     "Brno - Modřice - Pohořelice - Lechovice - Znojmo",
+     "99"
+    ],
+    [
+     "109",
+     "Brno - Telnice - Klobouky u Brna - Čejč - Mutěnice - Hodonín",
+     "99"
+    ],
+    [
+     "10",
+     "Stránská skála - Bystrc, Ečerova",
+     "99"
+    ]
+   ],
+   "samples": {
+    "routes.txt": [
+     "route_id,agency_id,route_short_name,route_long_name,route_type,route_color,route_text_color",
+     "L100D99,99,LOĎ,\"Bystrc - Rokle - Veverská Bítýška\",4,00224B,FFFFFF",
+     "L104D99,99,104,\"Brno - Pohořelice - Vlasatice - Hrušovany nad Jevišovkou - Hevlín - Laa an der Thaya\",3,00E68C,",
+     "L105D99,99,105,\"Brno - Modřice - Pohořelice - Pasohlávky - Dolní Dunajovice - Mikulov\",3,00E68C,",
+     "L106D99,99,106,\"Brno - Slavkov u Brna - Žarošice - Dražůvky - Kyjov\",3,00E68C,",
+     "L107D99,99,107,\"Vyškov - Rousínov - Brno\",3,00E68C,",
+     "L108D99,99,108,\"Brno - Modřice - Pohořelice - Lechovice - Znojmo\",3,00E68C,",
+     "L109D99,99,109,\"Brno - Telnice - Klobouky u Brna - Čejč - Mutěnice - Hodonín\",3,00E68C,",
+     "L10D99,99,10,\"Stránská skála - Bystrc, Ečerova\",0,A05A2C,FFFFFF",
+     "L110D99,99,S5,\"Kunovice - Uherské Hradiště - Staré Město u Uherského Hradiště\",2,800000,FFFFFF",
+     "L111D99,99,xR12,\"NÁHRADNÍ DOPRAVA ZA VLAK Brno - Vyškov na Moravě - Nezamyslice\",3,7FFFAA,",
+     "L118D99,99,xS41,\"NÁHRADNÍ DOPRAVA ZA VLAK Brno - Střelice\",3,7FFFAA,"
+    ],
+    "trips.txt": [
+     "route_id,service_id,trip_id,trip_headsign,wheelchair_accessible,block_id,direction_id,bikes_allowed,exceptional",
+     "L104D99,1,1,\"ÚAN Zvonařka\",1,,1,0,0",
+     "L104D99,1,2,\"Laa an der Thaya, Therme\",1,,0,0,0",
+     "L104D99,1,3,\"Pohořelice, náměstí\",1,,1,0,0",
+     "L104D99,1,4,\"Laa an der Thaya, Therme\",1,,0,0,0",
+     "L104D99,1,5,\"ÚAN Zvonařka\",1,,1,0,0",
+     "L104D99,1,6,\"Laa an der Thaya, Therme\",1,,0,0,0",
+     "L104D99,1,7,\"Pohořelice, náměstí\",1,,1,0,0",
+     "L104D99,1,8,\"Hevlín, škola\",1,,0,0,0",
+     "L104D99,1,9,\"ÚAN Zvonařka\",1,,1,0,0",
+     "L104D99,1,10,\"Laa an der Thaya, Therme\",1,,0,0,0",
+     "L104D99,1,11,\"ÚAN Zvonařka\",1,,1,0,0"
+    ],
+    "calendar.txt": [
+     "service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date",
+     "1,1,1,1,1,1,0,0,20261016,20261211",
+     "2,1,1,1,1,1,0,0,20261016,20261211",
+     "3,1,1,1,1,1,0,0,20261016,20261016",
+     "4,1,1,1,1,1,0,0,20261016,20261204",
+     "5,1,1,1,1,1,0,0,20261016,20261211",
+     "6,1,1,1,1,1,0,0,20261016,20261120",
+     "7,1,1,1,1,1,0,0,20261016,20261113",
+     "8,1,1,1,1,1,0,0,20261016,20261113",
+     "9,1,1,1,1,1,0,0,20261016,20261020",
+     "10,1,1,1,1,1,0,0,20261016,20261021",
+     "11,1,1,1,1,1,0,0,20261016,20261104"
+    ],
+    "agency.txt": [
+     "agency_id,agency_name,agency_url,agency_timezone,agency_lang,agency_phone",
+     "99,\"IDS JMK (Data from: KORDIS JMK, DPMB)\",http://www.idsjmk.cz,Europe/Prague,cs,\"5 4317 4317\""
+    ],
+    "stops.txt": [
+     "stop_id,stop_name,stop_lat,stop_lon,zone_id,location_type,parent_station,wheelchair_boarding,platform_code",
+     "\"U15775Z2\",\"Hevlín, škola\",48.751285,16.380187,\"570\",0,U15775N1,2,",
+     "\"U15773Z2\",\"Hevlín, cihelna\",48.761387,16.38346,\"570\",0,U15773N2,2,",
+     "\"U15627Z2\",\"Hrabětice\",48.796862,16.395222,\"560\",0,U15627N3,2,",
+     "\"U15640Z2\",\"Šanov, u mostu\",48.799235,16.386832,\"560\",0,U15640N4,2,",
+     "\"U15639Z2\",\"Šanov, požární zbrojnice\",48.802143,16.373927,\"560\",0,U15639N5,2,",
+     "\"U15637Z2\",\"Hrušovany nad Jevišovkou, žel. st.\",48.810465,16.38336,\"560\",0,U15637N6,2,",
+     "\"U15628Z2\",\"Hrabětice, rozcestí\",48.811255,16.39406,\"560\",0,U15628N7,2,",
+     "\"U15634Z2\",\"Hrušovany nad Jevišovkou, statek\",48.817402,16.397767,\"560\",0,U15634N8,2,",
+     "\"U15631Z2\",\"Hrušovany nad Jevišovkou, lékárna\",48.829121,16.399494,\"560\",0,U15631N9,2,",
+     "\"U15632Z1\",\"Hrušovany nad Jevišovkou, Lidická, VÚPP\",48.831472,16.401928,\"560\",0,U15632N10,2,",
+     "\"U15635Z2\",\"Hrušovany nad Jevišovkou, STS\",48.842858,16.403833,\"560\",0,U15635N11,2,"
+    ]
+   }
+  },
+  {
+   "name": "DPMO",
+   "atlas_file": "atlas/feeds/dpmo.cz.dmfr.json",
+   "license": {},
+   "url": "https://www.dpmo.cz/doc/dpmo-olomouc-cz.zip",
+   "size_mb": 1.0,
+   "files": [
+    "agency.txt",
+    "calendar.txt",
+    "calendar_dates.txt",
+    "fare_attributes.txt",
+    "fare_rules.txt",
+    "feed_info.txt",
+    "frequencies.txt",
+    "routes.txt",
+    "stop_times.txt",
+    "stops.txt",
+    "Tarifni_zony.txt",
+    "transfers.txt",
+    "trips.txt",
+    "shapes.txt"
+   ],
+   "agencies": 1,
+   "agency_names": [
+    "Dopravní podnik města Olomouce, a.s."
+   ],
+   "stops": 375,
+   "stops_no_coords": 0,
+   "routes": 41,
+   "route_types": [
+    [
+     "3",
+     28
+    ],
+    [
+     "0",
+     13
+    ]
+   ],
+   "trips": 8119,
+   "stop_times": 111460,
+   "bbox": [
+    49.547908782959,
+    17.1783504486084,
+    49.6431884765625,
+    17.3640804290771
+   ],
+   "dates": [
+    "20261015",
+    "20261212"
+   ],
+   "has_shapes": true,
+   "sample_stops": [
+    "Nová Ulice",
+    "Nová Ulice",
+    "Pionýrská",
+    "Pionýrská",
+    "Fakultní nemocnice",
+    "Fakultní nemocnice",
+    "Wolkerova",
+    "Wolkerova"
+   ],
+   "sample_routes": [
+    [
+     "1",
+     "",
+     "01"
+    ],
+    [
+     "2",
+     "",
+     "01"
+    ],
+    [
+     "3",
+     "",
+     "01"
+    ],
+    [
+     "4",
+     "",
+     "01"
+    ],
+    [
+     "5",
+     "",
+     "01"
+    ],
+    [
+     "6",
+     "",
+     "01"
+    ],
+    [
+     "7",
+     "",
+     "01"
+    ],
+    [
+     "10",
+     "",
+     "01"
+    ]
+   ],
+   "samples": {
+    "routes.txt": [
+     "route_id,agency_id,route_short_name,route_long_name,route_desc,route_type,route_url,route_color,route_text_color,route_sort_order",
+     "126,01,1,,,0,,FFFFFF,,",
+     "226,01,2,,,0,,FFFFFF,,",
+     "326,01,3,,,0,,FFFFFF,,",
+     "426,01,4,,,0,,FFFFFF,,",
+     "526,01,5,,,0,,FFFFFF,,",
+     "626,01,6,,,0,,FFFFFF,,",
+     "726,01,7,,,0,,FFFFFF,,",
+     "10026,01,10,,,3,,FFFFFF,,",
+     "11026,01,11,,,3,,FFFFFF,,",
+     "12026,01,12,,,3,,FFFFFF,,",
+     "13026,01,13,,,3,,FFFFFF,,"
+    ],
+    "trips.txt": [
+     "route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed",
+     "126,Prac.dny_0,126_1_1_1,Fibichova,,0,,TRA_00000,1,",
+     "126,Prac.dny_0,126_2_3_2,Fibichova,,0,,TRA_00000,,",
+     "126,Prac.dny_0,126_3_5_3,Fibichova,,0,,TRA_00000,1,",
+     "126,Prac.dny_0,126_1_7_4,Fibichova,,0,,TRA_00000,1,",
+     "126,Prac.dny_0,126_2_9_5,Fibichova,,0,,TRA_00000,,",
+     "126,Prac.dny_0,126_3_13_6,Fibichova,,0,,TRA_00000,1,",
+     "126,Prac.dny_0,126_1_17_7,Fibichova,,0,,TRA_00000,1,",
+     "126,Prac.dny_0,126_2_21_8,Fibichova,,0,,TRA_00000,,",
+     "126,Prac.dny_0,126_3_25_9,Fibichova,,0,,TRA_00000,1,",
+     "126,Prac.dny_0,126_1_31_10,Fibichova,,0,,TRA_00000,1,",
+     "126,Prac.dny_0,126_2_39_11,Fibichova,,0,,TRA_00000,,"
+    ],
+    "calendar.txt": [
+     "service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date",
+     "Prac.dny_0,1,1,1,1,1,0,0,20261015,20261212",
+     "Soboty_1,0,0,0,0,0,1,0,20261015,20261212",
+     "Neděle+Sv_2,0,0,0,0,0,0,1,20261015,20261212",
+     "Prac.dny_3,1,1,1,1,1,0,0,20261015,20261212",
+     "Prázdniny_4,1,1,1,1,1,0,0,20261015,20261212",
+     "Soboty_5,0,0,0,0,0,1,0,20261015,20261212",
+     "Neděle+Sv_6,0,0,0,0,0,0,1,20261015,20261212",
+     "Neděle+Sv_7,0,0,0,0,0,0,1,20261015,20261212",
+     "Typ5_8,0,0,0,0,0,1,0,20261015,20261212",
+     "Typ11_9,1,1,1,1,1,0,0,20261015,20261212",
+     "Typ12_10,0,0,0,0,0,1,0,20261015,20261212"
+    ],
+    "agency.txt": [
+     "agency_id,agency_name,agency_url,agency_timezone,agency_lang,agency_phone,agency_fare_url,agency_email",
+     "01,\"Dopravní podnik města Olomouce, a.s.\",http://www.dpmo.cz,Europe/Prague,cs,+420585533111,,dpmo@dpmo.cz"
+    ],
+    "stops.txt": [
+     "stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,location_type,parent_station,stop_timezone,wheelchair_boarding,level_id,platform_code",
+     "000000002700001,27,Nová Ulice,,49.5774307250977,17.2308406829834,71,0,,,1,,",
+     "000000002700002,27,Nová Ulice,,49.5778007507324,17.2301998138428,71,0,,,1,,",
+     "000000002600001,26,Pionýrská,,49.5775184631348,17.2383403778076,71,0,,,1,,",
+     "000000002600002,26,Pionýrská,,49.5782012939453,17.2385597229004,71,0,,,1,,",
+     "000000002500001,25,Fakultní nemocnice,,49.580638885498,17.239990234375,71,0,,,1,,",
+     "000000002500002,25,Fakultní nemocnice,,49.581298828125,17.2402191162109,71,0,,,1,,",
+     "000000002400001,24,Wolkerova,,49.5852317810059,17.2424392700195,71,0,,,1,,",
+     "000000002400002,24,Wolkerova,,49.5849494934082,17.2421607971191,71,0,,,1,,",
+     "000000002300001,23,Výstaviště Flora,,49.5893211364746,17.2453498840332,71,0,,,1,,",
+     "000000002300002,23,Výstaviště Flora,,49.5892791748047,17.2450294494629,71,0,,,1,,",
+     "000000001500001,15,Náměstí Hrdinů,,49.5952606201172,17.2472496032715,71,0,,,1,,"
+    ],
+    "feed_info.txt": [
+     "feed_publisher_name,feed_publisher_url,feed_lang,feed_start_date,feed_end_date,feed_version,feed_contact_email,feed_contact_url",
+     "\"Dopravní podnik města Olomouce, a.s.\",,cs,20261015,20261212,20261015074356,,"
+    ]
+   }
+  },
+  {
+   "name": "PMDP",
+   "atlas_file": "atlas/feeds/jizdnirady.pmdp.cz.dmfr.json",
+   "license": {
+    "spdx_identifier": "CC-BY-4.0",
+    "url": "https://opendata.plzen.eu/public/opendata/detail/187"
+   },
+   "url": "https://jizdnirady.pmdp.cz/jr/gtfs",
+   "size_mb": 1.0,
+   "files": [
+    "agency.txt",
+    "routes.txt",
+    "trips.txt",
+    "stop_times.txt",
+    "stops.txt",
+    "calendar.txt",
+    "calendar_dates.txt",
+    "transfers.txt"
+   ],
+   "agencies": 1,
+   "agency_names": [
+    "Plzeňské městské dopravní podniky, a.s."
+   ],
+   "stops": 720,
+   "stops_no_coords": 0,
+   "routes": 58,
+   "route_types": [
+    [
+     "3",
+     39
+    ],
+    [
+     "11",
+     13
+    ],
+    [
+     "0",
+     6
+    ]
+   ],
+   "trips": 9234,
+   "stop_times": 149978,
+   "bbox": [
+    49.63906097,
+    13.16450024,
+    49.8243103,
+    13.53170013
+   ],
+   "dates": [
+    "20261012",
+    "20270414"
+   ],
+   "has_shapes": false,
+   "sample_stops": [
+    "Anglické nábřeží",
+    "Anglické nábřeží",
+    "Anglické nábřeží",
+    "Anglické nábřeží",
+    "Západočeská univerzita",
+    "Západočeská univerzita",
+    "Bílá Hora",
+    "Bílá Hora"
+   ],
+   "sample_routes": [
+    [
+     "1",
+     "Slovany - Bolevec",
+     "1"
+    ],
+    [
+     "2",
+     "Světovar - Skvrňany",
+     "1"
+    ],
+    [
+     "4",
+     "Univerzita - Košutka",
+     "1"
+    ],
+    [
+     "20",
+     "Mrakodrap - Bílá Hora - Zruč-Senec",
+     "1"
+    ],
+    [
+     "21",
+     "Bory - Litice",
+     "1"
+    ],
+    [
+     "23",
+     "Bory - Radobyčice - Slovany",
+     "1"
+    ],
+    [
+     "24",
+     "Bory - Zadní Skvrňany - Bolevec",
+     "1"
+    ],
+    [
+     "25",
+     "Bory - Nemocnice Lochotín - Bolevec",
+     "1"
+    ]
+   ],
+   "samples": {
+    "routes.txt": [
+     "\"route_id\",\"agency_id\",\"route_short_name\",\"route_long_name\",\"route_type\",\"dir_1_from\",\"dir_1_to\",\"dir_2_from\",\"dir_2_to\"",
+     "\"3507\",\"1\",\"1\",\"Slovany - Bolevec\",\"0\",\"Slovany\",\"Bolevec\",\"Bolevec\",\"Slovany\"",
+     "\"3508\",\"1\",\"2\",\"Světovar - Skvrňany\",\"0\",\"Světovar\",\"Skvrňany\",\"Skvrňany\",\"Světovar\"",
+     "\"3509\",\"1\",\"4\",\"Univerzita - Košutka\",\"0\",\"Univerzita\",\"Košutka\",\"Košutka\",\"Univerzita\"",
+     "\"3510\",\"1\",\"20\",\"Mrakodrap - Bílá Hora - Zruč-Senec\",\"3\",\"Mrakodrap\",\"Zruč - Senec\",\"Zruč - Senec\",\"Mrakodrap\"",
+     "\"3511\",\"1\",\"21\",\"Bory - Litice\",\"3\",\"Bory\",\"Litice\",\"Litice\",\"Bory\"",
+     "\"3512\",\"1\",\"23\",\"Bory - Radobyčice - Slovany\",\"3\",\"Bory\",\"Slovany\",\"Slovany\",\"Bory\"",
+     "\"3513\",\"1\",\"24\",\"Bory - Zadní Skvrňany - Bolevec\",\"3\",\"Bory\",\"Bolevec\",\"Bolevec\",\"Bory\"",
+     "\"3514\",\"1\",\"25\",\"Bory - Nemocnice Lochotín - Bolevec\",\"3\",\"Bory\",\"Bolevec\",\"Bolevec\",\"Bory\"",
+     "\"3515\",\"1\",\"26\",\"Bory - Valcha - Lhota - Nová Ves\",\"3\",\"U Luny\",\"Nová Ves\",\"Nová Ves\",\"U Luny\"",
+     "\"3516\",\"1\",\"27\",\"Mrakodrap - Nemocnice Privamed - Košutka\",\"3\",\"Mrakodrap\",\"Sídliště Košutka\",\"Sídliště Košutka\",\"Mrakodrap\"",
+     "\"3517\",\"1\",\"28\",\"CAN - Doubravka - Bukovec\",\"3\",\"Papírna Bukovec\",\"CAN Husova\",\"CAN Husova\",\"Papírna Bukovec\""
+    ],
+    "trips.txt": [
+     "\"route_id\",\"service_id\",\"trip_id\",\"trip_short_name\",\"direction_id\",\"wheelchair_accessible\"",
+     "\"3507\",\"1\",\"685368\",\"1\",\"0\",\"1\"",
+     "\"3507\",\"2\",\"685369\",\"3\",\"0\",\"1\"",
+     "\"3507\",\"3\",\"685370\",\"5\",\"0\",\"1\"",
+     "\"3507\",\"2\",\"685371\",\"7\",\"0\",\"1\"",
+     "\"3507\",\"3\",\"685372\",\"9\",\"0\",\"1\"",
+     "\"3507\",\"2\",\"685373\",\"11\",\"0\",\"1\"",
+     "\"3507\",\"3\",\"685374\",\"13\",\"0\",\"1\"",
+     "\"3507\",\"2\",\"685375\",\"15\",\"0\",\"1\"",
+     "\"3507\",\"2\",\"685376\",\"17\",\"0\",\"1\"",
+     "\"3507\",\"3\",\"685377\",\"19\",\"0\",\"1\"",
+     "\"3507\",\"2\",\"685378\",\"21\",\"0\",\"1\""
+    ],
+    "calendar.txt": [
+     "\"service_id\",\"monday\",\"tuesday\",\"wednesday\",\"thursday\",\"friday\",\"saturday\",\"sunday\",\"start_date\",\"end_date\"",
+     "\"1\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"20261012\",\"20270414\"",
+     "\"2\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"20261012\",\"20270414\"",
+     "\"3\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"20261012\",\"20270414\"",
+     "\"4\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"20261012\",\"20270414\"",
+     "\"5\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"20261012\",\"20270414\"",
+     "\"6\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"20261012\",\"20270414\"",
+     "\"7\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"20261012\",\"20270414\"",
+     "\"8\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"20261012\",\"20270414\"",
+     "\"9\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"20261012\",\"20270414\"",
+     "\"10\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"20261012\",\"20270414\"",
+     "\"11\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"20261012\",\"20270414\""
+    ],
+    "agency.txt": [
+     "\"agency_id\",\"agency_name\",\"agency_url\",\"agency_timezone\",\"agency_lang\",\"agency_phone\"",
+     "\"1\",\"Plzeňské městské dopravní podniky, a.s.\",\"https://www.pmdp.cz\",\"Europe/Prague\",\"cs\",\"+420378037485\""
+    ],
+    "stops.txt": [
+     "\"stop_id\",\"stop_code\",\"stop_name\",\"stop_lat\",\"stop_lon\",\"zone_id\",\"location_type\",\"wheelchair_boarding\",\"original_stop_id\"",
+     "\"27\",\"54720/1\",\"Anglické nábřeží\",\"49.74571991\",\"13.38265038\",\"001\",\"0\",\"1\",\"1\"",
+     "\"28\",\"54720/2\",\"Anglické nábřeží\",\"49.7456398\",\"13.38265991\",\"001\",\"0\",\"1\",\"1\"",
+     "\"25\",\"54720/3\",\"Anglické nábřeží\",\"49.74654007\",\"13.38206959\",\"001\",\"0\",\"1\",\"1\"",
+     "\"26\",\"54720/4\",\"Anglické nábřeží\",\"49.74637985\",\"13.38249969\",\"001\",\"0\",\"1\",\"1\"",
+     "\"461\",\"57190/1\",\"Západočeská univerzita\",\"49.72306061\",\"13.35076046\",\"001\",\"0\",\"1\",\"2\"",
+     "\"462\",\"57190/2\",\"Západočeská univerzita\",\"49.72293091\",\"13.35216999\",\"001\",\"0\",\"1\",\"2\"",
+     "\"396\",\"53191/1\",\"Bílá Hora\",\"49.77587891\",\"13.40902996\",\"001\",\"0\",\"2\",\"3\"",
+     "\"395\",\"53191/2\",\"Bílá Hora\",\"49.775977978\",\"13.4090503255\",\"001\",\"0\",\"2\",\"3\"",
+     "\"63\",\"57060/1\",\"Bolevec\",\"49.78395081\",\"13.38346958\",\"001\",\"0\",\"1\",\"4\"",
+     "\"64\",\"57060/2\",\"Bolevec\",\"49.78366852\",\"13.3831501\",\"001\",\"0\",\"1\",\"4\"",
+     "\"65\",\"57060/3\",\"Bolevec\",\"49.78371811\",\"13.38348961\",\"001\",\"0\",\"1\",\"4\""
+    ]
+   }
+  },
+  {
+   "name": "DPMLJ",
+   "atlas_file": "atlas/feeds/dpmlj.cz.dmfr.json",
+   "license": {},
+   "url": "https://www.dpmlj.cz/gtfs.zip",
+   "error": "URLError(ConnectionResetError(104, 'Connection reset by peer'))"
+  },
+  {
+   "name": "IDZK",
+   "url": "https://hoermalmeister.github.io/gtfs-rehost/idzk/id-zk-all.zip",
+   "size_mb": 2.0,
+   "files": [
+    "agency.txt",
+    "attributions.txt",
+    "calendar.txt",
+    "calendar_dates.txt",
+    "feed_info.txt",
+    "routes.txt",
+    "stop_times.txt",
+    "stops.txt",
+    "trips.txt"
+   ],
+   "agencies": 2,
+   "agency_names": [
+    "Integrovaná doprava Zlínského kraje",
+    "Dopravní společnost Zlín-Otrokovice, s.r.o."
+   ],
+   "stops": 2299,
+   "stops_no_coords": 0,
+   "routes": 379,
+   "route_types": [
+    [
+     "3",
+     313
+    ],
+    [
+     "2",
+     66
+    ]
+   ],
+   "trips": 16914,
+   "stop_times": 281684,
+   "bbox": [
+    48.7536786,
+    14.435898,
+    50.761638262016824,
+    18.4680709839
+   ],
+   "dates": [
+    "20261015",
+    "20261212"
+   ],
+   "has_shapes": false,
+   "sample_stops": [
+    "Tečovice, střed",
+    "Paršovice, kostel",
+    "Bystřice p.Host., Černý potok",
+    "Racková, Drahy",
+    "Staré Město, hřbitov",
+    "Zlín, Malenovice, Sklady",
+    "Oldřichovice, škola",
+    "Tečovice, malenovská"
+   ],
+   "sample_routes": [
+    [
+     "101",
+     "Vsetín-Horní Lideč-Střelná-Púchov",
+     "1690"
+    ],
+    [
+     "735",
+     "Zlín-Luhačovice-Uherský Brod-Trenčín",
+     "1690"
+    ],
+    [
+     "155",
+     "Holešov-Ludslavice-Lechotice-Otrokovice",
+     "1690"
+    ],
+    [
+     "160",
+     "Kroměříž-Tlumačov-Otrokovice-Zlín",
+     "1690"
+    ],
+    [
+     "161",
+     "Velké Těšany-Nová Dědina-Kvasice-Otrokovice",
+     "1690"
+    ],
+    [
+     "165",
+     "Kroměříž-Otrokovice-Babice-Uherské Hradiště",
+     "1690"
+    ],
+    [
+     "240",
+     "Bystřice p.Host.-Bystřice p. Host.-Hlinsko-Rusava",
+     "1690"
+    ],
+    [
+     "242",
+     "Bystřice p.Host.-Hostýn",
+     "1690"
+    ]
+   ],
+   "samples": {
+    "routes.txt": [
+     "route_id,agency_id,route_short_name,route_long_name,route_desc,route_type,route_color,route_text_color",
+     "BUS_MHD:001101_1425_2026-02-16,1690,101,Vsetín-Horní Lideč-Střelná-Púchov,308901 (SK),3,102d69,ffffff",
+     "BUS_MHD:001735_263_2026-08-30,1690,735,Zlín-Luhačovice-Uherský Brod-Trenčín,,3,ed1c24,ffffff",
+     "BUS_MHD:771155_312_2021-03-07,1690,155,Holešov-Ludslavice-Lechotice-Otrokovice,,3,162D66,FFFFFF",
+     "BUS_MHD:771160_312_2021-03-07,1690,160,Kroměříž-Tlumačov-Otrokovice-Zlín,,3,162D66,FFFFFF",
+     "BUS_MHD:771161_312_2021-03-07,1690,161,Velké Těšany-Nová Dědina-Kvasice-Otrokovice,,3,162D66,FFFFFF",
+     "BUS_MHD:771165_312_2022-12-11,1690,165,Kroměříž-Otrokovice-Babice-Uherské Hradiště,,3,162D66,FFFFFF",
+     "BUS_MHD:771240_312_2021-03-07,1690,240,Bystřice p.Host.-Bystřice p. Host.-Hlinsko-Rusava,,3,162D66,FFFFFF",
+     "BUS_MHD:771242_312_2021-03-07,1690,242,Bystřice p.Host.-Hostýn,,3,162D66,FFFFFF",
+     "BUS_MHD:771250_312_2021-03-07,1690,250,Bystřice p.Host.-Holešov-Kroměříž,,3,162D66,FFFFFF",
+     "BUS_MHD:771251_312_2021-03-07,1690,251,Holešov-Prusinovice-Brusné-Bystřice p.Host.,,3,162D66,FFFFFF",
+     "BUS_MHD:771253_312_2023-12-10,1690,253,Kostelec u Holešova-Hulín-Kroměříž,,3,162D66,FFFFFF"
+    ],
+    "trips.txt": [
+     "route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,wheelchair_accessible,bikes_allowed",
+     "BUS_MHD:001101_1425_2026-02-16,16345,16345,\"Púchov,žel.st.\",581,0,1,0",
+     "BUS_MHD:001101_1425_2026-02-16,16346,16346,\"Vsetín,dopravní terminál\",582,1,1,0",
+     "BUS_MHD:001101_1425_2026-02-16,16347,16347,\"Púchov,žel.st.\",583,0,1,0",
+     "BUS_MHD:001101_1425_2026-02-16,16348,16348,\"Vsetín,dopravní terminál\",584,1,1,0",
+     "BUS_MHD:001101_1425_2026-02-16,16349,16349,\"Púchov,žel.st.\",585,0,1,0",
+     "BUS_MHD:001101_1425_2026-02-16,16350,16350,\"Vsetín,dopravní terminál\",586,1,1,0",
+     "BUS_MHD:001101_1425_2026-02-16,16351,16351,\"Púchov,žel.st.\",587,0,1,0",
+     "BUS_MHD:001101_1425_2026-02-16,16352,16352,\"Vsetín,dopravní terminál\",588,1,1,0",
+     "BUS_MHD:001101_1425_2026-02-16,16353,16353,\"Púchov,žel.st.\",681,0,1,0",
+     "BUS_MHD:001101_1425_2026-02-16,16354,16354,\"Vsetín,dopravní terminál\",682,1,1,0",
+     "BUS_MHD:001101_1425_2026-02-16,16355,16355,\"Púchov,žel.st.\",683,0,1,0"
+    ],
+    "calendar.txt": [
+     "service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date",
+     "11469,0,0,0,0,0,1,1,20261015,20261018",
+     "10190,1,1,1,1,1,0,0,20261015,20261018",
+     "11474,0,0,0,0,0,1,1,20261015,20261018",
+     "11477,0,0,0,0,0,1,1,20261015,20261018",
+     "10191,1,1,1,1,1,0,0,20261015,20261018",
+     "11468,0,0,0,0,0,1,1,20261015,20261018",
+     "10192,1,1,1,1,1,0,0,20261015,20261018",
+     "11473,0,0,0,0,0,1,1,20261015,20261018",
+     "11467,0,0,0,0,0,1,1,20261015,20261018",
+     "10193,1,1,1,1,1,0,0,20261015,20261018",
+     "10194,1,1,1,1,1,0,0,20261015,20261018"
+    ],
+    "agency.txt": [
+     "agency_id,agency_name,agency_url,agency_timezone,agency_lang,agency_phone,agency_fare_url",
+     "1690,Integrovaná doprava Zlínského kraje,https://www.idzk.cz,Europe/Prague,cs,+420 573 775 410,https://www.idzk.cz",
+     "367,\"Dopravní společnost Zlín-Otrokovice, s.r.o.\",https://www.dszo.cz,Europe/Prague,cs,+420 577 052 111,https://www.dszo.cz"
+    ],
+    "stops.txt": [
+     "stop_id,stop_name,stop_lat,stop_lon,location_type,stop_timezone,wheelchair_boarding",
+     "10000,\"Tečovice, střed\",49.22041382620869,17.587377765691237,0,Europe/Prague,0",
+     "10009,\"Paršovice, kostel\",49.500067292282075,17.711042633967278,0,Europe/Prague,0",
+     "10018,\"Bystřice p.Host., Černý potok\",49.39067969729725,17.683520615938576,0,Europe/Prague,0",
+     "10035,\"Racková, Drahy\",49.2732009888,17.6264743805,0,Europe/Prague,0",
+     "10038,\"Staré Město, hřbitov\",49.075697503225285,17.448914837269935,0,Europe/Prague,0",
+     "10044,\"Zlín, Malenovice, Sklady\",49.20632851,17.5792869403,0,Europe/Prague,0",
+     "10045,\"Oldřichovice, škola\",49.18004167368207,17.55731353163972,0,Europe/Prague,0",
+     "10068,\"Tečovice, malenovská\",49.216462668115426,17.589179000512694,0,Europe/Prague,0",
+     "10069,\"Pohořelice, st.statek\",49.1670117529172,17.54844290976228,0,Europe/Prague,0",
+     "10070,Oldřichovice,49.181912750368824,17.561610251282804,0,Europe/Prague,0",
+     "10072,\"Chvalčov, Včelín\",49.3972816467,17.6900901794,0,Europe/Prague,0"
+    ],
+    "feed_info.txt": [
+     "feed_publisher_name,feed_publisher_url,feed_lang,feed_start_date,feed_end_date,feed_version",
+     "IDZK,http://idzk.cz,cs,20261015,20261212,id-zk-all-16040"
+    ]
+   }
+  },
+  {
+   "name": "JDF-merged",
+   "url": "https://github.com/0xaa55h/gtfs-processor/raw/refs/heads/gtfs/files/latest.zip",
+   "size_mb": 30.7,
+   "files": [
+    "agency.txt",
+    "stops.txt",
+    "routes.txt",
+    "calendar.txt",
+    "calendar_dates.txt",
+    "trips.txt",
+    "stop_times.txt"
+   ],
+   "agencies": 499,
+   "agency_names": [
+    "TOV POPOVICH-BUS",
+    "GALIZ-SV S.R.L.",
+    "FORTUNA TOUR sp.z.o.o.",
+    "KORABEL BUS",
+    "TOV Grand Avtobas",
+    "FOP BIley M.V.",
+    "TOV MK VOYAZH",
+    "LOGO-TRANS sp. z.o.o.",
+    "Marhen",
+    "P-Trans Sp. z o.o.",
+    "TzOW P-TRANS",
+    "SRL EDNATERIC TRANS",
+    "ASIK SPOLKA Z.O.O.",
+    "TOV YELE BUS",
+    "SRL EDNATERIC TRANS"
+   ],
+   "stops": 36147,
+   "stops_no_coords": 0,
+   "routes": 9072,
+   "route_types": [
+    [
+     "701",
+     5333
+    ],
+    [
+     "704",
+     1832
+    ],
+    [
+     "202",
+     957
+    ],
+    [
+     "201",
+     645
+    ],
+    [
+     "800",
+     277
+    ],
+    [
+     "900",
+     27
+    ],
+    [
+     "1701",
+     1
+    ]
+   ],
+   "trips": 317767,
+   "stop_times": 5110655,
+   "bbox": [
+    37.99782,
+    2.18304,
+    60.65399,
+    37.59353
+   ],
+   "dates": [
+    "20160731",
+    "20351231"
+   ],
+   "has_shapes": false,
+   "sample_stops": [
+    "Aachen,Henricistrasse",
+    "Aachen,Henricistrasse",
+    "Abertamy,Barbora",
+    "Abertamy,Plešivec,rozc.",
+    "Abertamy,nám.",
+    "Abertamy,pila",
+    "Adamov",
+    "Adamov,Dělnická"
+   ],
+   "sample_routes": [
+    [
+     "670990",
+     "\"Krkobus:\" Harrachov-Vrchlabí-Pec p.Sněžkou-Malá Úpa",
+     "JDFA-05666384-3"
+    ],
+    [
+     "670990",
+     "\"Krkobus:\" Harrachov-Vrchlabí-Pec p.Sněžkou-Malá Úpa",
+     "JDFA-05666384-3"
+    ],
+    [
+     "670990",
+     "\"Krkobus:\" Harrachov-Vrchlabí-Pec p.Sněžkou-Malá Úpa",
+     "JDFA-05666384-3"
+    ],
+    [
+     "795001",
+     "(1) Za Rybníkem - Karlovo náměstí - Demlova, školka - Demlova - Poliklinika Vltavínská",
+     "JDFA-49969242-1"
+    ],
+    [
+     "795001",
+     "(1) Za Rybníkem - Karlovo náměstí - Demlova, školka - Demlova - Poliklinika Vltavínská",
+     "JDFA-49969242-1"
+    ],
+    [
+     "795010",
+     "(10) U Hřbitova - Karlovo náměstí - Poliklinika Vltavínská",
+     "JDFA-49969242-1"
+    ],
+    [
+     "795010",
+     "(10) U Hřbitova - Karlovo náměstí - Poliklinika Vltavínská",
+     "JDFA-49969242-1"
+    ],
+    [
+     "795011",
+     "(11) Karlovo náměstí - Kaufland - Na Holečku - Karlovo náměstí",
+     "JDFA-49969242-1"
+    ]
+   ],
+   "samples": {
+    "routes.txt": [
+     "route_long_name,route_short_name,agency_id,route_type,route_id",
+     "\"\"\"Krkobus:\"\" Harrachov-Vrchlabí-Pec p.Sněžkou-Malá Úpa\",670990,JDFA-05666384-3,202,-CISR-670990-1",
+     "\"\"\"Krkobus:\"\" Harrachov-Vrchlabí-Pec p.Sněžkou-Malá Úpa\",670990,JDFA-05666384-3,202,-CISR-670990-2",
+     "\"\"\"Krkobus:\"\" Harrachov-Vrchlabí-Pec p.Sněžkou-Malá Úpa\",670990,JDFA-05666384-3,202,-CISR-670990-3",
+     "\"(1) Za Rybníkem - Karlovo náměstí - Demlova, školka - Demlova - Poliklinika Vltavínská\",795001,JDFA-49969242-1,704,-CISR-795001-1",
+     "\"(1) Za Rybníkem - Karlovo náměstí - Demlova, školka - Demlova - Poliklinika Vltavínská\",795001,JDFA-49969242-1,704,-CISR-795001-2",
+     "(10) U Hřbitova - Karlovo náměstí - Poliklinika Vltavínská,795010,JDFA-49969242-1,704,-CISR-795010-1",
+     "(10) U Hřbitova - Karlovo náměstí - Poliklinika Vltavínská,795010,JDFA-49969242-1,704,-CISR-795010-2",
+     "(11) Karlovo náměstí - Kaufland - Na Holečku - Karlovo náměstí,795011,JDFA-49969242-1,704,-CISR-795011-1",
+     "(11) Karlovo náměstí - Kaufland - Na Holečku - Karlovo náměstí,795011,JDFA-49969242-1,704,-CISR-795011-2",
+     "(12) Karlovo náměstí - Ptáčov,795012,JDFA-49969242-1,704,-CISR-795012-1",
+     "(12) Karlovo náměstí - Ptáčov,795012,JDFA-49969242-1,704,-CISR-795012-2"
+    ],
+    "trips.txt": [
+     "route_id,service_id,trip_headsign,trip_short_name,direction_id,trip_id,wheelchair_accessible,bikes_allowed",
+     "-CISR-000001-1,CAL-1111111-0,\"Mykolajiv,AS\",000001 1,1,CIST-000001-1-1,,2",
+     "-CISR-000001-1,CAL-1111111-0,\"Praha,ÚAN Florenc\",000001 2,0,CIST-000001-1-2,,2",
+     "-CISR-000004-2,CAL-0000010-1,\"Zaporožje,AS\",000004 1,1,CIST-000004-2-1,,2",
+     "-CISR-000004-2,CAL-0100000-2,\"Liberec,aut.nádr.\",000004 2,0,CIST-000004-2-2,,2",
+     "-CISR-000007-1,CAL-1111111-3,\"Plzeň,CAN\",000007 2,0,CIST-000007-1-2,,2",
+     "-CISR-000007-1,CAL-1111111-3,\"Zaporožje,AS\",000007 1,1,CIST-000007-1-1,,2",
+     "-CISR-000008-1,CAL-1111111-4,\"Banská Bystrica,AS\",000008 1,1,CIST-000008-1-1,,2",
+     "-CISR-000008-1,CAL-1111111-4,\"Praha,ÚAN Florenc\",000008 2,0,CIST-000008-1-2,,2",
+     "-CISR-000008-1,CAL-exc-5,\"Banská Bystrica,AS\",000008 3,1,CIST-000008-1-3,,2",
+     "-CISR-000008-1,CAL-exc-5,\"Praha,ÚAN Florenc\",000008 4,0,CIST-000008-1-4,,2",
+     "-CISR-000009-1,CAL-1111111-6,\"Plzeň,CAN\",000009 2,0,CIST-000009-1-2,,2"
+    ],
+    "calendar.txt": [
+     "monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date,service_id",
+     "0,0,0,0,0,0,1,20161211,20170916,CAL-0000001-9500",
+     "0,0,0,0,0,0,1,20170305,20311231,CAL-0000001-9511",
+     "0,0,0,0,0,0,1,20170526,20321231,CAL-0000001-9514",
+     "0,0,0,0,0,0,1,20170917,20180613,CAL-0000001-9502",
+     "0,0,0,0,0,0,1,20180614,20181208,CAL-0000001-9496",
+     "0,0,0,0,0,0,1,20181209,20260621,CAL-0000001-9506",
+     "0,0,0,0,0,0,1,20210401,20211231,CAL-0000001-6048",
+     "0,0,0,0,0,0,1,20220101,20221231,CAL-0000001-6056",
+     "0,0,0,0,0,0,1,20220828,20221210,CAL-0000001-4586",
+     "0,0,0,0,0,0,1,20220828,20221210,CAL-0000001-4588",
+     "0,0,0,0,0,0,1,20220828,20230304,CAL-0000001-4871"
+    ],
+    "agency.txt": [
+     "agency_id,agency_name,agency_url,agency_timezone,agency_lang,agency_email",
+     "JDFA-00000000-1,TOV POPOVICH-BUS,jrutil://invalid,Europe/Prague,cs,",
+     "JDFA-00000000-10,GALIZ-SV S.R.L.,http://www.infobus.eu,Europe/Prague,cs,",
+     "JDFA-00000000-100,FORTUNA TOUR sp.z.o.o.,jrutil://invalid,Europe/Prague,cs,",
+     "JDFA-00000000-101,KORABEL BUS,jrutil://invalid,Europe/Prague,cs,",
+     "JDFA-00000000-102,TOV Grand Avtobas,jrutil://invalid,Europe/Prague,cs,",
+     "JDFA-00000000-103,FOP BIley M.V.,jrutil://invalid,Europe/Prague,cs,",
+     "JDFA-00000000-104,TOV MK VOYAZH,jrutil://invalid,Europe/Prague,cs,",
+     "JDFA-00000000-105,LOGO-TRANS sp. z.o.o.,jrutil://invalid,Europe/Prague,cs,",
+     "JDFA-00000000-106,Marhen,jrutil://invalid,Europe/Prague,cs,",
+     "JDFA-00000000-107,P-Trans Sp. z o.o.,jrutil://invalid,Europe/Prague,cs,",
+     "JDFA-00000000-108,TzOW P-TRANS,jrutil://invalid,Europe/Prague,cs,"
+    ],
+    "stops.txt": [
+     "stop_name,zone_id,stop_id,stop_lat,stop_lon,stop_timezone,wheelchair_boarding",
+     "\"Aachen,Henricistrasse\",,JDFS-17950,50.78355,6.07255,Europe/Prague,",
+     "\"Aachen,Henricistrasse\",,JDFS-4013,50.78355,6.07255,Europe/Prague,",
+     "\"Abertamy,Barbora\",,JDFS-5109,50.37418,12.863698,Europe/Prague,",
+     "\"Abertamy,Plešivec,rozc.\",,JDFS-5108,50.3687,12.834995,Europe/Prague,",
+     "\"Abertamy,nám.\",,JDFS-5107,50.36837,12.817396,Europe/Prague,",
+     "\"Abertamy,pila\",,JDFS-5106,50.365524,12.80378,Europe/Prague,",
+     "Adamov,\"8,8,881\",JDFS-27005,49.85811,15.408136,Europe/Prague,",
+     "\"Adamov,Dělnická\",100J,JDFS-28429,49.000576,14.540322,Europe/Prague,",
+     "\"Adamov,Horka\",,JDFS-36805,49.300842,16.658037,Europe/Prague,",
+     "\"Adamov,Horka točna\",,JDFS-36804,49.302906,16.655018,Europe/Prague,",
+     "\"Adamov,III\",,JDFS-36808,49.291225,16.663967,Europe/Prague,"
+    ]
+   }
+  },
+  {
+   "name": "JrUtil-JDF",
+   "url": "https://data.jr.ggu.cz/results/latest/JDF_merged_GTFS.zip",
+   "size_mb": 129.0,
+   "files": [
+    "agency.txt",
+    "calendar_dates.txt",
+    "calendar.txt",
+    "routes.txt",
+    "stops.txt",
+    "stop_times.txt",
+    "trips.txt"
+   ],
+   "agencies": 498,
+   "agency_names": [
+    "MARTIN UHER, spol. s r.o.",
+    "Dopravní podnik měst Liberce a Jablonce nad Nisou, a.s.",
+    "ČSAD Hodonín a.s.",
+    "ČSAD Benešov s.r.o.",
+    "ČSAD Benešov s.r.o.",
+    "ČSAD Benešov s.r.o.",
+    "ČSAD Benešov s.r.o.",
+    "ČSAD Benešov s.r.o.",
+    "Dopravní podnik Karlovy Vary, a.s.",
+    "Dopravní podnik Karlovy Vary, a.s.",
+    "Dopravní podnik Karlovy Vary, a.s.",
+    "Dopravní podnik Karlovy Vary, a.s.",
+    "Dopravní podnik Karlovy Vary, a.s.",
+    "ARRIVA STŘEDNÍ ČECHY s.r.o.",
+    "ARRIVA STŘEDNÍ ČECHY s.r.o."
+   ],
+   "stops": 37902,
+   "stops_no_coords": 0,
+   "routes": 13761,
+   "route_types": [
+    [
+     "701",
+     7799
+    ],
+    [
+     "704",
+     2637
+    ],
+    [
+     "202",
+     1896
+    ],
+    [
+     "201",
+     647
+    ],
+    [
+     "800",
+     454
+    ],
+    [
+     "900",
+     323
+    ],
+    [
+     "401",
+     3
+    ],
+    [
+     "1701",
+     2
+    ]
+   ],
+   "trips": 733118,
+   "stop_times": 13983510,
+   "bbox": [
+    0.0,
+    0.0,
+    51.156440809666,
+    23.11422
+   ],
+   "dates": [
+    "20160731",
+    "20351231"
+   ],
+   "has_shapes": false,
+   "sample_stops": [
+    "Dobříš,nám.",
+    "Dobříš,kostelíček",
+    "Dobříš,žel.st.",
+    "Stará Huť,Karla Čapka",
+    "Stará Huť,žel.zast.",
+    "Stará Huť,Knínská",
+    "Mokrovraty,Pouště",
+    "Mokrovraty,Pouště,rozc."
+   ],
+   "sample_routes": [
+    [
+     "100361",
+     "Praha,Smíchovské nádraží - Štěchovice - Dobříš",
+     "JDFA-26739135-1"
+    ],
+    [
+     "100361",
+     "Praha,Smíchovské nádraží - Štěchovice - Dobříš",
+     "JDFA-26739135-1"
+    ],
+    [
+     "100361",
+     "Praha,Smíchovské nádraží - Štěchovice - Dobříš",
+     "JDFA-26739135-1"
+    ],
+    [
+     "100361",
+     "Praha,Smíchovské nádraží - Štěchovice - Dobříš",
+     "JDFA-26739135-1"
+    ],
+    [
+     "100361",
+     "Praha,Smíchovské nádraží - Štěchovice - Dobříš",
+     "JDFA-26739135-1"
+    ],
+    [
+     "100361",
+     "Praha,Smíchovské nádraží - Štěchovice - Dobříš",
+     "JDFA-26739135-1"
+    ],
+    [
+     "100361",
+     "Praha,Smíchovské nádraží - Štěchovice - Dobříš",
+     "JDFA-26739135-1"
+    ],
+    [
+     "545025",
+     "Broumovská - Fügnerova - Ruprechtice náměstí - Ruprechtice sídliště",
+     "JDFA-47311975-1"
+    ]
+   ],
+   "samples": {
+    "routes.txt": [
+     "route_id,agency_id,route_short_name,route_long_name,route_desc,route_type,route_url,route_color,route_text_color,route_sort_order",
+     "\"-CISR-100361-1\",\"JDFA-26739135-1\",\"100361\",\"Praha,Smíchovské nádraží - Štěchovice - Dobříš\",\"\",\"202\",\"\",\"\",\"\",\"\"",
+     "\"-CISR-100361-3\",\"JDFA-26739135-1\",\"100361\",\"Praha,Smíchovské nádraží - Štěchovice - Dobříš\",\"\",\"202\",\"\",\"\",\"\",\"\"",
+     "\"-CISR-100361-4\",\"JDFA-26739135-1\",\"100361\",\"Praha,Smíchovské nádraží - Štěchovice - Dobříš\",\"\",\"202\",\"\",\"\",\"\",\"\"",
+     "\"-CISR-100361-5\",\"JDFA-26739135-1\",\"100361\",\"Praha,Smíchovské nádraží - Štěchovice - Dobříš\",\"\",\"202\",\"\",\"\",\"\",\"\"",
+     "\"-CISR-100361-6\",\"JDFA-26739135-1\",\"100361\",\"Praha,Smíchovské nádraží - Štěchovice - Dobříš\",\"\",\"202\",\"\",\"\",\"\",\"\"",
+     "\"-CISR-100361-2\",\"JDFA-26739135-1\",\"100361\",\"Praha,Smíchovské nádraží - Štěchovice - Dobříš\",\"\",\"202\",\"\",\"\",\"\",\"\"",
+     "\"-CISR-100361-7\",\"JDFA-26739135-1\",\"100361\",\"Praha,Smíchovské nádraží - Štěchovice - Dobříš\",\"\",\"202\",\"\",\"\",\"\",\"\"",
+     "\"-CISR-545025-1\",\"JDFA-47311975-1\",\"545025\",\"Broumovská - Fügnerova - Ruprechtice náměstí - Ruprechtice sídliště\",\"\",\"704\",\"\",\"\",\"\",\"\"",
+     "\"-CISR-545025-5\",\"JDFA-47311975-1\",\"545025\",\"Broumovská - Fügnerova - Ruprechtice náměstí - Ruprechtice sídliště\",\"\",\"704\",\"\",\"\",\"\",\"\"",
+     "\"-CISR-545025-3\",\"JDFA-47311975-1\",\"545025\",\"Broumovská - Fügnerova - Ruprechtice náměstí - Ruprechtice sídliště\",\"\",\"704\",\"\",\"\",\"\",\"\"",
+     "\"-CISR-545025-2\",\"JDFA-47311975-1\",\"545025\",\"Broumovská - Fügnerova - Ruprechtice náměstí - Ruprechtice sídliště\",\"\",\"704\",\"\",\"\",\"\",\"\""
+    ],
+    "trips.txt": [
+     "route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed",
+     "\"-CISR-100361-1\",\"CIST-100361-1-1001\",\"CIST-100361-1-1001\",\"Dobříš,nám.\",\"100361 1001\",\"1\",\"\",\"\",\"1\",\"2\"",
+     "\"-CISR-100361-1\",\"CIST-100361-1-1002\",\"CIST-100361-1-1002\",\"Praha,Smíchovské nádraží\",\"100361 1002\",\"0\",\"\",\"\",\"1\",\"2\"",
+     "\"-CISR-100361-1\",\"CIST-100361-1-1003\",\"CIST-100361-1-1003\",\"Dobříš,nám.\",\"100361 1003\",\"1\",\"\",\"\",\"1\",\"2\"",
+     "\"-CISR-100361-1\",\"CIST-100361-1-1004\",\"CIST-100361-1-1004\",\"Praha,Smíchovské nádraží\",\"100361 1004\",\"0\",\"\",\"\",\"1\",\"2\"",
+     "\"-CISR-100361-1\",\"CIST-100361-1-1005\",\"CIST-100361-1-1005\",\"Dobříš,nám.\",\"100361 1005\",\"1\",\"\",\"\",\"1\",\"2\"",
+     "\"-CISR-100361-1\",\"CIST-100361-1-1006\",\"CIST-100361-1-1006\",\"Praha,Smíchovské nádraží\",\"100361 1006\",\"0\",\"\",\"\",\"1\",\"2\"",
+     "\"-CISR-100361-1\",\"CIST-100361-1-1007\",\"CIST-100361-1-1007\",\"Dobříš,nám.\",\"100361 1007\",\"1\",\"\",\"\",\"1\",\"2\"",
+     "\"-CISR-100361-1\",\"CIST-100361-1-1008\",\"CIST-100361-1-1008\",\"Praha,Smíchovské nádraží\",\"100361 1008\",\"0\",\"\",\"\",\"1\",\"2\"",
+     "\"-CISR-100361-1\",\"CIST-100361-1-1009\",\"CIST-100361-1-1009\",\"Dobříš,nám.\",\"100361 1009\",\"1\",\"\",\"\",\"1\",\"2\"",
+     "\"-CISR-100361-1\",\"CIST-100361-1-1010\",\"CIST-100361-1-1010\",\"Praha,Smíchovské nádraží\",\"100361 1010\",\"0\",\"\",\"\",\"1\",\"2\"",
+     "\"-CISR-100361-1\",\"CIST-100361-1-1011\",\"CIST-100361-1-1011\",\"Dobříš,nám.\",\"100361 1011\",\"1\",\"\",\"\",\"1\",\"2\""
+    ],
+    "calendar.txt": [
+     "service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date",
+     "\"CIST-100361-1-1001\",\"1\",\"1\",\"1\",\"1\",\"1\",\"0\",\"0\",\"20260901\",\"20261212\"",
+     "\"CIST-100361-1-1002\",\"1\",\"1\",\"1\",\"1\",\"1\",\"0\",\"0\",\"20260901\",\"20261212\"",
+     "\"CIST-100361-1-1003\",\"1\",\"1\",\"1\",\"1\",\"1\",\"0\",\"0\",\"20260901\",\"20261212\"",
+     "\"CIST-100361-1-1004\",\"1\",\"1\",\"1\",\"1\",\"1\",\"0\",\"0\",\"20260901\",\"20261212\"",
+     "\"CIST-100361-1-1005\",\"1\",\"1\",\"1\",\"1\",\"1\",\"0\",\"0\",\"20260901\",\"20261212\"",
+     "\"CIST-100361-1-1006\",\"1\",\"1\",\"1\",\"1\",\"1\",\"0\",\"0\",\"20260901\",\"20261212\"",
+     "\"CIST-100361-1-1007\",\"1\",\"1\",\"1\",\"1\",\"1\",\"0\",\"0\",\"20260901\",\"20261212\"",
+     "\"CIST-100361-1-1008\",\"1\",\"1\",\"1\",\"1\",\"1\",\"0\",\"0\",\"20260901\",\"20261212\"",
+     "\"CIST-100361-1-1009\",\"1\",\"1\",\"1\",\"1\",\"1\",\"0\",\"0\",\"20260901\",\"20261212\"",
+     "\"CIST-100361-1-1010\",\"1\",\"1\",\"1\",\"1\",\"1\",\"0\",\"0\",\"20260901\",\"20261212\"",
+     "\"CIST-100361-1-1011\",\"1\",\"1\",\"1\",\"1\",\"1\",\"0\",\"0\",\"20260901\",\"20261212\""
+    ],
+    "agency.txt": [
+     "agency_id,agency_name,agency_url,agency_timezone,agency_lang,agency_phone,agency_fare_url,agency_email",
+     "\"JDFA-26739135-1\",\"MARTIN UHER, spol. s r.o.\",\"http://www.martinuher.cz\",\"Europe/Prague\",\"cs\",\"\",\"\",\"uher.martin@quick.cz\"",
+     "\"JDFA-47311975-1\",\"Dopravní podnik měst Liberce a Jablonce nad Nisou, a.s.\",\"http://www.dpmlj.cz\",\"Europe/Prague\",\"cs\",\"\",\"\",\"dpmlj@dpmlj.cz\"",
+     "\"JDFA-60747536-1\",\"ČSAD Hodonín a.s.\",\"http://www.csad.com\",\"Europe/Prague\",\"cs\",\"\",\"\",\"csad@csad.com\"",
+     "\"JDFA-60193441-1\",\"ČSAD Benešov s.r.o.\",\"http://www.icomtransport.cz/csad-benesov/\",\"Europe/Prague\",\"cs\",\"\",\"\",\"benesov@icomtransport.cz\"",
+     "\"JDFA-60193441-2\",\"ČSAD Benešov s.r.o.\",\"http://www.icomtransport.cz/csad-benesov/\",\"Europe/Prague\",\"cs\",\"\",\"\",\"benesov@icomtransport.cz\"",
+     "\"JDFA-60193441-3\",\"ČSAD Benešov s.r.o.\",\"http://www.icomtransport.cz/csad-benesov/\",\"Europe/Prague\",\"cs\",\"\",\"\",\"benesov@icomtransport.cz\"",
+     "\"JDFA-60193441-4\",\"ČSAD Benešov s.r.o.\",\"http://www.icomtransport.cz/csad-benesov/\",\"Europe/Prague\",\"cs\",\"\",\"\",\"benesov@icomtransport.cz\"",
+     "\"JDFA-60193441-5\",\"ČSAD Benešov s.r.o.\",\"http://www.icomtransport.cz/csad-benesov/\",\"Europe/Prague\",\"cs\",\"\",\"\",\"benesov@icomtransport.cz\"",
+     "\"JDFA-48364282-1\",\"Dopravní podnik Karlovy Vary, a.s.\",\"http://www.dpkv.cz\",\"Europe/Prague\",\"cs\",\"\",\"\",\"dpkv@dpkv.cz\"",
+     "\"JDFA-48364282-2\",\"Dopravní podnik Karlovy Vary, a.s.\",\"http://www.dpkv.cz\",\"Europe/Prague\",\"cs\",\"\",\"\",\"dpkv@dpkv.cz\"",
+     "\"JDFA-48364282-3\",\"Dopravní podnik Karlovy Vary, a.s.\",\"http://www.dpkv.cz\",\"Europe/Prague\",\"cs\",\"\",\"\",\"dpkv@dpkv.cz\""
+    ],
+    "stops.txt": [
+     "stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,stop_timezone,wheelchair_boarding,platform_code",
+     "\"JDFS-1\",\"\",\"Dobříš,nám.\",\"\",\"49.7816377059489\",\"14.1706904854923\",\"5\",\"\",\"0\",\"\",\"Europe/Prague\",\"0\",\"\"",
+     "\"JDFS-2\",\"\",\"Dobříš,kostelíček\",\"\",\"49.7838332439805\",\"14.1815198496834\",\"5\",\"\",\"0\",\"\",\"Europe/Prague\",\"0\",\"\"",
+     "\"JDFS-3\",\"\",\"Dobříš,žel.st.\",\"\",\"49.7890400614768\",\"14.1849423269954\",\"5\",\"\",\"0\",\"\",\"Europe/Prague\",\"0\",\"\"",
+     "\"JDFS-4\",\"\",\"Stará Huť,Karla Čapka\",\"\",\"49.7827339772229\",\"14.2007277000449\",\"5\",\"\",\"0\",\"\",\"Europe/Prague\",\"0\",\"\"",
+     "\"JDFS-5\",\"\",\"Stará Huť,žel.zast.\",\"\",\"49.7854786272174\",\"14.1984091166586\",\"5\",\"\",\"0\",\"\",\"Europe/Prague\",\"0\",\"\"",
+     "\"JDFS-6\",\"\",\"Stará Huť,Knínská\",\"\",\"49.7851571605509\",\"14.2065684499943\",\"5\",\"\",\"0\",\"\",\"Europe/Prague\",\"0\",\"\"",
+     "\"JDFS-7\",\"\",\"Mokrovraty,Pouště\",\"\",\"49.7874283772126\",\"14.239277299998\",\"5\",\"\",\"0\",\"\",\"Europe/Prague\",\"0\",\"\"",
+     "\"JDFS-8\",\"\",\"Mokrovraty,Pouště,rozc.\",\"\",\"49.7873036605601\",\"14.2238354000124\",\"5\",\"\",\"0\",\"\",\"Europe/Prague\",\"0\",\"\"",
+     "\"JDFS-9\",\"\",\"Mokrovraty,vilová čtvrť\",\"\",\"49.7943888605575\",\"14.2348313167153\",\"5\",\"\",\"0\",\"\",\"Europe/Prague\",\"0\",\"\"",
+     "\"JDFS-10\",\"\",\"Mokrovraty\",\"\",\"49.7960200439061\",\"14.2481091167944\",\"5\",\"\",\"0\",\"\",\"Europe/Prague\",\"0\",\"\"",
+     "\"JDFS-11\",\"\",\"Mokrovraty,u statku\",\"\",\"49.793385793878\",\"14.2585466499889\",\"5\",\"\",\"0\",\"\",\"Europe/Prague\",\"0\",\"\""
+    ]
+   }
+  },
+  {
+   "name": "CZPTT",
+   "url": "https://data.jr.ggu.cz/results/latest/CZPTT_GTFS.zip",
+   "size_mb": 68.9,
+   "files": [
+    "agency.txt",
+    "calendar_dates.txt",
+    "feed_info.txt",
+    "routes.txt",
+    "stops.txt",
+    "stop_times.txt",
+    "trips.txt"
+   ],
+   "agencies": 34,
+   "agency_names": [
+    "České dráhy, a.s.",
+    "ČESKÁ ZÁPADNÍ DRÁHA s. r. o.",
+    "Prvá Slovenská železničná, akciová spoločnosť",
+    "ARRIVA vlaky s.r.o.",
+    "METRANS Rail s.r.o.",
+    "RegioJet a.s.",
+    "Rail system s.r.o.",
+    "GW Train Regio a.s.",
+    "KŽC Doprava, s.r.o.",
+    "FAN RAIL CS s.r.o.",
+    "Puš s.r.o.",
+    "MBM rail s.r.o.",
+    "CityRail, a.s.",
+    "LokoTrain s.r.o.",
+    "AŽD Praha, s.r.o."
+   ],
+   "stops": 6923,
+   "stops_no_coords": 0,
+   "routes": 68272,
+   "route_types": [
+    [
+     "106",
+     59973
+    ],
+    [
+     "103",
+     6222
+    ],
+    [
+     "102",
+     1938
+    ],
+    [
+     "105",
+     89
+    ],
+    [
+     "100",
+     50
+    ]
+   ],
+   "trips": 204464,
+   "stop_times": 2367943,
+   "bbox": [
+    0.0,
+    0.0,
+    51.007855,
+    18.754954
+   ],
+   "dates": [
+    "20221211",
+    "20261212"
+   ],
+   "has_shapes": false,
+   "sample_stops": [
+    "Moravský Písek",
+    "Moravský Písek",
+    "Bzenec-Olšovec",
+    "Bzenec",
+    "Bzenec",
+    "Moravské Bránice",
+    "Moravské Bránice",
+    "Ivančice letovisko"
+   ],
+   "sample_routes": [
+    [
+     "Os 24140",
+     "",
+     "-CZPTTA-1154"
+    ],
+    [
+     "Os 24131",
+     "",
+     "-CZPTTA-1154"
+    ],
+    [
+     "Os 24125",
+     "",
+     "-CZPTTA-1154"
+    ],
+    [
+     "Os 24117",
+     "",
+     "-CZPTTA-1154"
+    ],
+    [
+     "Os 14426",
+     "",
+     "-CZPTTA-1154"
+    ],
+    [
+     "Os 14422",
+     "",
+     "-CZPTTA-1154"
+    ],
+    [
+     "Os 14433",
+     "",
+     "-CZPTTA-1154"
+    ],
+    [
+     "Os 14435",
+     "",
+     "-CZPTTA-1154"
+    ]
+   ],
+   "samples": {
+    "routes.txt": [
+     "route_id,agency_id,route_short_name,route_long_name,route_desc,route_type,route_url,route_color,route_text_color,route_sort_order",
+     "\"-CZTRAINR-2024-Os-24140\",\"-CZPTTA-1154\",\"Os 24140\",\"\",\"\",\"106\",\"\",\"\",\"\",\"\"",
+     "\"-CZTRAINR-2024-Os-24131\",\"-CZPTTA-1154\",\"Os 24131\",\"\",\"\",\"106\",\"\",\"\",\"\",\"\"",
+     "\"-CZTRAINR-2024-Os-24125\",\"-CZPTTA-1154\",\"Os 24125\",\"\",\"\",\"106\",\"\",\"\",\"\",\"\"",
+     "\"-CZTRAINR-2024-Os-24117\",\"-CZPTTA-1154\",\"Os 24117\",\"\",\"\",\"106\",\"\",\"\",\"\",\"\"",
+     "\"-CZTRAINR-2024-Os-14426\",\"-CZPTTA-1154\",\"Os 14426\",\"\",\"\",\"106\",\"\",\"\",\"\",\"\"",
+     "\"-CZTRAINR-2024-Os-14422\",\"-CZPTTA-1154\",\"Os 14422\",\"\",\"\",\"106\",\"\",\"\",\"\",\"\"",
+     "\"-CZTRAINR-2024-Os-14433\",\"-CZPTTA-1154\",\"Os 14433\",\"\",\"\",\"106\",\"\",\"\",\"\",\"\"",
+     "\"-CZTRAINR-2024-Os-14435\",\"-CZPTTA-1154\",\"Os 14435\",\"\",\"\",\"106\",\"\",\"\",\"\",\"\"",
+     "\"-CZTRAINR-2024-Os-14416\",\"-CZPTTA-1154\",\"Os 14416\",\"\",\"\",\"106\",\"\",\"\",\"\",\"\"",
+     "\"-CZTRAINR-2024-Os-15661\",\"-CZPTTA-1154\",\"Os 15661\",\"\",\"\",\"106\",\"\",\"\",\"\",\"\"",
+     "\"-CZTRAINR-2024-Os-24948\",\"-CZPTTA-1154\",\"Os 24948\",\"\",\"\",\"106\",\"\",\"\",\"\",\"\""
+    ],
+    "trips.txt": [
+     "route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed",
+     "\"-CZTRAINR-2024-Os-24140\",\"-CZTRAINT-2024:KT----13532A:00\",\"-CZTRAINT-2024:KT----13532A:00\",\"Bzenec\",\"\",\"\",\"\",\"\",\"\",\"\"",
+     "\"-CZTRAINR-2024-Os-24131\",\"-CZTRAINT-2024:KT----13517A:00\",\"-CZTRAINT-2024:KT----13517A:00\",\"Moravský Písek\",\"\",\"\",\"\",\"\",\"\",\"\"",
+     "\"-CZTRAINR-2024-Os-24125\",\"-CZTRAINT-2024:KT----13499A:00\",\"-CZTRAINT-2024:KT----13499A:00\",\"Moravský Písek\",\"\",\"\",\"\",\"\",\"\",\"\"",
+     "\"-CZTRAINR-2024-Os-24117\",\"-CZTRAINT-2024:KT----13475A:00\",\"-CZTRAINT-2024:KT----13475A:00\",\"Moravský Písek\",\"\",\"\",\"\",\"\",\"\",\"\"",
+     "\"-CZTRAINR-2024-Os-14426\",\"-CZTRAINT-2024:KT----13011A:00\",\"-CZTRAINT-2024:KT----13011A:00\",\"Ivančice\",\"\",\"\",\"\",\"\",\"\",\"\"",
+     "\"-CZTRAINR-2024-Os-14422\",\"-CZTRAINT-2024:KT----12999A:00\",\"-CZTRAINT-2024:KT----12999A:00\",\"Ivančice\",\"\",\"\",\"\",\"\",\"\",\"\"",
+     "\"-CZTRAINR-2024-Os-14433\",\"-CZTRAINT-2024:KT----12993A:00\",\"-CZTRAINT-2024:KT----12993A:00\",\"Moravské Bránice\",\"\",\"\",\"\",\"\",\"\",\"\"",
+     "\"-CZTRAINR-2024-Os-14435\",\"-CZTRAINT-2024:KT----12963A:00\",\"-CZTRAINT-2024:KT----12963A:00\",\"Moravské Bránice\",\"\",\"\",\"\",\"\",\"\",\"\"",
+     "\"-CZTRAINR-2024-Os-14416\",\"-CZTRAINT-2024:KT----12907A:00\",\"-CZTRAINT-2024:KT----12907A:00\",\"Ivančice\",\"\",\"\",\"\",\"\",\"\",\"\"",
+     "\"-CZTRAINR-2024-Os-15661\",\"-CZTRAINT-2024:KT----12473A:00\",\"-CZTRAINT-2024:KT----12473A:00\",\"Chlumec nad Cidlinou\",\"\",\"\",\"\",\"\",\"\",\"\"",
+     "\"-CZTRAINR-2024-Os-24948\",\"-CZTRAINT-2024:KT----12094A:00\",\"-CZTRAINT-2024:KT----12094A:00\",\"Křižanov\",\"\",\"\",\"\",\"\",\"\",\"\""
+    ],
+    "agency.txt": [
+     "agency_id,agency_name,agency_url,agency_timezone,agency_lang,agency_phone,agency_fare_url,agency_email",
+     "\"-CZPTTA-1154\",\"České dráhy, a.s.\",\"http://www.cd.cz\",\"Europe/Prague\",\"\",\"\",\"\",\"\"",
+     "\"-CZPTTA-2197\",\"ČESKÁ ZÁPADNÍ DRÁHA s. r. o.\",\"jrutil://invalid\",\"Europe/Prague\",\"\",\"\",\"\",\"\"",
+     "\"-CZPTTA-3107\",\"Prvá Slovenská železničná, akciová spoločnosť\",\"jrutil://invalid\",\"Europe/Prague\",\"\",\"\",\"\",\"\"",
+     "\"-CZPTTA-3189\",\"ARRIVA vlaky s.r.o.\",\"jrutil://invalid\",\"Europe/Prague\",\"\",\"\",\"\",\"\"",
+     "\"-CZPTTA-3207\",\"METRANS Rail s.r.o.\",\"jrutil://invalid\",\"Europe/Prague\",\"\",\"\",\"\",\"\"",
+     "\"-CZPTTA-3246\",\"RegioJet a.s.\",\"jrutil://invalid\",\"Europe/Prague\",\"\",\"\",\"\",\"\"",
+     "\"-CZPTTA-3265\",\"Rail system s.r.o.\",\"http://www.railsystem.cz\",\"Europe/Prague\",\"\",\"\",\"\",\"michal.simunek@hanzalik.cz\"",
+     "\"-CZPTTA-3288\",\"GW Train Regio a.s.\",\"jrutil://invalid\",\"Europe/Prague\",\"\",\"\",\"\",\"\"",
+     "\"-CZPTTA-3332\",\"KŽC Doprava, s.r.o.\",\"http://www.kzc.cz\",\"Europe/Prague\",\"\",\"\",\"\",\"\"",
+     "\"-CZPTTA-335K\",\"FAN RAIL CS s.r.o.\",\"jrutil://invalid\",\"Europe/Prague\",\"\",\"\",\"\",\"\"",
+     "\"-CZPTTA-3361\",\"Puš s.r.o.\",\"http://www.pussro.cz\",\"Europe/Prague\",\"\",\"\",\"\",\"\""
+    ],
+    "stops.txt": [
+     "stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,stop_timezone,wheelchair_boarding,platform_code",
+     "\"-SR70ST-CZ-35125\",\"\",\"Moravský Písek\",\"\",\"48.978303\",\"17.316008\",\"\",\"\",\"1\",\"\",\"Europe/Prague\",\"\",\"\"",
+     "\"-SR70S-CZ-35125-6c\",\"\",\"Moravský Písek\",\"\",\"48.978303\",\"17.316008\",\"\",\"\",\"0\",\"-SR70ST-CZ-35125\",\"\",\"\",\"6c\"",
+     "\"-SR70S-CZ-33475\",\"\",\"Bzenec-Olšovec\",\"\",\"48.97045\",\"17.294055\",\"\",\"\",\"0\",\"\",\"\",\"\",\"\"",
+     "\"-SR70ST-CZ-33615\",\"\",\"Bzenec\",\"\",\"48.969047\",\"17.263038\",\"\",\"\",\"1\",\"\",\"Europe/Prague\",\"\",\"\"",
+     "\"-SR70S-CZ-33615-6\",\"\",\"Bzenec\",\"\",\"48.969047\",\"17.263038\",\"\",\"\",\"0\",\"-SR70ST-CZ-33615\",\"\",\"\",\"6\"",
+     "\"-SR70ST-CZ-34985\",\"\",\"Moravské Bránice\",\"\",\"49.085109\",\"16.428978\",\"\",\"\",\"1\",\"\",\"Europe/Prague\",\"\",\"\"",
+     "\"-SR70S-CZ-34985-3\",\"\",\"Moravské Bránice\",\"\",\"49.085109\",\"16.428978\",\"\",\"\",\"0\",\"-SR70ST-CZ-34985\",\"\",\"\",\"3\"",
+     "\"-SR70S-CZ-34995\",\"\",\"Ivančice letovisko\",\"\",\"49.094714\",\"16.40209\",\"\",\"\",\"0\",\"\",\"\",\"\",\"\"",
+     "\"-SR70S-CZ-34135\",\"\",\"Ivančice město\",\"\",\"49.099039\",\"16.382666\",\"\",\"\",\"0\",\"\",\"\",\"\",\"\"",
+     "\"-SR70ST-CZ-34125\",\"\",\"Ivančice\",\"\",\"49.098248\",\"16.372796\",\"\",\"\",\"1\",\"\",\"Europe/Prague\",\"\",\"\"",
+     "\"-SR70S-CZ-34125-1\",\"\",\"Ivančice\",\"\",\"49.098248\",\"16.372796\",\"\",\"\",\"0\",\"-SR70ST-CZ-34125\",\"\",\"\",\"1\""
+    ],
+    "feed_info.txt": [
+     "feed_publisher_name,feed_publisher_url,feed_lang,feed_start_date,feed_end_date,feed_version",
+     "\"JrUtil\",\"https://gitlab.com/dvdkon/jrutil\",\"cs\",\"20221211\",\"20261212\",\"\""
+    ]
+   }
+  }
+ ],
+ "atlas_cz": [
+  {
+   "id": "f-u2y-koleje~małopolskie~ald",
+   "url": "https://kolejemalopolskie.com.pl/rozklady_jazdy/ald-gtfs.zip",
+   "file": "atlas/feeds/kolejemalopolskie.com.pl.dmfr.json"
+  },
+  {
+   "id": "f-u2nr-dakkzrt~szkt",
+   "url": "http://szegedimenetrend.hu/google_transit.zip",
+   "file": "atlas/feeds/members.upc.hu.dmfr.json"
+  },
+  {
+   "id": "f-u2f-pražskáintegrovanádoprava",
+   "url": "http://data.pid.cz/PID_GTFS.zip",
+   "file": "atlas/feeds/data.pid.cz.dmfr.json"
+  },
+  {
+   "id": "f-u2v-koleje~slaskie",
+   "url": "https://koleje-ks.pl/gtfs/2025-2026.zip",
+   "file": "atlas/feeds/koleje-ks.dmfr.json"
+  },
+  {
+   "id": "f-u2hy-biokomnonprofitkft",
+   "url": "http://mobilitas.biokom.hu/gtfs",
+   "file": "atlas/feeds/mobilitas.biokom.hu.dmfr.json"
+  },
+  {
+   "id": "f-u20-mobilitadimarca",
+   "url": "https://mobilitadimarca.it/treviso/google_transit.zip",
+   "file": "atlas/feeds/mobilitadimarca.it.dmfr.json"
+  },
+  {
+   "id": "f-u2u6-dpmo",
+   "url": "https://www.dpmo.cz/doc/dpmo-olomouc-cz.zip",
+   "file": "atlas/feeds/dpmo.cz.dmfr.json"
+  },
+  {
+   "id": "f-u2mw-weekendbus",
+   "url": "http://apps.weekendbus.hu/gtfs/google_transit.zip",
+   "file": "atlas/feeds/apps.weekendbus.hu.dmfr.json"
+  },
+  {
+   "id": "f-u2m-bkk",
+   "url": "https://go.bkk.hu/api/static/v1/public-gtfs/budapest_gtfs.zip",
+   "file": "atlas/feeds/bkk.hu.dmfr.json"
+  },
+  {
+   "id": "f-czptt~cz",
+   "url": "https://data.jr.ggu.cz/results/latest/CZPTT_GTFS.zip",
+   "file": "atlas/feeds/data.jr.ggu.cz.dmfr.json"
+  },
+  {
+   "id": "f-u2vh-rybnik",
+   "url": "https://km.rybnik.pl/download/attachment/629/gtfs_01082026.zip",
+   "file": "atlas/feeds/km.rybnik.pl.dmfr.json"
+  },
+  {
+   "id": "f-u2z-pks~rzeszow",
+   "url": "https://www.mpkrzeszow.pl/gtfs-pks/latest.zip",
+   "file": "atlas/feeds/mpkrzeszow.pl.dmfr.json"
+  },
+  {
+   "id": "f-u2zs-rzeszow",
+   "url": "https://www.mpkrzeszow.pl/gtfs/latest.zip",
+   "file": "atlas/feeds/mpkrzeszow.pl.dmfr.json"
+  },
+  {
+   "id": "f-u2mmz-budaörsvárosönkormányzata",
+   "url": "https://armadina-transit.fra1.digitaloceanspaces.com/budaors.zip",
+   "file": "atlas/feeds/armadina.hu.dmfr.json"
+  },
+  {
+   "id": "f-u243-autotrolej",
+   "url": "https://gt.autotrolej.hr/google-transit.zip",
+   "file": "atlas/feeds/data.gov.hr.dmfr.json"
+  },
+  {
+   "id": "f-u20-actvspa",
+   "url": "http://actv.avmspa.it/sites/default/files/attachments/opendata/automobilistico/actv_aut.zip",
+   "file": "atlas/feeds/actv.avmspa.it.dmfr.json"
+  },
+  {
+   "id": "f-u20f-actvspa",
+   "url": "http://actv.avmspa.it/sites/default/files/attachments/opendata/navigazione/actv_nav.zip",
+   "file": "atlas/feeds/actv.avmspa.it.dmfr.json"
+  },
+  {
+   "id": "f-u25k-zagrebačkielektričnitramvaj",
+   "url": "https://zet.hr/gtfs-scheduled/latest",
+   "file": "atlas/feeds/zet.hr.dmfr.json"
+  },
+  {
+   "id": "f-u2-zssk",
+   "url": "https://www.zsr.sk/files/pre-cestujucich/cestovny-poriadok/gtfs/gtfs.zip",
+   "file": "atlas/feeds/zsr.sk.dmfr.json"
+  },
+  {
+   "id": "f-u2wc-mvkzrt",
+   "url": "http://gtfs.cdata.hu/mvkzrt.zip",
+   "file": "atlas/feeds/siri.ktikmk.hu.dmfr.json"
+  },
+  {
+   "id": "f-u24q-ljubljanskipotniškipromet",
+   "url": "https://data.lpp.si/api/gtfs/feed.zip",
+   "file": "atlas/feeds/data.lpp.si.dmfr.json"
+  },
+  {
+   "id": "f-u2yk2-wielickakomunikacjamiędzygminna",
+   "url": "http://gtfs.pyrfekt.com/wieliczka_gtfs.zip",
+   "file": "atlas/feeds/gtfs.pyrfekt.com.dmfr.json"
+  },
+  {
+   "id": "f-u2yk2-wielickakomunikacjawewnątrzgminna",
+   "url": "http://gtfs.pyrfekt.com/feeds/wieliczka_gtfs.zip",
+   "file": "atlas/feeds/gtfs.pyrfekt.com.dmfr.json"
+  },
+  {
+   "id": "f-u2q8-oroshaza",
+   "url": "https://gtfs.gpspositions.net/storage/exports/OROSH_V_ONK/gtfs_latest.zip",
+   "file": "atlas/feeds/gtfs.gpspositions.net.dmfr.json"
+  },
+  {
+   "id": "f-u2vd~zywiec",
+   "url": "https://files.girlc.at/gtfs/zywiec.zip",
+   "file": "atlas/feeds/files.girlc.at.dmfr.json"
+  },
+  {
+   "id": "f-u2ve~bielsko~biala",
+   "url": "https://files.girlc.at/gtfs/bielsko_biala.zip",
+   "file": "atlas/feeds/files.girlc.at.dmfr.json"
+  },
+  {
+   "id": "f-u2vs~oswiecim",
+   "url": "https://files.girlc.at/gtfs/oswiecim.zip",
+   "file": "atlas/feeds/files.girlc.at.dmfr.json"
+  },
+  {
+   "id": "f-u2~komunikacja~beskidzka",
+   "url": "https://files.girlc.at/gtfs/komunikacja_beskidzka.zip",
+   "file": "atlas/feeds/files.girlc.at.dmfr.json"
+  },
+  {
+   "id": "f-u348-dpmlj",
+   "url": "https://www.dpmlj.cz/gtfs.zip",
+   "file": "atlas/feeds/dpmlj.cz.dmfr.json"
+  },
+  {
+   "id": "f-plzen",
+   "url": "https://jizdnirady.pmdp.cz/jr/gtfs",
+   "file": "atlas/feeds/jizdnirady.pmdp.cz.dmfr.json"
+  },
+  {
+   "id": "f-u2e-idsjmk",
+   "url": "https://kordis-jmk.cz/gtfs/gtfs.zip",
+   "file": "atlas/feeds/data.brno.cz.dmfr.json"
+  },
+  {
+   "id": "f-u20f-alilagunaspa",
+   "url": "http://www.alilaguna.it/attuale/alilaguna.zip",
+   "file": "atlas/feeds/alilaguna.it.dmfr.json"
+  },
+  {
+   "id": "f-u2s1vm0ergtc~bratislava",
+   "url": "https://www.arcgis.com/sharing/rest/content/items/aba12fd2cbac4843bc7406151bc66106/data",
+   "file": "atlas/feeds/opendata.bratislava.sk.dmfr.json"
+  }
+ ],
+ "PID-alerts": {
+  "url": "https://api.golemio.cz/v2/vehiclepositions/gtfsrt/alerts.pb",
+  "status": 200,
+  "bytes": 4225,
+  "head": "\n\r\n\u00032.0\u0010\u0000\u0018ϐ��\u0006\u0012�\u0006\n*alert-cab6dee5-2ce6-4aa8-a31b-755225e2faf3*�\u0006\n\u0006\b����\u0006*\u0005\u0012\u0003L130\n8\u0001BM\nK\nEhttps://pid.cz/mimoradnost/?uuid=cab6dee5-2ce6-4aa8-a31b-755225e2faf3\u0012\u0002csRG\nE\n?obratiště Zvonařka: dočasné přerušení provozu tramvají\u0012\u0002csZ�\u0004\n�\u0004\n�\u0004Z důvodu havárie inženýrských sítí v ulici Šafa"
+ },
+ "PID-rss": {
+  "url": "https://pid.cz/feed/rss-mimoradnosti",
+  "status": 200,
+  "bytes": 5574,
+  "head": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><rss version=\"2.0\"\n     xmlns:content=\"http://purl.org/rss/1.0/modules/content/\"\n     xmlns:wfw=\"http://wellformedweb.org/CommentAPI/\"\n     xmlns:dc=\"http://purl.org/dc/elements/1.1/\"\n     xmlns:atom=\"http://www.w3.org/2005/Atom\"\n     xmlns:sy=\"http://purl.org/r"
+ }
+}
