@@ -221,9 +221,12 @@ def prio(si, typ):
 TR = []  # globální seznam jízd
 for si, s in enumerate(srcs):
     t = s['trips']; rsn = dict(zip(s['routes'].route_id, s['routes'].route_short_name))
+    rlab = {r['route_id']: route_label(s['key'], r) for r in s['routes'].to_dict('records')}
+    rraw = dict(zip(s['routes'].route_id, s['routes'].route_type))
     for r in t.itertuples():
-        TR.append((si, r.Index, r.route_id, r.trip_headsign, r.shape_id, r.type, r.service_id, f"{si}:{rsn.get(r.route_id, '')}"))
-TRdf = pd.DataFrame(TR, columns=['src', 'lt', 'route_id', 'head', 'shape', 'type', 'svc', 'line'])
+        TR.append((si, r.Index, r.route_id, r.trip_headsign, r.shape_id, r.type, r.service_id, f"{si}:{rsn.get(r.route_id, '')}",
+                   rlab.get(r.route_id, ''), str(rraw.get(r.route_id, ''))))
+TRdf = pd.DataFrame(TR, columns=['src', 'lt', 'route_id', 'head', 'shape', 'type', 'svc', 'line', 'label', 'raw'])
 TRdf['prio'] = [prio(a, b) for a, b in zip(TRdf.src, TRdf.type)]
 toff = {}; off = 0
 for si, s in enumerate(srcs): toff[si] = off; off += len(s['trips'])
@@ -254,6 +257,23 @@ LINE = TRdf.line.values
 assert (np.diff(Eg) >= 0).all()
 starts = np.searchsorted(Eg, np.arange(len(TRdf) + 1))  # E je seřazené podle g
 label_from = {}  # globální jízda -> označení převzaté z krajského vlaku
+# MHD z CIS JŘ, kterou pokrývají krajská data (stejné číslo linky na stejných místech), vynecháme celou
+REG = np.array([srcs[i]['kind'] == 'regional' for i in TRdf.src.values])
+MHD = np.array([srcs[i]['key'] == 'JDF' for i in TRdf.src.values]) & TRdf.raw.isin(['704', '800', '900', '0', '11']).values
+cxe = np.floor(X[Erow] / 300).astype(np.int64); cye = np.floor(Y[Erow] / 300).astype(np.int64)
+LAB = TRdf.label.values
+rg = pd.DataFrame({'lab': LAB[Eg], 'cx': cxe, 'cy': cye})[REG[Eg]].drop_duplicates()
+regset = set()
+for dx in (-1, 0, 1):
+    for dy in (-1, 0, 1):
+        regset.update(zip(rg.lab.values, rg.cx.values + dx, rg.cy.values + dy))
+jm = pd.DataFrame({'line': LINE[Eg], 'lab': LAB[Eg], 'cx': cxe, 'cy': cye})[MHD[Eg]].drop_duplicates()
+jm['hit'] = [(a, b, c) in regset for a, b, c in zip(jm.lab.values, jm.cx.values, jm.cy.values)]
+share = jm.groupby('line').hit.mean()
+covered = set(share.index[share >= 0.5])
+pre_drop = np.isin(LINE, list(covered)) & MHD
+log('MHD z CIS JŘ pokrytá krajskými daty: linek', len(covered), 'jízd', int(pre_drop.sum()), 'z', int(MHD.sum()))
+
 day_trips = {}
 stats = []
 DBG_DAY = next((d for d in dates if datetime.datetime.strptime(d, '%Y%m%d').weekday() < 5), dates[0])
@@ -263,6 +283,7 @@ for day in dates:
     for si, s in enumerate(srcs):
         a = s['act'][day]; o = toff[si]
         active[o:o + len(s['trips'])] = s['trips'].service_id.isin(a).values
+    active &= ~pre_drop
     keep = np.zeros(len(TRdf), bool)
     acc = []  # DataFrame(k, b) přijatých událostí
     st_row = {'den': day}
