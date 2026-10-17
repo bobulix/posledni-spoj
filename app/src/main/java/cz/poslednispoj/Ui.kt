@@ -225,6 +225,8 @@ private fun DestinationField(vm: AppViewModel, modifier: Modifier, showLabel: Bo
     var focused by remember { mutableStateOf(false) }
     var fieldBottom by remember { mutableStateOf(0) }
     val focus = LocalFocusManager.current
+    // otevření detailu zastávky ukončí rozepsaný cíl (vrátí se platný cíl)
+    androidx.compose.runtime.LaunchedEffect(vm.selected) { if (vm.selected >= 0) focus.clearFocus() }
     val scope = rememberCoroutineScope()
     Column(modifier) {
         if (showLabel) FieldLabel("Chci se vrátit do")
