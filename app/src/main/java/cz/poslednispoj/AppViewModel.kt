@@ -333,6 +333,12 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
      * („kr vr“ → Kropáčova Vrutice, „pr ho“ → Praha-Hostivař), bez ohledu na diakritiku.
      * Když nic takového není, hledá se výskyt textu kdekoli v názvu.
      */
+    /** Vlaková stanice/zastávka (některý uzel s tímto názvem obsluhuje vlak). */
+    private fun isStation(name: String): Boolean {
+        val m = meta ?: return false
+        return nameIdx[name]?.any { (m.modes[it] and 4) != 0 } == true
+    }
+
     fun suggest(query: String, limit: Int = 8): List<String> {
         val q = tokens(query)
         if (q.isEmpty()) return emptyList()
@@ -345,7 +351,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         val res = ArrayList<String>()
         if (score(tokens(PRAHA)) >= 0) res.add(PRAHA)
         val hits = searchIndex.map { it.first to score(it.second) }.filter { it.second >= 0 }
-            .sortedWith(compareBy<Pair<String, Int>>({ it.second }, { it.first.length }))
+            .sortedWith(compareBy<Pair<String, Int>>({ it.second }, { if (isStation(it.first)) 0 else 1 }, { it.first.length }))
         hits.take(limit).forEach { res.add(it.first) }
         if (res.size < limit) {
             val nq = norm(query.trim())
