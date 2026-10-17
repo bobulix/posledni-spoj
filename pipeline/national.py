@@ -148,6 +148,13 @@ for si, s in enumerate(srcs):
     used = np.zeros(len(st), bool); used[s['stt'].s.unique()] = True
     lat = pd.to_numeric(st.stop_lat, errors='coerce').values; lon = pd.to_numeric(st.stop_lon, errors='coerce').values
     name = st.stop_name.map(pretty).values
+    # MHD bez názvu obce: doplníme obec, aby šly zastávky najít a sloučit s CIS JŘ („Brno, Hlavní nádraží“)
+    city = {'DPMO': 'Olomouc', 'PMDP': 'Plzeň', 'DPMLJ': 'Liberec'}.get(s['key'])
+    if city:
+        name = np.array([x if x.startswith(city) else f'{city}, {x}' for x in name])
+    if s['key'] == 'JMK' and 'zone_id' in st:
+        brno = st.zone_id.isin(['100', '101']).values
+        name = np.array([f'Brno, {x}' if b and not x.startswith('Brno') else x for x, b in zip(name, brno)])
     if s['key'] == 'PID':
         grp = np.where(st.asw_node_id != '', 'N' + st.asw_node_id, 'S' + st.stop_id)
         praha = st.zone_id.str.split(',').apply(lambda z: 'P' in z).values
@@ -171,7 +178,7 @@ def union(i, j):
     if a != b: par[max(a, b)] = min(a, b)
 
 X = A.X.values; Y = A.Y.values; S = A.src.values; G = A.grp.values
-NM = np.array([norm(x) for x in A.name.values])
+NM = np.array([re.sub(r'^praha', '', norm(x)) for x in A.name.values])
 def cellmap(cell):
     cx = np.floor(X / cell).astype(np.int64); cy = np.floor(Y / cell).astype(np.int64)
     grid = defaultdict(list)
@@ -325,6 +332,41 @@ for r, gr in gb:
     nm = gr.name.value_counts()
     best = gr[gr.pr == gr.pr.min()].name.value_counts().index[0]
     info[r] = (best, gr.lat.mean(), gr.lon.mean(), bool(gr.praha.any()))
+
+# stejné názvy na různých místech (např. 9× „Nová Ves“): doplníme nejbližší větší obec
+names_ = {r: info[r][0] for r in used_roots}
+tc = defaultdict(list)
+for r, nm_ in names_.items():
+    t_ = nm_.split(',')[0].strip()
+    tc[t_].append(r)
+bigtowns = [(t_, np.mean([info[r][1] for r in rs]), np.mean([info[r][2] for r in rs])) for t_, rs in tc.items() if len(rs) >= 20]
+bt_lat = np.array([b[1] for b in bigtowns]); bt_lon = np.array([b[2] for b in bigtowns])
+byname = defaultdict(list)
+for r, nm_ in names_.items(): byname[nm_].append(r)
+renamed = 0
+for nm_, rs in byname.items():
+    if len(rs) < 2: continue
+    la = np.array([info[r][1] for r in rs]); lo = np.array([info[r][2] for r in rs])
+    if (la.max() - la.min()) * KY < 2000 and (lo.max() - lo.min()) * KX < 2000: continue
+    # shluky do 2 km
+    lab_ = list(range(len(rs)))
+    for i in range(len(rs)):
+        for j in range(i):
+            if math.hypot((la[i] - la[j]) * KY, (lo[i] - lo[j]) * KX) < 2000:
+                a_, b_ = lab_[i], lab_[j]
+                lab_ = [b_ if x == a_ else x for x in lab_]
+    if len(set(lab_)) < 2: continue
+    for c in set(lab_):
+        mem = [k for k in range(len(rs)) if lab_[k] == c]
+        cla = la[mem].mean(); clo = lo[mem].mean()
+        dd = np.hypot((bt_lat - cla) * KY, (bt_lon - clo) * KX)
+        if len(dd) and nm_.split(',')[0].strip() != bigtowns[int(np.argmin(dd))][0]:
+            suffix = f' ({bigtowns[int(np.argmin(dd))][0]})'
+        else:
+            suffix = f' ({cla:.2f}, {clo:.2f})'
+        for k in mem:
+            r = rs[k]; info[r] = (nm_ + suffix,) + info[r][1:]; renamed += 1
+log('přejmenováno kvůli stejným názvům', renamed)
 
 # režimy uzlů
 modes = np.zeros(NN, np.int64)
