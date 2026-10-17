@@ -70,7 +70,8 @@ walk=np.array(walk,dtype=np.int32)
 print('walk edges',len(walk))
 
 meta={'nodes':[[r.name,round(r.lat,5),round(r.lon,5),int(r.praha),int(r.modes)] for r in nodes.itertuples()],
-  'routes':[[r.route_short_name,int(r.route_type) if r.route_type.isdigit() else 3,r.route_color or '888888'] for r in routes.itertuples()],
+  'routes':[[r.route_short_name,int(r.route_type) if r.route_type.isdigit() else 3,r.route_color or '888888',0,r.route_id] for r in routes.itertuples()],
+  'sources':['PID (ROPID)'],
   'walk':walk.flatten().tolist(),'days':[],
   'generated':datetime.datetime.utcnow().strftime('%Y%m%dT%H%M%SZ')}
 

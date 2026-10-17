@@ -495,6 +495,7 @@ private fun DetailSheet(vm: AppViewModel, modifier: Modifier) {
                                 Text(if (open) " ▴" else " ▾", fontSize = 13.sp, color = Ink2)
                             }
                             Text("${m.names[leg.from]} → ${m.names[leg.to]}  ·  příjezd ${hm(leg.arr)}", fontSize = 14.sp, color = Ink)
+                            vm.alertsForRoute(ri).forEach { AlertBox(it) }
                             if (open) RouteList(vm, day, leg, col)
                         }
                     }
@@ -513,10 +514,32 @@ private fun DetailSheet(vm: AppViewModel, modifier: Modifier) {
                 OutlinedButton(onClick = { openInMapy(ctx, m.lat[i], m.lon[i], m.names[i]) }) { Text("Otevřít v Mapách") }
             }
             Text(
-                "Zdroj: jízdní řády PID (ROPID), stav k ${vm.dataDate()}. Výluky nemusí být úplné, poslední spoj si ověř v IDOS. " +
+                "Zdroj: jízdní řády ${vm.sourcesOf(vm.journey).ifEmpty { m.sources.joinToString() }}, stav k ${vm.dataDate()}. " +
+                    "Výluky nemusí být úplné, poslední spoj si ověř v IDOS. Mimořádnosti PID se načítají živě. " +
                     "Počítá se 2 min na přestup (4 min na nádraží) a pěší přechody do 450 m.",
                 fontSize = 12.sp, color = Ink2, modifier = Modifier.padding(top = 10.dp)
             )
+        }
+    }
+}
+
+/** Upozornění na mimořádnost; klepnutím se rozbalí podrobnosti a odkaz na pid.cz. */
+@Composable
+private fun AlertBox(a: Alert) {
+    var open by remember(a.id) { mutableStateOf(false) }
+    val ctx = LocalContext.current
+    Column(
+        Modifier.padding(top = 4.dp).fillMaxWidth().clip(RoundedCornerShape(8.dp)).background(Color(0xFFFFF1E6))
+            .clickable { open = !open }.padding(horizontal = 8.dp, vertical = 5.dp)
+    ) {
+        Text("⚠ " + a.header.ifEmpty { "Mimořádnost na lince" } + if (open) "" else "  ▾",
+            fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF9A3A00))
+        if (open) {
+            if (a.description.isNotEmpty()) Text(a.description, fontSize = 13.sp, color = Ink, modifier = Modifier.padding(top = 3.dp))
+            if (a.url.isNotEmpty()) Text("Více na pid.cz ›", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF9A3A00),
+                modifier = Modifier.padding(top = 4.dp).clickable {
+                    try { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(a.url))) } catch (_: Exception) {}
+                })
         }
     }
 }

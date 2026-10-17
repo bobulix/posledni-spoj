@@ -337,7 +337,8 @@ for si, s in enumerate(srcs):
     for r in s['routes'].to_dict('records'):
         ridx[(si, r['route_id'])] = len(routes)
         col = (r.get('route_color') or '').strip()
-        routes.append([route_label(s['key'], r), simple_type(r.get('route_type', '3')), col if re.fullmatch(r'[0-9A-Fa-f]{6}', col) else '', si])
+        routes.append([route_label(s['key'], r), simple_type(r.get('route_type', '3')), col if re.fullmatch(r'[0-9A-Fa-f]{6}', col) else '', si,
+                       r['route_id'] if s['key'] == 'PID' else ''])
 
 # tvary tras (jen zdroje se shapes.txt)
 def _dp(pts, eps):

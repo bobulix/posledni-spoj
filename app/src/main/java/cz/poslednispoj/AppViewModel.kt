@@ -117,8 +117,36 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
 
     private var computeJob: Job? = null
 
+    /** Živé mimořádnosti PID; obnovují se každých 5 minut. */
+    var alerts by mutableStateOf<List<Alert>>(emptyList())
+        private set
+
     init {
         viewModelScope.launch { load() }
+        viewModelScope.launch {
+            while (true) {
+                try { alerts = withContext(Dispatchers.IO) { Alerts.fetch() } } catch (_: Exception) {}
+                kotlinx.coroutines.delay(5 * 60_000L)
+            }
+        }
+    }
+
+    /** Zdroje dat, ze kterých pochází jízdy cesty (např. „PID (ROPID), Správa železnic (CZPTT)“). */
+    fun sourcesOf(legs: List<Leg>): String {
+        val m = meta ?: return ""; val t = trips ?: return ""
+        return legs.filterIsInstance<Leg.Ride>().mapNotNull { l -> t.route.getOrNull(l.trip)?.let { m.sources.getOrNull(m.routeSrc[it]) } }
+            .distinct().joinToString()
+    }
+
+    /** Mimořádnosti, které se týkají linky [ri] ve zvolený den. */
+    fun alertsForRoute(ri: Int): List<Alert> {
+        val m = meta ?: return emptyList()
+        val id = m.routeId.getOrNull(ri) ?: return emptyList()
+        if (id.isEmpty() || dayKey.length != 8) return emptyList()
+        val z = java.time.ZoneId.of("Europe/Prague")
+        val d = java.time.LocalDate.of(dayKey.substring(0, 4).toInt(), dayKey.substring(4, 6).toInt(), dayKey.substring(6).toInt())
+        val from = d.atStartOfDay(z).toEpochSecond(); val to = d.plusDays(1).atStartOfDay(z).toEpochSecond()
+        return alerts.filter { id in it.routeIds && it.activeIn(from, to) }
     }
 
     private suspend fun load() {

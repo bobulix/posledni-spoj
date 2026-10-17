@@ -26,6 +26,9 @@ class Meta(
     val routeName: Array<String>,
     val routeType: IntArray,      // GTFS route_type
     val routeColor: IntArray,     // ARGB
+    val routeSrc: IntArray,       // index do sources
+    val routeId: Array<String>,   // route_id v PID (kvůli živým mimořádnostem), jinak ""
+    val sources: List<String>,
     val walkFlat: IntArray,
     val days: List<Pair<String, String>>, // (YYYYMMDD, den v týdnu anglicky)
     val generated: String,
@@ -129,15 +132,19 @@ class DataRepo(private val ctx: Context) {
         val routes = o.getJSONArray("routes")
         val rn = routes.length()
         val rName = Array(rn) { "" }; val rType = IntArray(rn); val rCol = IntArray(rn)
+        val rSrc = IntArray(rn); val rId = Array(rn) { "" }
         for (i in 0 until rn) {
             val a = routes.getJSONArray(i)
             rName[i] = a.getString(0); rType[i] = a.getInt(1)
+            rSrc[i] = a.optInt(3, 0); rId[i] = a.optString(4, "")
             rCol[i] = try { (0xFF000000.toInt()) or a.getString(2).toInt(16) } catch (e: Exception) { 0xFF888888.toInt() }
         }
         val w = o.getJSONArray("walk")
         val walk = IntArray(w.length()) { w.getInt(it) }
         val dj = o.getJSONArray("days")
         val days = (0 until dj.length()).map { dj.getJSONArray(it).let { a -> a.getString(0) to a.getString(1) } }
-        return Meta(names, lat, lon, praha, modes, rName, rType, rCol, walk, days, o.optString("generated", "v0"))
+        val sj = o.optJSONArray("sources")
+        val sources = if (sj == null) listOf("PID (ROPID)") else (0 until sj.length()).map { sj.getString(it) }
+        return Meta(names, lat, lon, praha, modes, rName, rType, rCol, rSrc, rId, sources, walk, days, o.optString("generated", "v0"))
     }
 }
