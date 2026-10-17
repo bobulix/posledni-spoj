@@ -51,7 +51,7 @@ jobs:
             # našeptávač cíle
             adb shell input tap 360 456
             sleep 2
-            adb shell input text "vsenory"
+            adb shell input text "revnice"
             sleep 3
             adb exec-out screencap -p > out/1b-search.png
             adb shell input keyevent 111

@@ -19,6 +19,7 @@ import java.util.Date
 import java.util.Locale
 
 const val PRAHA = "Praha (kamkoli do města)"
+const val TOWN_SUFFIX = " (celá obec)"
 
 /** Čára na mapě (zeměpisné souřadnice). */
 class GeoPath(val walk: Boolean, val lat: DoubleArray, val lon: DoubleArray)
@@ -133,6 +134,18 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
                 val coll = java.text.Collator.getInstance(Locale("cs", "CZ"))
                 sortedNames = idx.keys.sortedWith(coll)
                 searchIndex = sortedNames.map { it to tokens(it) }
+                // obce s více zastávkami: „Řevnice,škola“ + „Řevnice,nádraží“ → „Řevnice (celá obec)“
+                val towns = HashMap<String, MutableSet<String>>()
+                for (name in idx.keys) {
+                    val ids = idx[name]!!
+                    if (ids.any { m.praha[it] }) continue // Praha má vlastní volbu
+                    val town = name.substringBefore(',').trim()
+                    towns.getOrPut(town) { HashSet() }.add(name)
+                }
+                townIdx = towns.filter { it.value.size >= 2 }
+                    .mapKeys { it.key + TOWN_SUFFIX }
+                    .mapValues { e -> e.value.flatMap { idx[it]!! } }
+                townSearch = townIdx.keys.sortedWith(coll).map { it to tokens(it.removeSuffix(TOWN_SUFFIX)) }
             }
             meta = m
             val today = todayKey()
@@ -178,9 +191,9 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             if (dest == PRAHA || dest.equals("praha", true)) {
                 for (i in 0 until m.size) tgt[i] = m.praha[i]; label = "Prahy"
             } else {
-                val ids = nameIdx[dest]
+                val ids = townIdx[dest] ?: nameIdx[dest]
                 if (ids == null) { status = "Zastávku „$dest“ neznám. Vyber ji ze seznamu."; return@launch }
-                ids.forEach { tgt[it] = true }; label = dest
+                ids.forEach { tgt[it] = true }; label = dest.removeSuffix(TOWN_SUFFIX)
             }
             if ((modeMask and 15) == 0) {
                 profile = null; status = "Zapni aspoň jeden způsob dopravy."; renderTick++; return@launch
@@ -321,6 +334,8 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
 
     // ---- našeptávač cíle ----
     private var searchIndex: List<Pair<String, List<String>>> = emptyList()
+    private var townSearch: List<Pair<String, List<String>>> = emptyList()
+    private var townIdx: Map<String, List<Int>> = emptyMap()
 
     /** Malá písmena bez diakritiky. */
     private fun norm(s: String): String =
@@ -350,6 +365,10 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         }
         val res = ArrayList<String>()
         if (score(tokens(PRAHA)) >= 0) res.add(PRAHA)
+        // celé obce mají přednost před jednotlivými zastávkami
+        townSearch.map { it.first to score(it.second) }.filter { it.second >= 0 }
+            .sortedWith(compareBy<Pair<String, Int>>({ it.second }, { it.first.length }))
+            .take(3).forEach { res.add(it.first) }
         val hits = searchIndex.map { it.first to score(it.second) }.filter { it.second >= 0 }
             .sortedWith(compareBy<Pair<String, Int>>({ it.second }, { if (isStation(it.first)) 0 else 1 }, { it.first.length }))
         hits.take(limit).forEach { res.add(it.first) }
