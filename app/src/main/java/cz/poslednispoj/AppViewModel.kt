@@ -228,7 +228,13 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         prefs.edit().putInt("modes", modeMask).apply()
         closeSheet(); recompute()
     }
-    fun togglePanel() { panelCollapsed = !panelCollapsed; prefs.edit().putBoolean("collapsed", panelCollapsed).apply() }
+    fun togglePanel() {
+        panelCollapsed = !panelCollapsed; prefs.edit().putBoolean("collapsed", panelCollapsed).apply()
+        if (!panelCollapsed && selected >= 0) sheetMini = true // rozbalený panel a detail se nepřekrývají
+    }
+    /** Psaní cíle: detail spoje se sbalí, aby nepřekážel. */
+    fun onDestinationFocus() { if (selected >= 0) sheetMini = true }
+    private fun sheetExpanded() { if (!panelCollapsed) panelCollapsed = true }
     fun updateOpacity(v: Float) { opacity = v; prefs.edit().putFloat("opacity", v).apply(); renderTick++ }
     fun retry() { error = null; viewModelScope.launch { if (meta == null) load() else loadDayAndCompute() } }
 
@@ -236,6 +242,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         val p = profile ?: return
         val d = day ?: return
         selected = i; selK = k
+        if (!sheetMini) sheetExpanded()
         expanded.clear()
         val e = p.prof[i].getOrNull(k)
         journey = if (e != null) Csa.legsFrom(d, i, e) else emptyList()
@@ -284,8 +291,8 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             DoubleArray(n + 2) { when (it) { 0 -> m.lat[from]; n + 1 -> m.lat[to]; else -> la[a + it - 1] } },
             DoubleArray(n + 2) { when (it) { 0 -> m.lon[from]; n + 1 -> m.lon[to]; else -> lo[a + it - 1] } })
     }
-    fun toggleMini() { sheetMini = !sheetMini }
-    fun expandSheet() { sheetMini = false }
+    fun toggleMini() { sheetMini = !sheetMini; if (!sheetMini) sheetExpanded() }
+    fun expandSheet() { sheetMini = false; sheetExpanded() }
     fun toggleRoute(legIndex: Int) {
         if (expanded.containsKey(legIndex)) expanded.remove(legIndex)
         else {

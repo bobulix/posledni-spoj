@@ -68,6 +68,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInRoot
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.focus.onFocusChanged
@@ -219,6 +221,7 @@ private fun DestinationField(vm: AppViewModel, modifier: Modifier, showLabel: Bo
     var value by remember(vm.dest) { mutableStateOf(TextFieldValue(vm.dest)) }
     var open by remember { mutableStateOf(false) }
     var focused by remember { mutableStateOf(false) }
+    var fieldBottom by remember { mutableStateOf(0) }
     val focus = LocalFocusManager.current
     val scope = rememberCoroutineScope()
     Column(modifier) {
@@ -237,8 +240,10 @@ private fun DestinationField(vm: AppViewModel, modifier: Modifier, showLabel: Bo
                     vm.suggest(value.text).firstOrNull()?.let { vm.setDestination(it) }
                 }),
                 modifier = Modifier.fillMaxWidth()
+                    .onGloballyPositioned { c -> fieldBottom = (c.positionInRoot().y + c.size.height).toInt() }
                     .onFocusChanged { st ->
                         if (st.isFocused && !focused) {
+                            vm.onDestinationFocus()
                             // klepnutí na zadaný název ho celý označí, takže lze rovnou psát nový
                             scope.launch {
                                 kotlinx.coroutines.delay(60)
@@ -258,10 +263,18 @@ private fun DestinationField(vm: AppViewModel, modifier: Modifier, showLabel: Bo
             )
             val q = value.text
             val suggestions = remember(q) { if (open) vm.suggest(q) else emptyList() }
+            val density = androidx.compose.ui.platform.LocalDensity.current
+            val view = androidx.compose.ui.platform.LocalView.current
+            val imeBottom = androidx.compose.foundation.layout.WindowInsets.ime.getBottom(density)
+            val maxMenu = with(density) {
+                val free = view.rootView.height - imeBottom - fieldBottom - 16.dp.roundToPx()
+                free.coerceAtLeast(56.dp.roundToPx()).toDp()
+            }
             DropdownMenu(
                 expanded = open && suggestions.isNotEmpty(),
                 onDismissRequest = { open = false },
                 properties = PopupProperties(focusable = false),
+                modifier = Modifier.heightIn(max = maxMenu),
             ) {
                 suggestions.forEach { s ->
                     DropdownMenuItem(text = { Text(s) }, onClick = {

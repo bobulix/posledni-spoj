@@ -100,11 +100,11 @@ class MapLayers(private val vm: AppViewModel) {
         ))
         // zvýrazněná cesta
         style.addLayer(LineLayer("journey", "journey").withProperties(
-            PropertyFactory.lineColor("#C8321F"), PropertyFactory.lineWidth(5f),
+            PropertyFactory.lineColor(toColor(get("col"))), PropertyFactory.lineWidth(5f),
             PropertyFactory.lineCap(Property.LINE_CAP_ROUND), PropertyFactory.lineJoin(Property.LINE_JOIN_ROUND),
         ).withFilter(Expression.eq(get("walk"), literal(0))))
         style.addLayer(LineLayer("journey-walk", "journey").withProperties(
-            PropertyFactory.lineColor("#C8321F"), PropertyFactory.lineWidth(5f),
+            PropertyFactory.lineColor(toColor(get("col"))), PropertyFactory.lineWidth(5f),
             PropertyFactory.lineDasharray(arrayOf(0.4f, 1.4f)), PropertyFactory.lineCap(Property.LINE_CAP_ROUND),
         ).withFilter(Expression.eq(get("walk"), literal(1))))
         // štítky a tečky dřívějších spojů: jedna vrstva na každou úroveň, od které se zastávka ukazuje
@@ -269,9 +269,13 @@ class MapLayers(private val vm: AppViewModel) {
         val sel = vm.selected
         val selF = if (sel in 0 until m.size) listOf(Feature.fromGeometry(Point.fromLngLat(m.lon[sel], m.lat[sel]))) else emptyList()
         st.getSourceAs<GeoJsonSource>("sel")?.setGeoJson(FeatureCollection.fromFeatures(selF))
-        val jf = vm.journeyPaths.map { g ->
+        // když je rozbalený konkrétní spoj, je výrazný jen on; ostatní úseky cesty jsou světlejší
+        val focus = vm.expanded.keys
+        val jf = vm.journeyPaths.mapIndexed { li, g ->
             val f = Feature.fromGeometry(LineString.fromLngLats(g.lat.indices.map { Point.fromLngLat(g.lon[it], g.lat[it]) }))
-            f.addNumberProperty("walk", if (g.walk) 1 else 0); f
+            f.addNumberProperty("walk", if (g.walk) 1 else 0)
+            f.addStringProperty("col", if (focus.isEmpty() || li in focus) "#C8321F" else "#EBA79C")
+            f
         }
         st.getSourceAs<GeoJsonSource>("journey")?.setGeoJson(FeatureCollection.fromFeatures(jf))
         val rf = vm.expandedLines.values.filter { it.lat.size >= 2 }.map { g ->
