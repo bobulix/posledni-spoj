@@ -56,6 +56,8 @@ jobs:
             adb exec-out screencap -p > out/1b-search.png
             adb shell input keyevent 111
             sleep 2
+            adb shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS || true
+            sleep 1
             # přiblížení tlačítkem + (3×)
             adb shell input tap 988 2079
             sleep 2
@@ -64,6 +66,7 @@ jobs:
             adb shell input tap 988 2079
             sleep 8
             adb exec-out screencap -p > out/2-zoom.png
+            adb shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS || true
             adb shell input tap 385 1957
             sleep 4
             adb exec-out screencap -p > out/3-tap.png
