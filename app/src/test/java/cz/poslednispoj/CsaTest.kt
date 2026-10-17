@@ -2,6 +2,7 @@ package cz.poslednispoj
 
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Assume.assumeTrue
 import org.junit.Test
 import java.net.HttpURLConnection
@@ -9,8 +10,11 @@ import java.net.URL
 import java.util.zip.GZIPInputStream
 
 /**
- * Porovná výpočet s ověřeným webovým prototypem na datech ze soboty 17. 10. 2026
- * (návrat do Prahy do 19:00, všechny druhy dopravy). Bez dat (jiný den) se test přeskočí.
+ * Kontrola výpočtu na aktuálních datech (první den v datech, návrat do Prahy do 19:00).
+ * Ověřuje pravidla, která musí platit pro jakákoli data:
+ *  - poslední odjezd = první položka profilu,
+ *  - dřívější spoje mají dřívější odjezd i dřívější příjezd do cíle,
+ *  - každá cesta navazuje, nikde nečeká záporně a do cíle dorazí nejpozději v 19:00.
  */
 class CsaTest {
     private fun fetch(url: String): ByteArray? {
@@ -19,11 +23,13 @@ class CsaTest {
     }
 
     @Test
-    fun matchesPrototype() {
+    fun profileIsConsistent() {
         val metaBytes = fetch(Config.DATA_URL + "meta.json")
-        val conn = fetch(Config.DATA_URL + "conn_20261017.bin")
-        assumeTrue("data pro 17. 10. už nejsou k dispozici", metaBytes != null && conn != null)
+        assumeTrue("data nejsou k dispozici", metaBytes != null)
         val o = JSONObject(String(metaBytes!!))
+        val dayKey = o.getJSONArray("days").getJSONArray(0).getString(0)
+        val conn = fetch(Config.DATA_URL + "conn_$dayKey.bin")
+        assumeTrue("spoje nejsou k dispozici", conn != null)
         val nodes = o.getJSONArray("nodes")
         val n = nodes.length()
         val target = BooleanArray(n) { nodes.getJSONArray(it).getInt(3) == 1 }
@@ -31,15 +37,40 @@ class CsaTest {
         val w = o.getJSONArray("walk")
         val walk = Csa.buildWalk(n, IntArray(w.length()) { w.getInt(it) })
         val day = Csa.parseDay(GZIPInputStream(conn!!.inputStream()).readBytes())
-        val p = Csa.profile(day, walk, n, target, 19 * 60, change, null)
-        var reach = 0; var tot = 0; var sumL = 0L
-        for (i in 0 until n) { if (p.latest[i] >= 0) { reach++; sumL += p.latest[i] }; tot += p.prof[i].size }
-        assertEquals(4983, reach)
-        assertEquals(60107, tot)
-        assertEquals(5013370L, sumL)
-        assertEquals(1106, p.latest[1848]) // Karlštejn, žel. st. – 18:26
-        assertEquals(46, p.prof[1848].size)
-        val legs = Csa.legsFrom(day, 1848, p.prof[1848][0])
-        assertEquals(1, legs.size)
+        val by = 19 * 60
+        val p = Csa.profile(day, walk, n, target, by, change, null)
+
+        val reach = p.latest.count { it >= 0 }
+        assertTrue("málo dosažitelných zastávek: $reach", reach > 2500)
+        var checked = 0
+        for (i in 0 until n) {
+            val prof = p.prof[i]
+            if (prof.isEmpty()) { assertEquals(-1, p.latest[i]); continue }
+            assertEquals(prof[0].dep, p.latest[i])
+            for (k in 1 until prof.size) {
+                assertTrue("odjezdy nejsou sestupně u $i", prof[k].dep < prof[k - 1].dep)
+                assertTrue("dřívější spoj nedorazí dřív u $i", prof[k].eta < prof[k - 1].eta)
+            }
+            if (i % 7 != 0) continue // cesty kontrolujeme u vzorku zastávek
+            for (e in prof) {
+                assertTrue(e.eta <= by)
+                val legs = Csa.legsFrom(day, i, e)
+                assertTrue(legs.isNotEmpty())
+                var at = i; var t = e.dep
+                for (l in legs) when (l) {
+                    is Leg.WalkLeg -> { assertEquals(at, l.from); at = l.to }
+                    is Leg.Ride -> {
+                        assertEquals(at, l.from)
+                        assertTrue("jízda odjíždí dřív, než tam jsem", l.dep >= t)
+                        assertTrue(l.arr >= l.dep)
+                        at = l.to; t = l.arr
+                    }
+                }
+                assertTrue("cesta nekončí v cíli", target[at])
+                assertTrue("příjezd po 19:00", t <= by)
+                checked++
+            }
+        }
+        assertTrue(checked > 1000)
     }
 }
