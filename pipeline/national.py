@@ -244,6 +244,8 @@ starts = np.searchsorted(Eg, np.arange(len(TRdf) + 1))  # E je seřazené podle 
 label_from = {}  # globální jízda -> označení převzaté z krajského vlaku
 day_trips = {}
 stats = []
+DBG_DAY = next((d for d in dates if datetime.datetime.strptime(d, '%Y%m%d').weekday() < 5), dates[0])
+dbg = []
 for day in dates:
     active = np.zeros(len(TRdf), bool)
     for si, s in enumerate(srcs):
@@ -270,6 +272,11 @@ for day in dates:
                 best = np.where(h & ~hit, ag[pos], best); hit |= h
             cnt = pd.Series(hit.astype(int)).groupby(g).agg(['sum', 'size'])
             dup = cnt.index.values[(cnt['sum'] >= 2) & (cnt['sum'] * 2 >= cnt['size'])]
+            if day == DBG_DAY:
+                bdf = pd.DataFrame({'g': g, 'b': best}); bdf = bdf[bdf.b >= 0]
+                bm = bdf.groupby('g').b.agg(lambda s: s.value_counts().index[0])
+                for gg, r in cnt.iterrows():
+                    dbg.append((int(gg), int(p), int(r['sum']), int(r['size']), int(bm.get(gg, -1))))
             # krajské vlaky předají označení
             if p >= 100 and p < 200 and len(dup):
                 bdf = pd.DataFrame({'g': g, 'b': best})
@@ -372,49 +379,105 @@ for si, s in enumerate(srcs):
 with gzip.open(os.path.join(OUT, 'shapes.bin'), 'wb', 9) as f: f.write(json.dumps(shlist).encode())
 log('tvarů tras', len(shlist))
 
-meta = {'format': 2,
+# ---------- zpráva o deduplikaci (jeden pracovní den) ----------
+def tdesc(t):
+    si = int(TRdf.src.values[t]); r = routes[ridx[(si, TRdf.route_id.values[t])]]
+    rows_ = Erow[starts[t]:starts[t + 1]]
+    a_ = A.name.values[rows_[0]] if len(rows_) else '?'; b_ = A.name.values[rows_[-1]] if len(rows_) else '?'
+    return f"{srcs[si]['key']}:{r[0]} {a_} {Edep[starts[t]]//3600:02d}:{Edep[starts[t]]//60%60:02d} → {b_}"
+D = pd.DataFrame(dbg, columns=['g', 'p', 'hit', 'size', 'best'])
+with open(os.path.join(OUT, 'dedupe.txt'), 'w') as f:
+    f.write(f'den {DBG_DAY}\n')
+    for p, gr in D.groupby('p'):
+        dup = gr[(gr.hit >= 2) & (gr.hit * 2 >= gr['size'])]
+        part = gr[(gr.hit >= 2) & (gr.hit * 2 < gr['size'])]
+        f.write(f'\n=== priorita {p}: kandidátů {len(gr)}, zahozeno {len(dup)}, částečná shoda (ponecháno) {len(part)}\n')
+        bs = dup.best.map(lambda b: srcs[int(TRdf.src.values[b])]['key'] if b >= 0 else '?').value_counts()
+        f.write('zahozeno kvůli zdroji: ' + ', '.join(f'{k} {v}' for k, v in bs.items()) + '\n')
+        for r in dup.sample(min(12, len(dup)), random_state=1).itertuples():
+            f.write(f'  ZAHOZ {r.hit}/{r.size}  {tdesc(r.g)}  ≈  {tdesc(r.best) if r.best >= 0 else "?"}\n')
+        for r in part.sample(min(12, len(part)), random_state=1).itertuples():
+            f.write(f'  ČÁST  {r.hit}/{r.size}  {tdesc(r.g)}  ≈  {tdesc(r.best) if r.best >= 0 else "?"}\n')
+        if p >= 200:
+            pr = part.g.map(lambda t: routes[ridx[(int(TRdf.src.values[t]), TRdf.route_id.values[t])]][0]).value_counts().head(40)
+            f.write('linky s částečnou shodou: ' + ', '.join(f'{k}×{v}' for k, v in pr.items()) + '\n')
+log('zpráva o deduplikaci hotova')
+
+# ---------- výstup (formát 3): jeden soubor jízdních řádů na celé období ----------
+# Jízdy se rozloží na "vzory" (posloupnost uzlů + možnost nástupu/výstupu) a "profily"
+# (vzor + jízdní doby od prvního odjezdu). Jízda = profil + čas odjezdu; pro každý den bitová maska jízd.
+Enode = pd.Series(A.root.values[Erow]).map(nidx).fillna(-1).astype(np.int64).values
+Earr = E.arr.values; Epk = E.pk.values; Edr = E.dr.values
+T_src = TRdf.src.values; T_rid = TRdf.route_id.values; T_head = TRdf['head'].values; T_shape = TRdf['shape'].values
+assert NN < 65535
+pat_id = {}; pats = []          # (nodes tuple, flags tuple)
+prof_id = {}; profs = []        # (pat, offsets tuple)
+strings = []; str_id = {}
+def sid_(x):
+    if x not in str_id: str_id[x] = len(strings); strings.append(x)
+    return str_id[x]
+trows = []
+for t in alltr:
+    a, b = starts[t], starts[t + 1]
+    nn = Enode[a:b]; ok = nn >= 0
+    nn = nn[ok]; ar = Earr[a:b][ok]; dp = Edep[a:b][ok]; pk = Epk[a:b][ok]; dr = Edr[a:b][ok]
+    # sloučení po sobě jdoucích zastavení ve stejném uzlu
+    keepi = np.ones(len(nn), bool); keepi[1:] = nn[1:] != nn[:-1]
+    if not keepi.all():
+        grp = np.cumsum(keepi) - 1
+        first = np.where(keepi)[0]; last = np.r_[first[1:] - 1, len(nn) - 1]
+        ar = ar[first]; dp = dp[last]; pk = np.maximum.reduceat(pk.astype(int), first).astype(bool)
+        dr = np.maximum.reduceat(dr.astype(int), first).astype(bool); nn = nn[first]
+    if len(nn) < 2: continue
+    dm = dp // 60; am = -((-ar) // 60); am = np.maximum(am, np.r_[dm[0], dm[:-1]]); dm = np.maximum(dm, am)
+    am[0] = dm[0]
+    st0 = int(dm[0])
+    fl = tuple((pk.astype(int) | (dr.astype(int) << 1)).tolist())
+    pkey = (tuple(nn.tolist()), fl)
+    pi = pat_id.get(pkey)
+    if pi is None: pi = pat_id[pkey] = len(pats); pats.append(pkey)
+    offs = tuple(np.stack([am - st0, dm - st0], 1).flatten().tolist())
+    qkey = (pi, offs)
+    qi = prof_id.get(qkey)
+    if qi is None: qi = prof_id[qkey] = len(profs); profs.append(qkey)
+    si = int(T_src[t])
+    lab = label_from.get(int(t))
+    labs = routes[ridx[(int(T_src[lab]), T_rid[lab])]][0] if lab is not None else ''
+    trows.append((int(t), qi, st0, ridx[(si, T_rid[t])], sid_(pretty(str(T_head[t]))), shidx.get((si, T_shape[t]), -1), sid_(labs) if labs else -1))
+TT = pd.DataFrame(trows, columns=['g', 'prof', 'start', 'route', 'head', 'shape', 'label']).sort_values(['route', 'prof', 'start']).reset_index(drop=True)
+pos_of = dict(zip(TT.g, TT.index))
+log('vzorů', len(pats), 'profilů', len(profs), 'jízd', len(TT))
+
+import struct, io
+buf = io.BytesIO(); w = buf.write
+w(b'PSJ3')
+w(struct.pack('<I', len(pats)))
+w(np.array([len(p[0]) for p in pats], np.uint16).tobytes())
+w(np.array([n for p in pats for n in p[0]], np.uint16).tobytes())
+w(np.array([x for p in pats for x in p[1]], np.uint8).tobytes())
+w(struct.pack('<I', len(profs)))
+w(np.array([q[0] for q in profs], np.uint32).tobytes())
+w(np.array([x for q in profs for x in q[1]], np.uint16).tobytes())
+w(struct.pack('<I', len(TT)))
+for col, dt_ in (('prof', np.uint32), ('start', np.uint16), ('route', np.uint32), ('head', np.uint32), ('shape', np.int32), ('label', np.int32)):
+    w(TT[col].values.astype(dt_).tobytes())
+sb = json.dumps(strings, ensure_ascii=False).encode()
+w(struct.pack('<I', len(sb))); w(sb)
+w(struct.pack('<I', len(dates)))
+for day in dates:
+    bits = np.zeros(len(TT), bool)
+    bits[[pos_of[int(t)] for t in day_trips[day] if int(t) in pos_of]] = True
+    w(np.packbits(bits, bitorder='little').tobytes())
+raw = buf.getvalue()
+with gzip.open(os.path.join(OUT, 'timetable.bin'), 'wb', 9) as f: f.write(raw)
+log('timetable.bin', len(raw) // 1024, 'KB nekomprimovaně,', os.path.getsize(os.path.join(OUT, 'timetable.bin')) // 1024, 'KB gzip')
+
+meta = {'format': 3,
         'nodes': [[info[r][0], round(info[r][1], 5), round(info[r][2], 5), int(info[r][3]), int(modes[i])] for i, r in enumerate(used_roots)],
         'routes': routes, 'sources': [s['desc'] for s in srcs],
-        'walk': np.array(walk, np.int32).flatten().tolist(), 'days': [],
-        'generated': datetime.datetime.utcnow().strftime('%Y%m%dT%H%M%SZ'), 'stats': stats}
-
-Eroot = A.root.values[Erow]
-Enode = np.array([nidx.get(r, -1) for r in Eroot]) if False else pd.Series(Eroot).map(nidx).fillna(-1).astype(np.int64).values
-T_src = TRdf.src.values; T_rid = TRdf.route_id.values; T_head = TRdf['head'].values; T_shape = TRdf['shape'].values
-Earr = E.arr.values; Epk = E.pk.values; Edr = E.dr.values
-for day in dates:
-    tl = day_trips[day]
-    idx = np.concatenate([np.arange(starts[t], starts[t + 1]) for t in tl])
-    loc = np.repeat(np.arange(len(tl)), starts[tl + 1] - starts[tl])
-    a = idx[:-1]; b = idx[1:]; ok = loc[:-1] == loc[1:]
-    a = a[ok]; b = b[ok]; ti = loc[:-1][ok]
-    u = Enode[a]; v = Enode[b]
-    keepc = (u != v) & (u >= 0) & (v >= 0)
-    a, b, ti, u, v = a[keepc], b[keepc], ti[keepc], u[keepc], v[keepc]
-    dep = Edep[a] // 60; arr = -((-Earr[b]) // 60)
-    arr = np.maximum(arr, dep)
-    fl = Epk[a].astype(np.uint8) + 2 * Edr[b].astype(np.uint8)
-    o = np.lexsort((-arr, -dep))
-    n = len(o)
-    with gzip.open(os.path.join(OUT, f'conn_{day}.bin'), 'wb', 9) as f:
-        f.write(np.uint32(n).tobytes())
-        f.write(u[o].astype(np.uint32).tobytes()); f.write(v[o].astype(np.uint32).tobytes())
-        f.write(dep[o].astype(np.uint16).tobytes()); f.write(arr[o].astype(np.uint16).tobytes())
-        f.write(ti[o].astype(np.uint32).tobytes()); f.write(fl[o].astype(np.uint8).tobytes())
-    tinfo = []
-    for t in tl:
-        si = int(T_src[t]); rid = T_rid[t]
-        ri = ridx[(si, rid)]
-        lab = label_from.get(int(t))
-        h = pretty(str(T_head[t]))
-        e = [ri, h, shidx.get((si, T_shape[t]), -1)]
-        if lab is not None:
-            e.append(routes[ridx[(int(T_src[lab]), T_rid[lab])]][0])
-        tinfo.append(e)
-    with open(os.path.join(OUT, f'trips_{day}.json'), 'w') as f: json.dump(tinfo, f, ensure_ascii=False, separators=(',', ':'))
-    dt = datetime.datetime.strptime(day, '%Y%m%d')
-    meta['days'].append([day, WD[dt.weekday()]])
-    log(day, 'jízd', len(tl), 'spojů', n, os.path.getsize(os.path.join(OUT, f'conn_{day}.bin')) // 1024, 'KB',
-        'trips', os.path.getsize(os.path.join(OUT, f'trips_{day}.json')) // 1024, 'KB')
+        'walk': np.array(walk, np.int32).flatten().tolist(),
+        'days': [[d, WD[datetime.datetime.strptime(d, '%Y%m%d').weekday()]] for d in dates],
+        'generated': datetime.datetime.now(datetime.timezone.utc).strftime('%Y%m%dT%H%M%SZ'), 'stats': stats}
 with open(os.path.join(OUT, 'meta.json'), 'w') as f: json.dump(meta, f, ensure_ascii=False, separators=(',', ':'))
-log('meta KB', os.path.getsize(os.path.join(OUT, 'meta.json')) // 1024, 'hotovo')
+with gzip.open(os.path.join(OUT, 'meta.json.gz'), 'wb', 9) as f: f.write(json.dumps(meta, ensure_ascii=False, separators=(',', ':')).encode())
+log('meta KB', os.path.getsize(os.path.join(OUT, 'meta.json')) // 1024, 'gzip', os.path.getsize(os.path.join(OUT, 'meta.json.gz')) // 1024, 'hotovo')
