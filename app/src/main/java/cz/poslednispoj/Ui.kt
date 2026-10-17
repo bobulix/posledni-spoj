@@ -68,6 +68,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.ime
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import kotlinx.coroutines.launch
@@ -265,7 +267,7 @@ private fun DestinationField(vm: AppViewModel, modifier: Modifier, showLabel: Bo
             val suggestions = remember(q) { if (open) vm.suggest(q) else emptyList() }
             val density = androidx.compose.ui.platform.LocalDensity.current
             val view = androidx.compose.ui.platform.LocalView.current
-            val imeBottom = androidx.compose.foundation.layout.WindowInsets.ime.getBottom(density)
+            val imeBottom = WindowInsets.ime.getBottom(density)
             val maxMenu = with(density) {
                 val free = view.rootView.height - imeBottom - fieldBottom - 16.dp.roundToPx()
                 free.coerceAtLeast(56.dp.roundToPx()).toDp()
