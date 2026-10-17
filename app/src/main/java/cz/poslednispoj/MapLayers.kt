@@ -75,23 +75,28 @@ class MapLayers(private val vm: AppViewModel) {
         style.addImage("dot", dot, true)
 
         // velké zdroje (zastávky, štítky) jen do úrovně 12 – výš se jen zvětšují; šetří paměť
-        val light = org.maplibre.android.style.sources.GeoJsonOptions().withMaxZoom(12).withBuffer(64)
-        for (id in listOf("stops", "labels")) style.addSource(GeoJsonSource(id, FeatureCollection.fromFeatures(emptyList()), light))
+        // Každá úroveň štítků má vlastní zdroj, který se dlaždicuje jen od své úrovně (minZoom),
+        // takže se tisíce štítků nekopírují do dlaždic všech úrovní (jinak dojde paměť).
+        fun opts(minZ: Int, maxZ: Int) = org.maplibre.android.style.sources.GeoJsonOptions().withMinZoom(minZ).withMaxZoom(maxZ).withBuffer(64)
+        style.addSource(GeoJsonSource("stops-on", FeatureCollection.fromFeatures(emptyList()), opts(0, 10)))
+        style.addSource(GeoJsonSource("stops-off", FeatureCollection.fromFeatures(emptyList()), opts(9, 10)))
+        for (z in MIN_Z..MAX_Z) style.addSource(GeoJsonSource("labels-$z", FeatureCollection.fromFeatures(emptyList()),
+            opts(if (z == MIN_Z) 0 else z, maxOf(z, 10))))
         for (id in listOf("routes", "routepts", "journey", "sel")) {
             style.addSource(GeoJsonSource(id, FeatureCollection.fromFeatures(emptyList())))
         }
         // nedosažitelné zastávky šedě, až při přiblížení
-        style.addLayer(CircleLayer("stops-off", "stops").withProperties(
+        style.addLayer(CircleLayer("stops-off", "stops-off").withProperties(
             PropertyFactory.circleColor(GREY),
             PropertyFactory.circleRadius(1.6f),
-        ).withFilter(Expression.lt(get("b"), literal(0))).apply { minZoom = 9.6f })
-        style.addLayer(CircleLayer("stops-on", "stops").withProperties(
+        ).apply { minZoom = 9.6f })
+        style.addLayer(CircleLayer("stops-on", "stops-on").withProperties(
             PropertyFactory.circleColor(bgOf("b")),
             PropertyFactory.circleRadius(
                 Expression.interpolate(Expression.linear(), Expression.zoom(),
                     Expression.stop(8, 2.4f), Expression.stop(10.5, 3.5f), Expression.stop(12, 4.5f))
             ),
-        ).withFilter(Expression.gte(get("b"), literal(0))))
+        ))
         // rozbalené trasy spojů (čárkovaně) a jejich zastávky
         style.addLayer(LineLayer("routes", "routes").withProperties(
             PropertyFactory.lineColor("#1C2620"), PropertyFactory.lineWidth(3f),
@@ -113,7 +118,7 @@ class MapLayers(private val vm: AppViewModel) {
         ).withFilter(Expression.eq(get("walk"), literal(1))))
         // štítky a tečky dřívějších spojů: jedna vrstva na každou úroveň, od které se zastávka ukazuje
         for (z in MIN_Z..MAX_Z) {
-            style.addLayer(SymbolLayer("lab-$z", "labels").withProperties(
+            style.addLayer(SymbolLayer("lab-$z", "labels-$z").withProperties(
                 PropertyFactory.textField(get("t")),
                 PropertyFactory.textFont(arrayOf(FONT)),
                 PropertyFactory.textSize(TEXT_SIZE),
@@ -126,15 +131,14 @@ class MapLayers(private val vm: AppViewModel) {
                 PropertyFactory.iconTextFit(Property.ICON_TEXT_FIT_BOTH),
                 PropertyFactory.iconTextFitPadding(arrayOf(2f, 4f, 2f, 4f)),
                 PropertyFactory.iconAllowOverlap(true), PropertyFactory.iconIgnorePlacement(true),
-            ).withFilter(Expression.eq(get("z0"), literal(z)))
-                .apply { minZoom = if (z == MIN_Z) 0f else z.toFloat() })
+            ).apply { minZoom = if (z == MIN_Z) 0f else z.toFloat() })
             // tečky dřívějších spojů: až tři ve sloupci vpravo od štítku (pásma v d0, d1, d2)
             val r = 17.0 / 6.0 // jako výška obdélníku pod časem
             val size = (2 * r / DOT_IMG)
             for (k in 0..2) {
                 fun off(w: Int) = arrayOf(((1.0 + w * 0.572 * TEXT_SIZE + 0.29 * TEXT_SIZE + 8 + 2 + r) / size).toFloat(),
                     ((-21.0 + r + k * (2 * r + 1)) / size).toFloat())
-                style.addLayer(SymbolLayer("pdot-$z-$k", "labels").withProperties(
+                style.addLayer(SymbolLayer("pdot-$z-$k", "labels-$z").withProperties(
                     PropertyFactory.iconImage("dot"),
                     PropertyFactory.iconColor(bgOf("d$k")),
                     PropertyFactory.iconSize(size.toFloat()),
@@ -142,7 +146,7 @@ class MapLayers(private val vm: AppViewModel) {
                         Expression.eq(get("w"), literal(4)), literal(off(4)), literal(off(3)))),
                     PropertyFactory.iconAnchor(Property.ICON_ANCHOR_CENTER),
                     PropertyFactory.iconAllowOverlap(true), PropertyFactory.iconIgnorePlacement(true),
-                ).withFilter(Expression.all(Expression.eq(get("z0"), literal(z)), Expression.has("d$k")))
+                ).withFilter(Expression.has("d$k"))
                     .apply { minZoom = maxOf(z.toFloat(), DOTS_MIN_ZOOM) })
             }
         }
@@ -199,12 +203,14 @@ class MapLayers(private val vm: AppViewModel) {
     private fun buildStopsAndLabels(st: Style, m: Meta, p: Profile?) {
         val tgt = vm.target
         val stops = ArrayList<Feature>(m.size)
-        val labels = ArrayList<Feature>()
-        if (p == null || tgt.size != m.size) {
-            (st.getSourceAs<GeoJsonSource>("stops"))?.setGeoJson(FeatureCollection.fromFeatures(stops))
-            (st.getSourceAs<GeoJsonSource>("labels"))?.setGeoJson(FeatureCollection.fromFeatures(labels))
-            return
+        val stopsOff = ArrayList<Feature>()
+        val labels = (MIN_Z..MAX_Z).map { ArrayList<Feature>() }
+        fun publish() {
+            st.getSourceAs<GeoJsonSource>("stops-on")?.setGeoJson(FeatureCollection.fromFeatures(stops))
+            st.getSourceAs<GeoJsonSource>("stops-off")?.setGeoJson(FeatureCollection.fromFeatures(stopsOff))
+            for (z in MIN_Z..MAX_Z) st.getSourceAs<GeoJsonSource>("labels-$z")?.setGeoJson(FeatureCollection.fromFeatures(labels[z - MIN_Z]))
         }
+        if (p == null || tgt.size != m.size) { publish(); return }
         val imp = vm.importance
         val mx = DoubleArray(m.size) { mercX(m.lon[it]) }
         val my = DoubleArray(m.size) { mercY(m.lat[it]) }
@@ -254,21 +260,20 @@ class MapLayers(private val vm: AppViewModel) {
             val f = Feature.fromGeometry(pt)
             f.addNumberProperty("id", i)
             val l = p.latest[i]
-            if (l < 0) { f.addNumberProperty("b", -1); stops.add(f); continue }
+            if (l < 0) { stopsOff.add(f); continue }
             val b = binIdx(l)
             f.addNumberProperty("b", b)
             stops.add(f)
             val lf = Feature.fromGeometry(pt)
-            lf.addNumberProperty("id", i); lf.addNumberProperty("z0", z0[i].coerceAtMost(MAX_Z))
+            lf.addNumberProperty("id", i)
             lf.addStringProperty("t", texts[i]); lf.addNumberProperty("b", b)
             lf.addNumberProperty("w", texts[i]!!.length - 1) // počet číslic: 3 nebo 4
             // tečky dřívějších spojů (pásma)
             val nPrev = min(3, p.prof[i].size - 1)
             for (k in 0 until nPrev) lf.addNumberProperty("d$k", binIdx(p.prof[i][k + 1].dep))
-            labels.add(lf)
+            labels[z0[i].coerceAtMost(MAX_Z) - MIN_Z].add(lf)
         }
-        st.getSourceAs<GeoJsonSource>("stops")?.setGeoJson(FeatureCollection.fromFeatures(stops))
-        st.getSourceAs<GeoJsonSource>("labels")?.setGeoJson(FeatureCollection.fromFeatures(labels))
+        publish()
     }
 
     private fun buildSelection(st: Style, m: Meta) {
