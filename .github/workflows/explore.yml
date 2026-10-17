@@ -1,0 +1,35 @@
+# Průzkum zdrojů jízdních řádů pro celou ČR (spouští se ručně nebo při změně skriptu).
+name: Průzkum zdrojů dat
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [main]
+    paths: ["pipeline/explore.py", ".github/workflows/explore.yml"]
+
+permissions:
+  contents: write
+
+jobs:
+  explore:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Atlas feedů
+        run: git clone --depth 1 https://github.com/transitland/transitland-atlas atlas
+      - name: Průzkum
+        run: python pipeline/explore.py out 2>&1 | tee out-log.txt
+      - name: Uložení do větve explore
+        if: always()
+        run: |
+          mkdir -p out && cp out-log.txt out/ || true
+          cd out
+          git init -q -b explore
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add . && git commit -q -m "Průzkum zdrojů"
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" explore
