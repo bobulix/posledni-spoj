@@ -503,12 +503,18 @@ private fun DetailSheet(vm: AppViewModel, modifier: Modifier) {
             val endNode = when (val l = vm.journey.lastOrNull()) { is Leg.Ride -> l.to; is Leg.WalkLeg -> l.to; null -> i }
             LegRow(time = lastArr, end = true) { Text("v cíli · ${m.names[endNode]}", fontSize = 14.sp, color = Ink) }
 
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 8.dp)) {
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.padding(top = 8.dp)) {
                 Button(onClick = { vm.returnHere() }, colors = ButtonDefaults.buttonColors(containerColor = Ink)) { Text("Vracet se sem") }
+                OutlinedButton(onClick = {
+                    // ověření přesně tohoto spojení v IDOS (výluky a mimořádnosti)
+                    val to = m.names[endNode]
+                    openIdos(ctx, m.names[i], to, vm.dayKey, dep)
+                }) { Text("Ověřit v IDOS") }
                 OutlinedButton(onClick = { openInMapy(ctx, m.lat[i], m.lon[i], m.names[i]) }) { Text("Otevřít v Mapách") }
             }
             Text(
-                "Podle jízdního řádu PID. Počítá se 2 min na přestup (4 min na nádraží) a pěší přechody do 450 m.",
+                "Zdroj: jízdní řády PID (ROPID), stav k ${vm.dataDate()}. Výluky nemusí být úplné, poslední spoj si ověř v IDOS. " +
+                    "Počítá se 2 min na přestup (4 min na nádraží) a pěší přechody do 450 m.",
                 fontSize = 12.sp, color = Ink2, modifier = Modifier.padding(top = 10.dp)
             )
         }
@@ -605,4 +611,13 @@ private fun openInMapy(ctx: android.content.Context, lat: Double, lon: Double, n
     } catch (e: android.content.ActivityNotFoundException) {
         try { ctx.startActivity(intent) } catch (_: Exception) {}
     }
+}
+
+/** Otevře IDOS s vyplněným spojením (odkud, kam, den a čas odjezdu). */
+private fun openIdos(ctx: android.content.Context, from: String, to: String, dayKey: String, depMin: Int) {
+    val date = if (dayKey.length == 8) "${dayKey.substring(6).toInt()}.${dayKey.substring(4, 6).toInt()}.${dayKey.substring(0, 4)}" else ""
+    val time = if (depMin >= 0) "${(depMin / 60) % 24}:${(depMin % 60).toString().padStart(2, '0')}" else ""
+    val enc = { s: String -> java.net.URLEncoder.encode(s, "UTF-8") }
+    val url = "https://idos.cz/vlakyautobusymhdvse/spojeni/vysledky/?f=${enc(from)}&fc=1&t=${enc(to)}&tc=1&date=${enc(date)}&time=${enc(time)}"
+    try { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) } catch (_: Exception) {}
 }

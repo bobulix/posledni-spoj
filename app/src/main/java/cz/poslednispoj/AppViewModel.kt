@@ -310,6 +310,11 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         }
         renderTick++
     }
+    /** Datum přípravy dat, např. „17. 10. 2026“. */
+    fun dataDate(): String {
+        val g = meta?.generated ?: return "?"
+        return if (g.length >= 8 && g[0].isDigit()) "${g.substring(6, 8).toInt()}. ${g.substring(4, 6).toInt()}. ${g.substring(0, 4)}" else g
+    }
     fun returnHere() { val m = meta ?: return; if (selected >= 0) setDestination(m.names[selected]) }
 
     // ---- pomocné ----
