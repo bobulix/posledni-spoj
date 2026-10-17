@@ -213,10 +213,10 @@ def prio(si, typ):
 
 TR = []  # globální seznam jízd
 for si, s in enumerate(srcs):
-    t = s['trips']; rmap = {r['route_id']: r for r in s['routes'].to_dict('records')}
+    t = s['trips']; rsn = dict(zip(s['routes'].route_id, s['routes'].route_short_name))
     for r in t.itertuples():
-        TR.append((si, r.Index, r.route_id, r.trip_headsign, r.shape_id, r.type, r.service_id))
-TRdf = pd.DataFrame(TR, columns=['src', 'lt', 'route_id', 'head', 'shape', 'type', 'svc'])
+        TR.append((si, r.Index, r.route_id, r.trip_headsign, r.shape_id, r.type, r.service_id, f"{si}:{rsn.get(r.route_id, '')}"))
+TRdf = pd.DataFrame(TR, columns=['src', 'lt', 'route_id', 'head', 'shape', 'type', 'svc', 'line'])
 TRdf['prio'] = [prio(a, b) for a, b in zip(TRdf.src, TRdf.type)]
 toff = {}; off = 0
 for si, s in enumerate(srcs): toff[si] = off; off += len(s['trips'])
@@ -242,6 +242,8 @@ def ev_keys(rows, dep, cls, dx=0, dy=0):
     return (((cxx * 40000 + cyy) * 3000 + dep // 60) * 2 + cls)
 
 Eg = E.g.values; Erow = E.row.values; Edep = E.dep.values
+Estop = (E.pk.values | E.dr.values)  # skutečné zastavení (ne jen průjezd)
+LINE = TRdf.line.values
 assert (np.diff(Eg) >= 0).all()
 starts = np.searchsorted(Eg, np.arange(len(TRdf) + 1))  # E je seřazené podle g
 label_from = {}  # globální jízda -> označení převzaté z krajského vlaku
@@ -261,6 +263,8 @@ for day in dates:
         cand = np.where(active & (TRdf.prio.values == p))[0]
         lens = starts[cand + 1] - starts[cand]
         idx = np.concatenate([np.arange(a, b) for a, b in zip(starts[cand], starts[cand + 1])]) if len(cand) else np.zeros(0, np.int64)
+        idx = idx[Estop[idx]]
+        lens = np.bincount(Eg[idx] - 0, minlength=len(TRdf))[cand] if len(idx) else lens
         g = Eg[idx]; rows = Erow[idx]; dep = Edep[idx]; cls = TRAINCLS[g]
         k = ev_keys(rows, dep, cls)
         dup = np.zeros(0, np.int64)
@@ -276,8 +280,17 @@ for day in dates:
             pc = H.groupby(['g', 'b']).size().rename('n').reset_index().sort_values('n', ascending=False).drop_duplicates('g')
             size = pd.Series(lens, index=cand)
             pc['size'] = size.loc[pc.g.values].values
-            d = pc[(pc.n >= 2) & (pc.n * 2 >= pc['size'])]
+            same = (pc.n >= 2) & (pc.n * 2 >= pc['size'])
+            if 100 <= p < 200:  # krajský vlak: 3 shodná zastavení s jedním vlakem stačí
+                same |= pc.n >= 3
+            d = pc[same]
             dup = d.g.values
+            if p >= 200 and len(dup):
+                # linka, jejíž aspoň 80 % jízd je v krajských datech, se bere z krajských dat celá
+                lc = pd.Series(LINE[cand]); ld = pd.Series(np.isin(cand, dup))
+                share = ld.groupby(lc).mean()
+                whole = set(share.index[share >= 0.8])
+                dup = np.union1d(dup, cand[lc.isin(whole).values])
             if 100 <= p < 200:
                 for gg, bb in zip(d.g.values, d.b.values):
                     if TRAINCLS[bb]: label_from[int(bb)] = int(gg)
@@ -479,3 +492,31 @@ meta = {'format': 3,
 with open(os.path.join(OUT, 'meta.json'), 'w') as f: json.dump(meta, f, ensure_ascii=False, separators=(',', ':'))
 with gzip.open(os.path.join(OUT, 'meta.json.gz'), 'wb', 9) as f: f.write(json.dumps(meta, ensure_ascii=False, separators=(',', ':')).encode())
 log('meta KB', os.path.getsize(os.path.join(OUT, 'meta.json')) // 1024, 'gzip', os.path.getsize(os.path.join(OUT, 'meta.json.gz')) // 1024, 'hotovo')
+
+# ---------- podkladová síť pro webový prototyp (base.json) ----------
+# třídy: 0 vlak, 1 bus/trolejbus/ostatní, 2 tramvaj, 3 metro; přímé úseky mezi uzly v jednotkách 25 m
+UNIT = 25
+cls_of = {2: 0, 0: 2, 1: 3}
+pat_cls = {}
+ttype = TRdf.type.values
+for g_, q in zip(TT.g.values, TT.prof.values):
+    pi_ = profs[q][0]; c = cls_of.get(int(ttype[g_]), 1)
+    pat_cls[pi_] = min(pat_cls.get(pi_, 9), c)
+segs = {0: set(), 1: set(), 2: set(), 3: set()}
+for pi_, c in pat_cls.items():
+    nn = pats[pi_][0]
+    for a_, b_ in zip(nn[:-1], nn[1:]):
+        segs[c].add((min(a_, b_), max(a_, b_)))
+for c in (1, 2, 3):  # úsek vlaku se nekreslí znovu jako bus
+    segs[c] -= segs[0]
+lines = {}
+for c, ss in segs.items():
+    L = []
+    for a_, b_ in ss:
+        xa = int(round(NX[a_] / UNIT)); ya = int(round(NY[a_] / UNIT)); xb = int(round(NX[b_] / UNIT)); yb = int(round(NY[b_] / UNIT))
+        if abs(xa - xb) + abs(ya - yb) > 4000: continue  # dálkové skoky bez zastávek nekreslíme
+        L.append([xa, ya, xb - xa, yb - ya])
+    lines[str(c)] = L
+with open(os.path.join(OUT, 'base.json'), 'w') as f:
+    json.dump({'unit': UNIT, 'kx': KX, 'ky': KY, 'lines': lines}, f, separators=(',', ':'))
+log('base.json', {k: len(v) for k, v in lines.items()}, os.path.getsize(os.path.join(OUT, 'base.json')) // 1024, 'KB')
