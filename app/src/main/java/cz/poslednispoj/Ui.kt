@@ -68,6 +68,14 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.PopupProperties
 
@@ -208,34 +216,48 @@ private fun FieldBox(text: String, modifier: Modifier = Modifier, onClick: () ->
 
 @Composable
 private fun DestinationField(vm: AppViewModel, modifier: Modifier, showLabel: Boolean) {
-    var text by remember(vm.dest) { mutableStateOf(vm.dest) }
+    var value by remember(vm.dest) { mutableStateOf(TextFieldValue(vm.dest)) }
     var open by remember { mutableStateOf(false) }
+    var focused by remember { mutableStateOf(false) }
     val focus = LocalFocusManager.current
+    val scope = rememberCoroutineScope()
     Column(modifier) {
         if (showLabel) FieldLabel("Chci se vrátit do")
         Box {
-            OutlinedTextField(
-                value = text,
-                onValueChange = { text = it; open = it.length >= 2 },
+            // stejný vzhled jako políčka času a dne
+            BasicTextField(
+                value = value,
+                onValueChange = { value = it; open = it.text.trim().isNotEmpty() },
                 singleLine = true,
-                textStyle = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
-                modifier = Modifier.fillMaxWidth(),
+                textStyle = TextStyle(fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = Ink),
+                cursorBrush = SolidColor(Ink),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(onDone = {
                     open = false; focus.clearFocus()
-                    val exact = vm.sortedNames.firstOrNull { it.equals(text.trim(), true) }
-                    when {
-                        text.trim().equals("praha", true) -> vm.setDestination(PRAHA)
-                        exact != null -> vm.setDestination(exact)
-                    }
+                    vm.suggest(value.text).firstOrNull()?.let { vm.setDestination(it) }
                 }),
+                modifier = Modifier.fillMaxWidth()
+                    .onFocusChanged { st ->
+                        if (st.isFocused && !focused) {
+                            // klepnutí na zadaný název ho celý označí, takže lze rovnou psát nový
+                            scope.launch {
+                                kotlinx.coroutines.delay(60)
+                                value = value.copy(selection = TextRange(0, value.text.length))
+                            }
+                        }
+                        if (!st.isFocused) { open = false; value = TextFieldValue(vm.dest) }
+                        focused = st.isFocused
+                    },
+                decorationBox = { inner ->
+                    Box(
+                        Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp)).background(Paper)
+                            .border(1.dp, if (focused) Ink else Hair, RoundedCornerShape(8.dp))
+                            .padding(horizontal = 10.dp, vertical = 12.dp)
+                    ) { inner() }
+                },
             )
-            val q = text.trim()
-            val suggestions = remember(q) {
-                if (q.length < 2) emptyList()
-                else (listOf(PRAHA).filter { it.contains(q, true) } +
-                    vm.sortedNames.asSequence().filter { it.contains(q, true) }.take(8).toList()).take(8)
-            }
+            val q = value.text
+            val suggestions = remember(q) { if (open) vm.suggest(q) else emptyList() }
             DropdownMenu(
                 expanded = open && suggestions.isNotEmpty(),
                 onDismissRequest = { open = false },
@@ -243,7 +265,7 @@ private fun DestinationField(vm: AppViewModel, modifier: Modifier, showLabel: Bo
             ) {
                 suggestions.forEach { s ->
                     DropdownMenuItem(text = { Text(s) }, onClick = {
-                        text = s; open = false; focus.clearFocus(); vm.setDestination(s)
+                        open = false; vm.setDestination(s); value = TextFieldValue(s); focus.clearFocus()
                     })
                 }
             }
@@ -466,10 +488,7 @@ private fun DetailSheet(vm: AppViewModel, modifier: Modifier) {
 
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 8.dp)) {
                 Button(onClick = { vm.returnHere() }, colors = ButtonDefaults.buttonColors(containerColor = Ink)) { Text("Vracet se sem") }
-                OutlinedButton(onClick = {
-                    val url = "https://www.openstreetmap.org/?mlat=${m.lat[i]}&mlon=${m.lon[i]}#map=15/${m.lat[i]}/${m.lon[i]}"
-                    ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
-                }) { Text("Otevřít v prohlížeči") }
+                OutlinedButton(onClick = { openInMapy(ctx, m.lat[i], m.lon[i], m.names[i]) }) { Text("Otevřít v Mapách") }
             }
             Text(
                 "Podle jízdního řádu PID. Počítá se 2 min na přestup (4 min na nádraží) a pěší přechody do 450 m.",
@@ -557,5 +576,16 @@ private fun MapyAttribution(modifier: Modifier) {
             modifier = Modifier.clip(RoundedCornerShape(4.dp)).background(Color.White.copy(alpha = 0.8f))
                 .clickable { open("https://api.mapy.com/copyright") }.padding(horizontal = 4.dp, vertical = 1.dp)
         )
+    }
+}
+
+/** Otevře místo v aplikaci Mapy.com (Mapy.cz); když není nainstalovaná, otevře web Mapy.com. */
+private fun openInMapy(ctx: android.content.Context, lat: Double, lon: Double, name: String) {
+    val url = "https://mapy.com/fnc/v1/showmap?mapset=outdoor&center=$lon,$lat&zoom=16&marker=true"
+    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+    try {
+        ctx.startActivity(Intent(intent).setPackage("cz.seznam.mapy"))
+    } catch (e: android.content.ActivityNotFoundException) {
+        try { ctx.startActivity(intent) } catch (_: Exception) {}
     }
 }

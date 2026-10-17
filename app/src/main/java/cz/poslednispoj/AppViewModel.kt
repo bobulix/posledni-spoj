@@ -132,6 +132,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
                 nameIdx = idx
                 val coll = java.text.Collator.getInstance(Locale("cs", "CZ"))
                 sortedNames = idx.keys.sortedWith(coll)
+                searchIndex = sortedNames.map { it to tokens(it) }
             }
             meta = m
             val today = todayKey()
@@ -316,6 +317,44 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             try { return block() } catch (e: Exception) { kotlinx.coroutines.delay(w) }
         }
         return block()
+    }
+
+    // ---- našeptávač cíle ----
+    private var searchIndex: List<Pair<String, List<String>>> = emptyList()
+
+    /** Malá písmena bez diakritiky. */
+    private fun norm(s: String): String =
+        java.text.Normalizer.normalize(s, java.text.Normalizer.Form.NFD).replace(Regex("\\p{M}+"), "").lowercase(Locale.ROOT)
+
+    private fun tokens(s: String): List<String> = norm(s).split(Regex("[^a-z0-9]+")).filter { it.isNotEmpty() }
+
+    /**
+     * Návrhy cílů: každé napsané slovo musí být začátkem některého slova v názvu, ve stejném pořadí
+     * („kr vr“ → Kropáčova Vrutice, „pr ho“ → Praha-Hostivař), bez ohledu na diakritiku.
+     * Když nic takového není, hledá se výskyt textu kdekoli v názvu.
+     */
+    fun suggest(query: String, limit: Int = 8): List<String> {
+        val q = tokens(query)
+        if (q.isEmpty()) return emptyList()
+        // skóre = součet pořadí slov, na která se trefila napsaná slova (nižší = lepší), -1 = neshoda
+        fun score(t: List<String>): Int {
+            var j = 0; var sc = 0
+            for ((k, w) in t.withIndex()) { if (j < q.size && w.startsWith(q[j])) { sc += k; j++ } }
+            return if (j == q.size) sc else -1
+        }
+        val res = ArrayList<String>()
+        if (score(tokens(PRAHA)) >= 0) res.add(PRAHA)
+        val hits = searchIndex.map { it.first to score(it.second) }.filter { it.second >= 0 }
+            .sortedWith(compareBy<Pair<String, Int>>({ it.second }, { it.first.length }))
+        hits.take(limit).forEach { res.add(it.first) }
+        if (res.size < limit) {
+            val nq = norm(query.trim())
+            for ((name, _) in searchIndex) {
+                if (res.size >= limit) break
+                if (name !in res && norm(name).contains(nq)) res.add(name)
+            }
+        }
+        return res.take(limit)
     }
 
     private fun todayKey(): String = SimpleDateFormat("yyyyMMdd", Locale.US).format(Date())
