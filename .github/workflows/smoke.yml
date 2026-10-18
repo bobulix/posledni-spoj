@@ -79,15 +79,20 @@ jobs:
             sleep 2
             adb exec-out screencap -p > out/5-detail.png
             # cesta s přestupy: zastávka vybraná parametrem spuštění, rozbalený 1. a pak 5. úsek
-            for L in 0 4; do
-              adb shell am force-stop cz.poslednispoj
-              adb shell "am start -n cz.poslednispoj/.MainActivity --es ps_select 'Žerotín, u kaple' --es ps_legs $L"
-              sleep 45
-              adb exec-out screencap -p > out/6-leg$L-detail.png
-              adb shell input tap 540 300
-              sleep 3
-              adb exec-out screencap -p > out/6-leg$L-map.png
-            done
+            adb shell am force-stop cz.poslednispoj
+            adb shell "am start -n cz.poslednispoj/.MainActivity --es ps_select 'Žerotín, u kaple' --es ps_legs 0" || true
+            sleep 45
+            adb exec-out screencap -p > out/6-leg0-detail.png
+            adb shell input tap 540 300
+            sleep 3
+            adb exec-out screencap -p > out/6-leg0-map.png
+            adb shell am force-stop cz.poslednispoj
+            adb shell "am start -n cz.poslednispoj/.MainActivity --es ps_select 'Žerotín, u kaple' --es ps_legs 4" || true
+            sleep 45
+            adb exec-out screencap -p > out/6-leg4-detail.png
+            adb shell input tap 540 300
+            sleep 3
+            adb exec-out screencap -p > out/6-leg4-map.png
             sleep 1
             adb logcat -d > out/logcat.txt
             adb logcat -d -b crash > out/crash.txt || true
