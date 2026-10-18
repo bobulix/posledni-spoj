@@ -80,7 +80,7 @@ jobs:
             adb exec-out screencap -p > out/5-detail.png
             # cesta s přestupy: zastávka vybraná parametrem spuštění, rozbalený 1. a pak 5. úsek
             adb shell am force-stop cz.poslednispoj
-            adb shell "am start -n cz.poslednispoj/.MainActivity --es ps_select 'Obora (Boskovice)' --es ps_legs 1 --es ps_zoom 8.3" || true
+            adb shell "am start -n cz.poslednispoj/.MainActivity --es ps_select 'Obora (Boskovice)' --es ps_legs 0 --es ps_zoom 8.3" || true
             sleep 45
             adb exec-out screencap -p > out/6-legA-detail.png
             adb shell input tap 540 900

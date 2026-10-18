@@ -289,7 +289,9 @@ class MapLayers(private val vm: AppViewModel) {
             f.addStringProperty("col", if (focus.isEmpty() || li in focus) "#C8321F" else "#EBA79C")
             f
         }
-        st.getSourceAs<GeoJsonSource>("journey")?.setGeoJson(FeatureCollection.fromFeatures(jf))
+        // vybrané úseky se kreslí navrch, aby je nepřekryly ostatní (světlejší) části cesty
+        val jfs = jf.withIndex().sortedBy { (li, _) -> if (focus.isEmpty() || li in focus) 1 else 0 }.map { it.value }
+        st.getSourceAs<GeoJsonSource>("journey")?.setGeoJson(FeatureCollection.fromFeatures(jfs))
         val rf = vm.expandedLines.entries.filter { it.value.lat.size >= 2 }.map { (li, g) ->
             Feature.fromGeometry(LineString.fromLngLats(g.lat.indices.map { Point.fromLngLat(g.lon[it], g.lat[it]) }))
                 .also { it.addNumberProperty("leg", li) }
@@ -313,9 +315,27 @@ class MapLayers(private val vm: AppViewModel) {
 
     /** Klepnutí na zvýrazněnou cestu nebo rozbalenou trasu: vrací index úseku cesty, jinak -1. */
     fun hitLeg(map: MapLibreMap, x: Float, y: Float, density: Float): Int {
-        val pad = 12 * density
+        val pad = 14 * density
         val f = map.queryRenderedFeatures(RectF(x - pad, y - pad, x + pad, y + pad), "journey", "journey-walk", "routes")
-        return f.firstNotNullOfOrNull { it.getNumberProperty("leg")?.toInt() } ?: -1
+        // úsek, jehož čára vede nejblíž místu klepnutí (ne ten, který je náhodou nakreslený navrch)
+        var best = -1; var bd = Double.MAX_VALUE
+        for (ft in f) {
+            val leg = ft.getNumberProperty("leg")?.toInt() ?: continue
+            val g = ft.geometry() as? LineString ?: continue
+            val pts = g.coordinates().map { map.projection.toScreenLocation(org.maplibre.android.geometry.LatLng(it.latitude(), it.longitude())) }
+            var d = Double.MAX_VALUE
+            for (k in 0 until pts.size - 1) d = minOf(d, segDist(x, y, pts[k], pts[k + 1]))
+            if (pts.size == 1) d = Math.hypot((pts[0].x - x).toDouble(), (pts[0].y - y).toDouble())
+            if (d < bd) { bd = d; best = leg }
+        }
+        return best
+    }
+
+    private fun segDist(x: Float, y: Float, a: PointF, b: PointF): Double {
+        val dx = (b.x - a.x).toDouble(); val dy = (b.y - a.y).toDouble()
+        val l2 = dx * dx + dy * dy
+        val t = if (l2 == 0.0) 0.0 else (((x - a.x) * dx + (y - a.y) * dy) / l2).coerceIn(0.0, 1.0)
+        return Math.hypot(a.x + t * dx - x, a.y + t * dy - y)
     }
 
     /** Klepnutí: nejdřív štítek s časem (nebo jeho tečky), pak nejbližší tečka zastávky. Vrací id zastávky nebo -1. */
