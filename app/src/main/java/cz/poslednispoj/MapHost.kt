@@ -110,8 +110,18 @@ class MapHolder(private val ctx: Context, private val vm: AppViewModel) {
             }
             m.addOnMapClickListener { ll ->
                 val pt = m.projection.toScreenLocation(ll)
-                val id = layers.hitTest(m, pt.x, pt.y, ctx.resources.displayMetrics.density)
-                if (id >= 0) vm.select(id) else if (!vm.sheetMini) vm.closeSheet()
+                val dens = ctx.resources.displayMetrics.density
+                val leg = if (vm.selected >= 0) layers.hitLeg(m, pt.x, pt.y, dens) else -1
+                when {
+                    // klepnutí na cestu = jako klepnutí na spoj v detailu (rozbalí / sbalí jeho trasu)
+                    leg >= 0 -> vm.toggleRoute(leg)
+                    // při rozbaleném detailu klepnutí do mapy jen sbalí detail, zastávka zůstává
+                    vm.selected >= 0 && !vm.sheetMini -> vm.toggleMini()
+                    else -> {
+                        val id = layers.hitTest(m, pt.x, pt.y, dens)
+                        if (id >= 0) vm.select(id)
+                    }
+                }
                 true
             }
         }

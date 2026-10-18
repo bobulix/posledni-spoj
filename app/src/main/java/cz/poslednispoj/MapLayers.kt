@@ -285,12 +285,14 @@ class MapLayers(private val vm: AppViewModel) {
         val jf = vm.journeyPaths.mapIndexed { li, g ->
             val f = Feature.fromGeometry(LineString.fromLngLats(g.lat.indices.map { Point.fromLngLat(g.lon[it], g.lat[it]) }))
             f.addNumberProperty("walk", if (g.walk) 1 else 0)
+            f.addNumberProperty("leg", li)
             f.addStringProperty("col", if (focus.isEmpty() || li in focus) "#C8321F" else "#EBA79C")
             f
         }
         st.getSourceAs<GeoJsonSource>("journey")?.setGeoJson(FeatureCollection.fromFeatures(jf))
-        val rf = vm.expandedLines.values.filter { it.lat.size >= 2 }.map { g ->
+        val rf = vm.expandedLines.entries.filter { it.value.lat.size >= 2 }.map { (li, g) ->
             Feature.fromGeometry(LineString.fromLngLats(g.lat.indices.map { Point.fromLngLat(g.lon[it], g.lat[it]) }))
+                .also { it.addNumberProperty("leg", li) }
         }
         st.getSourceAs<GeoJsonSource>("routes")?.setGeoJson(FeatureCollection.fromFeatures(rf))
         val rp = vm.expanded.values.flatMap { it.asIterable() }.map { Feature.fromGeometry(Point.fromLngLat(m.lon[it], m.lat[it])) }
@@ -307,6 +309,13 @@ class MapLayers(private val vm: AppViewModel) {
         for (id in listOf("journey", "journey-walk", "routes")) st.getLayerAs<LineLayer>(id)?.setProperties(PropertyFactory.lineOpacity(a))
         for (id in listOf("routepts", "sel")) st.getLayerAs<CircleLayer>(id)?.setProperties(
             PropertyFactory.circleOpacity(a), PropertyFactory.circleStrokeOpacity(a))
+    }
+
+    /** Klepnutí na zvýrazněnou cestu nebo rozbalenou trasu: vrací index úseku cesty, jinak -1. */
+    fun hitLeg(map: MapLibreMap, x: Float, y: Float, density: Float): Int {
+        val pad = 12 * density
+        val f = map.queryRenderedFeatures(RectF(x - pad, y - pad, x + pad, y + pad), "journey", "journey-walk", "routes")
+        return f.firstNotNullOfOrNull { it.getNumberProperty("leg")?.toInt() } ?: -1
     }
 
     /** Klepnutí: nejdřív štítek s časem (nebo jeho tečky), pak nejbližší tečka zastávky. Vrací id zastávky nebo -1. */
