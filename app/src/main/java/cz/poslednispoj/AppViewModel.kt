@@ -239,8 +239,28 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             nowMin = if (dayKey == todayKey()) Calendar.getInstance().let { it.get(Calendar.HOUR_OF_DAY) * 60 + it.get(Calendar.MINUTE) } else -1
             val c = p.latest.count { it >= 0 }
             status = "$c zastávek, odkud se dostaneš do $label do ${hm(by)} · výpočet $ms ms"
+            val pend = pendingSelect
+            if (pend != null) {
+                pendingSelect = null
+                val ids = nameIdx[pend.first]
+                if (ids != null) {
+                    select(ids[0], 0)
+                    cameraRequest = doubleArrayOf(m.lat[ids[0]], m.lon[ids[0]], 11.5)
+                    pend.second.forEach { toggleRoute(it) }
+                    return@launch
+                }
+            }
             if (selected >= 0) select(selected, 0) else renderTick++
         }
+    }
+
+    // ---- automatické testy: výběr zastávky a rozbalení úseků z parametrů spuštění ----
+    private var pendingSelect: Pair<String, List<Int>>? = null
+    /** Požadavek na posun mapy [lat, lon, zoom]; mapa ho vyřídí a vynuluje. */
+    var cameraRequest by mutableStateOf<DoubleArray?>(null)
+    fun debugSelect(dest: String?, stop: String, legs: List<Int>) {
+        pendingSelect = stop to legs
+        if (dest != null && dest != this.dest) setDestination(dest) else recompute()
     }
 
     // ---- akce z UI ----

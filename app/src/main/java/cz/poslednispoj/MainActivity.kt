@@ -19,6 +19,10 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        intent?.getStringExtra("ps_select")?.let { stop ->
+            val legs = intent.getStringExtra("ps_legs")?.split(',')?.mapNotNull { it.trim().toIntOrNull() } ?: emptyList()
+            vm.debugSelect(intent.getStringExtra("ps_dest"), stop, legs)
+        }
         setContent {
             val holder = rememberMapHolder(vm)
             val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { res ->

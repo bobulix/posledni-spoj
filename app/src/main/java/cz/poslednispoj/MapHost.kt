@@ -157,6 +157,10 @@ class MapHolder(private val ctx: Context, private val vm: AppViewModel) {
         return true
     }
 
+    fun moveTo(lat: Double, lon: Double, zoom: Double) {
+        map?.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(lat, lon), zoom))
+    }
+
     fun zoomBy(delta: Double) { map?.animateCamera(CameraUpdateFactory.zoomBy(delta)) }
 }
 
@@ -182,6 +186,11 @@ fun rememberMapHolder(vm: AppViewModel): MapHolder {
     // každá změna výsledku nebo výběru překreslí vrstvu
     LaunchedEffect(holder) {
         snapshotFlow { vm.renderTick to vm.expanded.size }.collect { holder.layers.update() }
+    }
+    LaunchedEffect(holder) {
+        snapshotFlow { vm.cameraRequest }.collect { r ->
+            if (r != null) { holder.moveTo(r[0], r[1], r[2]); vm.cameraRequest = null }
+        }
     }
     return holder
 }

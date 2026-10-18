@@ -430,12 +430,16 @@ info = {}
 for r, gr in gb:
     nm = gr.name.value_counts()
     best = gr[gr.pr == gr.pr.min()].name.value_counts().index[0]
+    # uzel s vlakovou stanicí se jmenuje podle stanice („Praha-Libeň“, ne „Praha, Nádraží Libeň“) – tak ji zná i IDOS
+    trains_ = [nm2 for x, nm2 in zip(gr.src.values, gr.name.values) if srcs[x]['key'] == 'CZPTT']
+    if trains_: best = pd.Series(trains_).value_counts().index[0]
     # název pro IDOS: úřední název z CIS JŘ (např. „Žerotín,u kaple“), jinak ze Správy železnic či PID
     # stejně pojmenovaná zastávka z CIS JŘ má přednost, jinak se název převede do tvaru CIS („Obec,část“)
     keys_ = [srcs[x]['key'] for x in gr.src.values]
     idos = None
     for k_, nm2, raw_ in zip(keys_, gr.name.values, gr.raw.values):
         if k_ == 'JDF' and nm2 == best: idos = raw_; break
+    if trains_: idos = None
     if idos is None:
         idos = best.replace(', ', ',')
         if 'CZPTT' in keys_: idos = re.sub(r'\.\s+(?=[a-záčďéěíňóřšťúůýž])', '.', idos)
