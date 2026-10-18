@@ -245,7 +245,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
                 val ids = nameIdx[pend.first]
                 if (ids != null) {
                     select(ids[0], 0)
-                    cameraRequest = doubleArrayOf(m.lat[ids[0]], m.lon[ids[0]], 11.5)
+                    cameraRequest = doubleArrayOf(m.lat[ids[0]], m.lon[ids[0]], debugZoom)
                     pend.second.forEach { toggleRoute(it) }
                     return@launch
                 }
@@ -256,6 +256,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
 
     // ---- automatické testy: výběr zastávky a rozbalení úseků z parametrů spuštění ----
     private var pendingSelect: Pair<String, List<Int>>? = null
+    var debugZoom = 11.5
     /** Požadavek na posun mapy [lat, lon, zoom]; mapa ho vyřídí a vynuluje. */
     var cameraRequest by mutableStateOf<DoubleArray?>(null)
     fun debugSelect(dest: String?, stop: String, legs: List<Int>) {

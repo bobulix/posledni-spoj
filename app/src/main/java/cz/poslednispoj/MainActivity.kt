@@ -21,6 +21,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         intent?.getStringExtra("ps_select")?.let { stop ->
             val legs = intent.getStringExtra("ps_legs")?.split(',')?.mapNotNull { it.trim().toIntOrNull() } ?: emptyList()
+            intent.getStringExtra("ps_zoom")?.toDoubleOrNull()?.let { vm.debugZoom = it }
             vm.debugSelect(intent.getStringExtra("ps_dest"), stop, legs)
         }
         setContent {

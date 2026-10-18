@@ -80,17 +80,17 @@ jobs:
             adb exec-out screencap -p > out/5-detail.png
             # cesta s přestupy: zastávka vybraná parametrem spuštění, rozbalený 1. a pak 5. úsek
             adb shell am force-stop cz.poslednispoj
-            adb shell "am start -n cz.poslednispoj/.MainActivity --es ps_select 'Žerotín, u kaple' --es ps_legs 0" || true
+            adb shell "am start -n cz.poslednispoj/.MainActivity --es ps_select 'Žerotín, u kaple' --es ps_legs 0 --es ps_zoom 8.3" || true
             sleep 45
             adb exec-out screencap -p > out/6-leg0-detail.png
-            adb shell input tap 540 300
+            adb shell input tap 540 900
             sleep 3
             adb exec-out screencap -p > out/6-leg0-map.png
             adb shell am force-stop cz.poslednispoj
-            adb shell "am start -n cz.poslednispoj/.MainActivity --es ps_select 'Žerotín, u kaple' --es ps_legs 4" || true
+            adb shell "am start -n cz.poslednispoj/.MainActivity --es ps_select 'Žerotín, u kaple' --es ps_legs 4 --es ps_zoom 8.3" || true
             sleep 45
             adb exec-out screencap -p > out/6-leg4-detail.png
-            adb shell input tap 540 300
+            adb shell input tap 540 900
             sleep 3
             adb exec-out screencap -p > out/6-leg4-map.png
             sleep 1
