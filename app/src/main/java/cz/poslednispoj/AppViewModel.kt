@@ -348,6 +348,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             val l = journey.getOrNull(legIndex) as? Leg.Ride ?: return
             val d = day ?: return
             val nodes = Csa.tripRoute(d, l.trip).map { it.node }.toIntArray()
+            expanded.clear() // rozbalený je vždy jen jeden spoj; předchozí se sbalí
             expanded[legIndex] = nodes
         }
         val m = meta
