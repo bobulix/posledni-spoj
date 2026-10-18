@@ -142,6 +142,65 @@ srcs = [x for x in (load_source(k, d, kd, dates) for k, d, kd in SOURCES) if x i
 assert any(s['key'] == 'CZPTT' for s in srcs) and any(s['key'] == 'JDF' for s in srcs)
 
 # --- uzly: v rámci zdroje podle názvu (PID: asw uzel), mezi zdroji podle polohy a názvu ---
+# --- doplnění chybějících souřadnic zastávek (CIS JŘ je u části zastávek nemá) ---
+# 1) stejný název zastávky v jiném zdroji nebo v OpenStreetMap (zastávky), 2) obec z OSM,
+# 3) odhad z polohy sousedních zastávek na trasách. Víc kandidátů = ten nejblíž odhadu.
+def valid(la, lo): return np.isfinite(la) & np.isfinite(lo) & (la > 47.5) & (la < 51.5) & (lo > 11.8) & (lo < 19.2)
+ref_stop = defaultdict(list); ref_place = defaultdict(list)
+osmf = os.path.join(SRC, 'osm_stops.csv')
+if os.path.exists(osmf):
+    o = pd.read_csv(osmf, sep='\t', header=None, names=['lat', 'lon', 'name', 'place'], dtype=str, keep_default_na=False, quoting=3)
+    o['la'] = pd.to_numeric(o.lat, errors='coerce'); o['lo'] = pd.to_numeric(o.lon, errors='coerce')
+    o = o[valid(o.la.values, o.lo.values) & (o.name != '')]
+    for nm_, la, lo, pl in zip(o.name.values, o.la.values, o.lo.values, o.place.values):
+        (ref_place if pl else ref_stop)[norm(nm_)].append((la, lo))
+    log('OSM: zastávek', sum(o.place == ''), 'obcí', sum(o.place != ''))
+else:
+    log('OSM zastávky nejsou k dispozici')
+for s in srcs:
+    st = s['stops']; la = pd.to_numeric(st.stop_lat, errors='coerce').values; lo = pd.to_numeric(st.stop_lon, errors='coerce').values
+    ok = valid(la, lo)
+    for nm_, a_, b_ in zip(st.stop_name.values[ok], la[ok], lo[ok]): ref_stop[norm(nm_)].append((a_, b_))
+for s in srcs:
+    st = s['stops']
+    la = pd.to_numeric(st.stop_lat, errors='coerce').values.astype(float); lo = pd.to_numeric(st.stop_lon, errors='coerce').values.astype(float)
+    ok = valid(la, lo)
+    used = np.zeros(len(st), bool); used[s['stt'].s.unique()] = True
+    miss = np.where(~ok & used)[0]
+    if not len(miss): continue
+    # sousedé na trasách
+    stt = s['stt']; sa = stt.s.values; ta = stt.t.values
+    same = ta[1:] == ta[:-1]
+    nb = defaultdict(set)
+    for a_, b_ in zip(sa[:-1][same], sa[1:][same]):
+        if a_ != b_: nb[a_].add(b_); nb[b_].add(a_)
+    names_ = st.stop_name.values
+    method = defaultdict(int)
+    for it in range(6):
+        left = [i for i in miss if not ok[i]]
+        if not left: break
+        changed = False
+        for i in left:
+            kn = [j for j in nb[i] if ok[j]]
+            est = (np.mean([la[j] for j in kn]), np.mean([lo[j] for j in kn])) if kn else None
+            def pick(cands, maxd):
+                if not cands: return None
+                if est is None: return cands[0] if len(cands) == 1 else None
+                d = [math.hypot((c[0] - est[0]) * KY, (c[1] - est[1]) * KX) for c in cands]
+                k = int(np.argmin(d)); return cands[k] if d[k] <= maxd else None
+            nm_ = names_[i]
+            c = pick(ref_stop.get(norm(nm_), []), 15000)
+            how = 'název'
+            if c is None and it >= 1:
+                c = pick(ref_place.get(norm(nm_.split(',')[0]), []), 15000); how = 'obec'
+            if c is None and it >= 2 and est is not None and len(kn) >= 2:
+                c = est; how = 'sousedé'
+            if c is not None:
+                la[i], lo[i] = c; ok[i] = True; changed = True; method[how] += 1
+        if not changed and it >= 2: break
+    st['stop_lat'] = la.astype(str); st['stop_lon'] = lo.astype(str)
+    log(s['key'], 'bez souřadnic', len(miss), 'doplněno', dict(method), 'zbývá', int((~ok[miss]).sum()))
+
 allst = []
 for si, s in enumerate(srcs):
     st = s['stops']

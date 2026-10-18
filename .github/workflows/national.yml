@@ -45,9 +45,18 @@ jobs:
           get DPMLJ https://www.dpmlj.cz/gtfs.zip
           get CZPTT https://data.jr.ggu.cz/results/latest/CZPTT_GTFS.zip 1
           get JDF https://data.jr.ggu.cz/results/latest/JDF_merged_GTFS.zip 1
+          # zastávky a obce z OpenStreetMap (pro zastávky bez souřadnic); při chybě se použije poslední uložená kopie
+          Q='[out:csv(::lat,::lon,name,place;false)][timeout:600];area["ISO3166-1"="CZ"][admin_level=2]->.cz;(node["highway"="bus_stop"]["name"](area.cz);node["public_transport"~"platform|stop_position|station"]["name"](area.cz);node["railway"~"halt|station|tram_stop"]["name"](area.cz);node["amenity"="bus_station"]["name"](area.cz);node["place"~"city|town|village|hamlet|suburb|isolated_dwelling|neighbourhood|quarter|locality"]["name"](area.cz););out;'
+          if curl -fsS --retry 2 --max-time 900 --data-urlencode "data=$Q" -o osm.csv https://overpass-api.de/api/interpreter && [ $(wc -l < osm.csv) -gt 50000 ]; then
+            cp osm.csv src/osm_stops.csv; echo "OSM OK $(wc -l < osm.csv)"
+          else
+            curl -fsSL -o src/osm_stops.csv "https://raw.githubusercontent.com/${{ github.repository }}/national/osm_stops.csv" && echo "OSM z mezipaměti" || echo "OSM NEDOSTUPNÉ"
+          fi
           df -h . ; du -sh src/*
       - name: Sloučení
-        run: python pipeline/national.py src out 14 2>&1 | tee out-log.txt
+        run: |
+          python pipeline/national.py src out 14 2>&1 | tee out-log.txt
+          [ -f src/osm_stops.csv ] && cp src/osm_stops.csv out/ || true
       - name: Uložení do větve national
         if: always()
         run: |
