@@ -213,6 +213,9 @@ for s in srcs:
                 la[i], lo[i] = c; ok[i] = True; changed = True; method[how] += 1
         if not changed and it >= 2: break
     st['stop_lat'] = la.astype(str); st['stop_lon'] = lo.astype(str)
+    with open(os.path.join(OUT, 'bez_souradnic.txt'), 'a') as f_:
+        for i in miss:
+            if not ok[i]: f_.write(f"{s['key']}\t{names_[i]}\n")
     log(s['key'], 'bez souřadnic', len(miss), 'doplněno', dict(method), 'zbývá', int((~ok[miss]).sum()))
 
 allst = []
