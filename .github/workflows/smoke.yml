@@ -70,11 +70,12 @@ jobs:
             adb shell input tap 385 1957
             sleep 4
             adb exec-out screencap -p > out/3-tap.png
-            # sbalit detail, aby byla vidět trasa
-            adb shell input tap 815 1372
+            # klepnutí do mapy mimo cestu: detail se jen sbalí, zastávka zůstane
+            adb shell input tap 540 700
             sleep 3
             adb exec-out screencap -p > out/4-route.png
-            adb shell input tap 815 1372
+            # klepnutí na sbalený detail ho zase rozbalí
+            adb shell input tap 300 2150
             sleep 2
             adb exec-out screencap -p > out/5-detail.png
             sleep 1
