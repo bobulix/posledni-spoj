@@ -171,6 +171,8 @@ object Csa {
         target: BooleanArray, arriveBy: Int, change: IntArray, allowed: BooleanArray?,
     ): Profile {
         val prof = Array(nNodes) { ArrayList<Entry>(2) }
+        // pro zobrazení jen odjezdy přímo z dané zastávky (cesta nezačíná přechodem pěšky jinam)
+        val own = Array(nNodes) { ArrayList<Entry>(2) }
         val tripEta = IntArray(day.nTrips) { INF }
         val tripExit = IntArray(day.nTrips) { -1 }
         val tripNext = arrayOfNulls<Entry>(day.nTrips)
@@ -195,14 +197,15 @@ object Csa {
             val s = day.u[i]
             if (target[s]) continue
             val e = Entry(d, tripEta[t], i, tripExit[t], -1, tripNext[t])
+            insert(own[s], e)
             if (!insert(prof[s], e)) continue
             for (k in walk.start[s] until walk.start[s + 1]) {
                 val w = walk.to[k]
                 if (!target[w]) insert(prof[w], Entry(d - walk.dur[k], e.eta, -1, -1, s, e))
             }
         }
-        val latest = IntArray(nNodes) { if (prof[it].isEmpty()) -1 else prof[it][0].dep }
-        return Profile(latest, prof)
+        val latest = IntArray(nNodes) { if (own[it].isEmpty()) -1 else own[it][0].dep }
+        return Profile(latest, own)
     }
 
     /** Úseky cesty ze zastávky [start] podle položky profilu. */

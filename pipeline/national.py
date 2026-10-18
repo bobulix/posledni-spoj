@@ -234,11 +234,13 @@ for si, s in enumerate(srcs):
     if s['key'] == 'PID':
         grp = np.where(st.asw_node_id != '', 'N' + st.asw_node_id, 'S' + st.stop_id)
         praha = st.zone_id.str.split(',').apply(lambda z: 'P' in z).values
+        # pražské zastávky PID nemají v názvu obec: „Hlavní nádraží“ → „Praha, Hlavní nádraží“
+        name = np.array([f'Praha, {x}' if p_ and not x.startswith('Praha') else x for x, p_ in zip(name, praha)])
     else:
         grp = np.array(['n' + norm(x) for x in name])
         praha = np.array([norm(x).startswith('praha') for x in name])
     allst.append(pd.DataFrame({'src': si, 'sid': np.arange(len(st)), 'grp': grp, 'name': name, 'lat': lat, 'lon': lon,
-                               'praha': praha, 'used': used}))
+                               'praha': praha, 'used': used, 'raw': st.stop_name.str.strip().values}))
 A = pd.concat(allst, ignore_index=True)
 A = A[A.used & A.lat.between(47, 52) & A.lon.between(11, 20)].reset_index(drop=True)
 A['X'] = A.lon * KX; A['Y'] = A.lat * KY
@@ -428,7 +430,16 @@ info = {}
 for r, gr in gb:
     nm = gr.name.value_counts()
     best = gr[gr.pr == gr.pr.min()].name.value_counts().index[0]
-    info[r] = (best, gr.lat.mean(), gr.lon.mean(), bool(gr.praha.any()))
+    # název pro IDOS: úřední název z CIS JŘ (např. „Žerotín,u kaple“), jinak ze Správy železnic či PID
+    keys_ = [srcs[x]['key'] for x in gr.src.values]
+    idos = None
+    for want in ('JDF', 'CZPTT', 'PID'):
+        if want in keys_:
+            idos = gr.raw.values[keys_.index(want)]
+            if want == 'CZPTT': idos = re.sub(r'\.\s+(?=[a-záčďéěíňóřšťúůýž])', '.', idos)
+            if want == 'PID' and gr.praha.any() and not idos.startswith('Praha'): idos = 'Praha,' + idos
+            break
+    info[r] = (best, gr.lat.mean(), gr.lon.mean(), bool(gr.praha.any()), idos or gr.raw.values[0])
 
 # stejné názvy na různých místech (např. 9× „Nová Ves“): doplníme nejbližší větší obec
 names_ = {r: info[r][0] for r in used_roots}
@@ -623,7 +634,7 @@ with gzip.open(os.path.join(OUT, 'timetable.bin'), 'wb', 9) as f: f.write(raw)
 log('timetable.bin', len(raw) // 1024, 'KB nekomprimovaně,', os.path.getsize(os.path.join(OUT, 'timetable.bin')) // 1024, 'KB gzip')
 
 meta = {'format': 3,
-        'nodes': [[info[r][0], round(info[r][1], 5), round(info[r][2], 5), int(info[r][3]), int(modes[i])] for i, r in enumerate(used_roots)],
+        'nodes': [[info[r][0], round(info[r][1], 5), round(info[r][2], 5), int(info[r][3]), int(modes[i]), info[r][4]] for i, r in enumerate(used_roots)],
         'routes': routes, 'sources': [s['desc'] for s in srcs],
         'walk': np.array(walk, np.int32).flatten().tolist(),
         'days': [[d, WD[datetime.datetime.strptime(d, '%Y%m%d').weekday()]] for d in dates],

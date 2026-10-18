@@ -509,8 +509,7 @@ private fun DetailSheet(vm: AppViewModel, modifier: Modifier) {
                 Button(onClick = { vm.returnHere() }, colors = ButtonDefaults.buttonColors(containerColor = Ink)) { Text("Vracet se sem") }
                 OutlinedButton(onClick = {
                     // ověření přesně tohoto spojení v IDOS (výluky a mimořádnosti)
-                    val to = m.names[endNode]
-                    openIdos(ctx, m.names[i], to, vm.dayKey, dep)
+                    openIdos(ctx, m.idosName[i], m.idosName[endNode], vm.dayKey, dep)
                 }) { Text("Ověřit v IDOS") }
                 OutlinedButton(onClick = { openInMapy(ctx, m.lat[i], m.lon[i], m.names[i]) }) { Text("Otevřít v Mapách") }
             }
@@ -641,8 +640,7 @@ private fun openInMapy(ctx: android.content.Context, lat: Double, lon: Double, n
 private fun openIdos(ctx: android.content.Context, from: String, to: String, dayKey: String, depMin: Int) {
     val date = if (dayKey.length == 8) "${dayKey.substring(6).toInt()}.${dayKey.substring(4, 6).toInt()}.${dayKey.substring(0, 4)}" else ""
     val time = if (depMin >= 0) "${(depMin / 60) % 24}:${(depMin % 60).toString().padStart(2, '0')}" else ""
-    // „Nová Ves (Louny)“ → „Nová Ves“: doplněk v závorce je jen náš, IDOS ho nezná
-    val enc = { s: String -> java.net.URLEncoder.encode(s.replace(Regex(" \\([^)]*\\)$"), ""), "UTF-8") }
+    val enc = { s: String -> java.net.URLEncoder.encode(s, "UTF-8") }
     val url = "https://idos.cz/vlakyautobusymhdvse/spojeni/vysledky/?f=${enc(from)}&fc=1&t=${enc(to)}&tc=1&date=${enc(date)}&time=${enc(time)}"
     try { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) } catch (_: Exception) {}
 }

@@ -23,6 +23,7 @@ class Meta(
     val lon: DoubleArray,
     val praha: BooleanArray,
     val modes: IntArray,          // 1 tram, 2 metro, 4 vlak, 8 bus, 16 jiné
+    val idosName: Array<String>,  // název zastávky, jak ho zná IDOS
     val routeName: Array<String>,
     val routeType: IntArray,      // GTFS route_type
     val routeColor: IntArray,     // ARGB
@@ -134,11 +135,11 @@ class DataRepo(private val ctx: Context) {
         val n = nodes.length()
         val names = Array(n) { "" }
         val lat = DoubleArray(n); val lon = DoubleArray(n)
-        val praha = BooleanArray(n); val modes = IntArray(n)
+        val praha = BooleanArray(n); val modes = IntArray(n); val idos = Array(n) { "" }
         for (i in 0 until n) {
             val a = nodes.getJSONArray(i)
             names[i] = a.getString(0); lat[i] = a.getDouble(1); lon[i] = a.getDouble(2)
-            praha[i] = a.getInt(3) == 1; modes[i] = a.getInt(4)
+            praha[i] = a.getInt(3) == 1; modes[i] = a.getInt(4); idos[i] = a.optString(5, names[i])
         }
         val routes = o.getJSONArray("routes")
         val rn = routes.length()
@@ -158,6 +159,6 @@ class DataRepo(private val ctx: Context) {
         val days = (0 until dj.length()).map { dj.getJSONArray(it).let { a -> a.getString(0) to a.getString(1) } }
         val sj = o.optJSONArray("sources")
         val sources = if (sj == null) listOf("PID (ROPID)") else (0 until sj.length()).map { sj.getString(it) }
-        return Meta(names, lat, lon, praha, modes, rName, rType, rCol, rSrc, rId, sources, walk, days, o.optString("generated", "v0"))
+        return Meta(names, lat, lon, praha, modes, idos, rName, rType, rCol, rSrc, rId, sources, walk, days, o.optString("generated", "v0"))
     }
 }
