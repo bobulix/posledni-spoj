@@ -157,6 +157,13 @@ if os.path.exists(osmf):
     log('OSM: zastávek', sum(o.place == ''), 'obcí', sum(o.place != ''))
 else:
     log('OSM zastávky nejsou k dispozici')
+reff = os.path.join(SRC, 'ref_stops.txt')
+if os.path.exists(reff):
+    rs = pd.read_csv(reff, dtype=str, keep_default_na=False)
+    rla = pd.to_numeric(rs.stop_lat, errors='coerce').values; rlo = pd.to_numeric(rs.stop_lon, errors='coerce').values
+    okr = valid(rla, rlo)
+    for nm_, a_, b_ in zip(rs.stop_name.values[okr], rla[okr], rlo[okr]): ref_stop[norm(nm_)].append((a_, b_))
+    log('referenční zastávky', int(okr.sum()))
 for s in srcs:
     st = s['stops']; la = pd.to_numeric(st.stop_lat, errors='coerce').values; lo = pd.to_numeric(st.stop_lon, errors='coerce').values
     ok = valid(la, lo)
@@ -191,6 +198,13 @@ for s in srcs:
             nm_ = names_[i]
             c = pick(ref_stop.get(norm(nm_), []), 15000)
             how = 'název'
+            if c is None and ',' in nm_:
+                # „Obec,část“ → zastávka „část“ v OSM do 6 km od obce
+                town_ = ref_place.get(norm(nm_.split(',')[0]), [])
+                part_ = ref_stop.get(norm(nm_.split(',', 1)[1]), [])
+                near_ = [q for q in part_ if any(math.hypot((q[0] - t_[0]) * KY, (q[1] - t_[1]) * KX) < 6000 for t_ in town_)]
+                c = pick(near_, 15000); how = 'část'
+                if c is None and est is None and len({(round(q[0], 3), round(q[1], 3)) for q in near_}) == 1: c = near_[0]
             if c is None and it >= 1:
                 c = pick(ref_place.get(norm(nm_.split(',')[0]), []), 15000); how = 'obec'
             if c is None and it >= 2 and est is not None and len(kn) >= 2:

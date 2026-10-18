@@ -45,6 +45,8 @@ jobs:
           get DPMLJ https://www.dpmlj.cz/gtfs.zip
           get CZPTT https://data.jr.ggu.cz/results/latest/CZPTT_GTFS.zip 1
           get JDF https://data.jr.ggu.cz/results/latest/JDF_merged_GTFS.zip 1
+          # jen jako zdroj souřadnic zastávek (jiné zpracování CIS JŘ)
+          if curl -fsSL --retry 3 -o ref.zip https://github.com/0xaa55h/gtfs-processor/raw/refs/heads/gtfs/files/latest.zip; then mkdir -p ref && unzip -q -o ref.zip stops.txt -d ref && cp ref/stops.txt src/ref_stops.txt && echo REF OK; fi
           # zastávky a obce z OpenStreetMap (pro zastávky bez souřadnic); při chybě se použije poslední uložená kopie
           Q='[out:csv(::lat,::lon,name,place;false)][timeout:600];area["ISO3166-1"="CZ"][admin_level=2]->.cz;(node["highway"="bus_stop"]["name"](area.cz);node["public_transport"~"platform|stop_position|station"]["name"](area.cz);node["railway"~"halt|station|tram_stop"]["name"](area.cz);node["amenity"="bus_station"]["name"](area.cz);node["place"~"city|town|village|hamlet|suburb|isolated_dwelling|neighbourhood|quarter|locality"]["name"](area.cz););out;'
           for U in https://overpass-api.de/api/interpreter https://overpass.private.coffee/api/interpreter https://maps.mail.ru/osm/tools/overpass/api/interpreter; do
