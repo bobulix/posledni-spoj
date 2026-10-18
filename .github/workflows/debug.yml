@@ -1,0 +1,20 @@
+name: Ladění zdroje
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [main]
+    paths: ["pipeline/debug_line.py", ".github/workflows/debug.yml"]
+permissions:
+  contents: write
+jobs:
+  dbg:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install pandas==2.2.3
+      - run: |
+          curl -fsSL -o j.zip https://data.jr.ggu.cz/results/latest/JDF_merged_GTFS.zip && mkdir j && unzip -q j.zip -d j
+          python pipeline/debug_line.py j 890364,891364,890000 "Žerotín" > out.txt 2>&1 || true
+          ls -la --time-style=full-iso j >> out.txt
+          curl -sI https://data.jr.ggu.cz/results/latest/JDF_merged_GTFS.zip >> out.txt
+          mkdir o && cp out.txt o/ && cd o && git init -q -b debug && git config user.name bot && git config user.email bot@x && git add . && git commit -qm d && git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" debug
