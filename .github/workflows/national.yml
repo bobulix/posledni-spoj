@@ -47,7 +47,13 @@ jobs:
           get JDF https://data.jr.ggu.cz/results/latest/JDF_merged_GTFS.zip 1
           # zastávky a obce z OpenStreetMap (pro zastávky bez souřadnic); při chybě se použije poslední uložená kopie
           Q='[out:csv(::lat,::lon,name,place;false)][timeout:600];area["ISO3166-1"="CZ"][admin_level=2]->.cz;(node["highway"="bus_stop"]["name"](area.cz);node["public_transport"~"platform|stop_position|station"]["name"](area.cz);node["railway"~"halt|station|tram_stop"]["name"](area.cz);node["amenity"="bus_station"]["name"](area.cz);node["place"~"city|town|village|hamlet|suburb|isolated_dwelling|neighbourhood|quarter|locality"]["name"](area.cz););out;'
-          if curl -fsS --retry 2 --max-time 900 --data-urlencode "data=$Q" -o osm.csv https://overpass-api.de/api/interpreter && [ $(wc -l < osm.csv) -gt 50000 ]; then
+          for U in https://overpass-api.de/api/interpreter https://overpass.private.coffee/api/interpreter https://maps.mail.ru/osm/tools/overpass/api/interpreter; do
+            curl -sS --max-time 900 -A "posledni-spoj (github.com/bobulix/posledni-spoj)" --data-urlencode "data=$Q" -o osm.csv -w "$U HTTP %{http_code} %{size_download}\n" "$U" >> osm_status.txt 2>&1 || true
+            echo "řádků: $(wc -l < osm.csv 2>/dev/null)" >> osm_status.txt; head -c 300 osm.csv >> osm_status.txt 2>/dev/null; echo >> osm_status.txt
+            [ -f osm.csv ] && [ $(wc -l < osm.csv) -gt 50000 ] && break
+          done
+          cat osm_status.txt
+          if [ -f osm.csv ] && [ $(wc -l < osm.csv) -gt 50000 ]; then
             cp osm.csv src/osm_stops.csv; echo "OSM OK $(wc -l < osm.csv)"
           else
             curl -fsSL -o src/osm_stops.csv "https://raw.githubusercontent.com/${{ github.repository }}/national/osm_stops.csv" && echo "OSM z mezipaměti" || echo "OSM NEDOSTUPNÉ"
@@ -57,6 +63,7 @@ jobs:
         run: |
           python pipeline/national.py src out 14 2>&1 | tee out-log.txt
           [ -f src/osm_stops.csv ] && cp src/osm_stops.csv out/ || true
+          cp osm_status.txt out/ || true
       - name: Uložení do větve national
         if: always()
         run: |
