@@ -1,0 +1,37 @@
+fc=1 | Praha,Hlavní nádraží → Brno,Hlavní nádraží | OK | https://idos.cz/vlakyautobusymhdvse/spojeni/vysledky/?f=Praha%2CHlavn%C3%AD+n%C3%A1dra%C5%BE%C3%AD&t=Brno%2CHlavn%C3%AD+n%C3%A1dra%C5%BE%C3% | 
+fc=1 | Hlavní nádraží → Brno,Hlavní nádraží | OK | https://idos.cz/vlakyautobusymhdvse/spojeni/vysledky/?f=Hlavn%C3%AD+n%C3%A1dra%C5%BE%C3%AD&t=Brno%2CHlavn%C3%AD+n%C3%A1dra%C5%BE%C3%AD&date= | 
+fc=1 | Praha hl.n. → Olomouc hl.n. | OK | https://idos.cz/vlakyautobusymhdvse/spojeni/vysledky/?f=Praha+hl.n.&t=Olomouc+hl.n.&date=19.10.2026&time=12%3A00&fc=1&tc=1 | 
+fc=1 | Žerotín,u kaple → Olomouc hl.n. | OK | https://idos.cz/vlakyautobusymhdvse/spojeni/vysledky/?f=%C5%BDerot%C3%ADn%2Cu+kaple&t=Olomouc+hl.n.&date=19.10.2026&time=12%3A00&fc=1&tc=1 | 
+fc=1 | Žerotín, u kaple → Olomouc hl. n. | OK | https://idos.cz/vlakyautobusymhdvse/spojeni/vysledky/?f=%C5%BDerot%C3%ADn%2C+u+kaple&t=Olomouc+hl.+n.&date=19.10.2026&time=12%3A00&fc=1&tc=1 | 
+fc=1 | Boskovice,Obora → Praha hl.n. | OK | https://idos.cz/vlakyautobusymhdvse/spojeni/vysledky/?f=Boskovice%2CObora&t=Praha+hl.n.&date=19.10.2026&time=12%3A00&fc=1&tc=1 | 
+fc=1 | Obora → Praha hl.n. | OK | https://idos.cz/vlakyautobusymhdvse/spojeni/vysledky/?f=Obora&t=Praha+hl.n.&date=19.10.2026&time=12%3A00&fc=1&tc=1 | 
+fc=1 | Dolní Břežany,Lhota → Písnice | OK | https://idos.cz/vlakyautobusymhdvse/spojeni/vysledky/?f=Doln%C3%AD+B%C5%99e%C5%BEany%2CLhota&t=P%C3%ADsnice&date=19.10.2026&time=12%3A00&fc= | 
+fc=- | Praha,Hlavní nádraží → Brno,Hlavní nádraží | OK | https://idos.cz/vlakyautobusymhdvse/spojeni/vysledky/?date=19.10.2026&time=12:00&f=Praha%20hl.n.&fc=100003&t=Brno%20hl.n.&tc=100003 | 12:0419.10. po Celkový čas 3 hod 40 min û R9 (R 981 Vysočina) RQº³®°ª České dráhy, a.s. Odjezd bývá včas 12:04 Praha hl.n. # 15:44 Brno hl.n. Detaily spojení Vy
+fc=- | Hlavní nádraží → Brno,Hlavní nádraží | OK | https://idos.cz/vlakyautobusymhdvse/spojeni/vysledky/?date=19.10.2026&time=12:00&f=Hlavn%C3%AD%20n%C3%A1dra%C5%BE%C3%AD&fc=301003&t=Brno%20h | 12:0419.10. po Celkový čas 3 hod 40 min û R9 (R 981 Vysočina) RQº³®°ª České dráhy, a.s. Odjezd bývá včas 12:04 Praha hl.n. # 15:44 Brno hl.n. Detaily spojení Vy
+fc=- | Praha hl.n. → Olomouc hl.n. | OK | https://idos.cz/vlakyautobusymhdvse/spojeni/vysledky/?date=19.10.2026&time=12:00&f=Praha%20hl.n.&fc=100003&t=Olomouc%20hl.n.&tc=100003 | 12:0819.10. po Celkový čas 2 hod 26 min û Ex1 (EC 143 Ostravan) rMº³®ª© České dráhy, a.s. Odjezd bývá včas 12:08 Praha hl.n. # 14:34 Olomouc hl.n. Detaily spoje
+fc=- | Žerotín,u kaple → Olomouc hl.n. | OK | https://idos.cz/vlakyautobusymhdvse/spojeni/vysledky/?date=19.10.2026&time=12:00&f=%C5%BDerot%C3%ADn,,u%20kaple;%20Olomouc&fc=200003&t=Olomo | 12:3519.10. po Celkový čas 50 min ÷ Bus 364 H ARRIVA autobusy a.s. Odjezd bývá včas 12:35 Žerotín,,u kaple 13:25 Olomouc,,hl.nádr. H Detaily spojení Vytisknout 
+fc=- | Žerotín, u kaple → Olomouc hl. n. | OK | https://idos.cz/vlakyautobusymhdvse/spojeni/vysledky/?date=19.10.2026&time=12:00&f=%C5%BDerot%C3%ADn,,u%20kaple;%20Olomouc&fc=200003&t=Olomo | 12:3519.10. po Celkový čas 50 min ÷ Bus 364 H ARRIVA autobusy a.s. Odjezd bývá včas 12:35 Žerotín,,u kaple 13:25 Olomouc,,hl.nádr. H Detaily spojení Vytisknout 
+fc=- | Boskovice,Obora → Praha hl.n. | OK | https://idos.cz/vlakyautobusymhdvse/spojeni/vysledky/?f=Boskovice%2CObora&t=Praha+hl.n.&date=19.10.2026&time=12%3A00 | 
+fc=- | Obora → Praha hl.n. | OK | https://idos.cz/vlakyautobusymhdvse/spojeni/vysledky/?f=Obora&t=Praha+hl.n.&date=19.10.2026&time=12%3A00 | 
+fc=- | Dolní Břežany,Lhota → Písnice | OK | https://idos.cz/vlakyautobusymhdvse/spojeni/vysledky/?date=19.10.2026&time=12:00&f=Doln%C3%AD%20B%C5%99e%C5%BEany,Lhota&fc=200003&t=P%C3%ADs | 12:2319.10. po Celkový čas 12 min ÷ Bus 333 H UMBRELLA CITY LINES s.r.o. Odjezd bývá včas 12:23 Dolní Břežany,Lhota D 12:35 Praha,,Písnice D Detaily spojení Vyt
+vstupních polí 10
+NAŠEPTÁVAČ chyba locator.fill: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator('input').first()
+  -   loc
+  síť: 204 https://www.google-analytics.com/g/collect?v=2&tid=G-CMNVVVXPX5&gtm=45je6ae1v9123951984za20oxf1&_p=1792324369856&gcd=13l3l3l3l1l1&npa=0&dma=0&tcfd=10000&_eu=AAAIAAQ&are=1&cid=1604624439.1792324303&frm=0&ngs=1&pscdl=noapi&rcb=0&sr=1280x720&uaa=x86&uab || 204 https://www.google-analytics.com/g/collect?v=2&tid=G-921RMVX4PQ&gtm=45je6ae1v9126094048za20gxf1&_p=1792324369856&gcd=13l3l3l3l2l1&npa=0&dma=0&tcfd=1000g&_eu=ABAIAAQ&are=1&cid=1604624439.1792324303&frm=0&ngs=1&pscdl=noapi&rcb=9&sr=1280x720&uaa=x86&uab || 204 https://analytics.google.com/g/collect?v=2&tid=G-91H9JGGHZD&gtm=45je6ae1v9165060772za20gxf1&_p=1792324369856&gcd=13l3l3l3l2l1&npa=0&dma=0&tcfd=1000g&_eu=ABAIACQC&are=1&cid=1604624439.1792324303&frm=0&ibt=1&ngs=1&pscdl=noapi&rcb=13&sr=1280x720&uaa=x86 || 200 https://gum.criteo.com/syncframe?origin=publishertag&topUrl=idos.cz
+NAŠEPTÁVAČ chyba locator.fill: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator('input').first()
+  -   loc
+  síť: 
+NAŠEPTÁVAČ chyba locator.fill: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator('input').first()
+  -   loc
+  síť: 
+NAŠEPTÁVAČ chyba locator.fill: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator('input').first()
+  -   loc
+  síť: 
