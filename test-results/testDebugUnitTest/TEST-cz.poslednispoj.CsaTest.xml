@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="cz.poslednispoj.CsaTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-10-18T15:05:51" hostname="runnervm8k3b6" time="1.871">
+  <properties/>
+  <testcase name="profileIsConsistent" classname="cz.poslednispoj.CsaTest" time="1.871"/>
+  <system-out><![CDATA[jízd 284840, spojů dne 1303094, čtení 90 ms, sestavení dne 256 ms, výpočet 398 ms
+dosažitelných zastávek: 25455
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

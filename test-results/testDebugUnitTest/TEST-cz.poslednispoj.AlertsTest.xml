@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="cz.poslednispoj.AlertsTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-10-18T15:05:50" hostname="runnervm8k3b6" time="1.26">
+  <properties/>
+  <testcase name="parsesLiveAlerts" classname="cz.poslednispoj.AlertsTest" time="1.26"/>
+  <system-out><![CDATA[mimořádností: 3
+- Dálnice D5; směr Praha | linky [L384, L394, L309, L311, L310, L336] | https://pid.cz/mimoradnost/?uuid=19d0ac45-3083-44d0-bff2-74cdca8c344a | období 1
+- obratiště Zvonařka: dočasné přerušení provozu tramvají | linky [L13] | https://pid.cz/mimoradnost/?uuid=cab6dee5-2ce6-4aa8-a31b-755225e2faf3 | období 1
+- Stochov,Slovanka I | linky [L590, L415] | https://pid.cz/mimoradnost/?uuid=159153ed-880f-44a9-828f-660711af2b4d | období 1
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
