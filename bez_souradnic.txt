@@ -1,0 +1,605 @@
+CZPTT	Szkl. Poręba Huta
+CZPTT	Szkl. Poręba Górna
+CZPTT	Bad Brambach
+CZPTT	Selb-Plößberg
+CZPTT	Johanngeorgenstadt
+CZPTT	Schmilka-Hirschmühle
+CZPTT	Krippen Hp
+CZPTT	Rathmannsdorf(Pirna)
+CZPTT	Porschdorf(Pirna)
+CZPTT	Goßdorf-Kohlmühle
+CZPTT	Ulbersdorf
+CZPTT	Amtshainersdorf
+CZPTT	Sebnitz(Sachs)
+CZPTT	Sebnitz(Sachs)
+CZPTT	Schöna
+CZPTT	Bad Schandau
+CZPTT	Retz
+CZPTT	Unterretzbach z
+CZPTT	Seifhennersdorf
+CZPTT	Kamienna Góra
+CZPTT	Błażkowa
+CZPTT	Lubawka
+CZPTT	Klingenthal
+CZPTT	Cranzahl
+CZPTT	Bärenstein
+CZPTT	Svrčinovec zast. z
+CZPTT	Čadca
+CZPTT	Chałupki
+CZPTT	Klingenthal
+CZPTT	Zwota
+CZPTT	Zwota-Zechenbach
+CZPTT	Zwotental
+CZPTT	Myjava
+CZPTT	Brestovec z
+CZPTT	Vrbovce zastávka z
+CZPTT	Zwotental
+CZPTT	Bad Schandau
+CZPTT	Čadca
+JDF	Užhorod,ZOLL
+JDF	Chmeľnickij,AS
+JDF	Vinnica,AS
+JDF	Uman,AS
+JDF	Odesa,AS
+JDF	Kremenčuk,AS
+JDF	Oleksandrija,AS
+JDF	Znamjanka,AS
+JDF	Smila,AS
+JDF	Čerkasy,AS
+JDF	Zolotonoša,AS
+JDF	Pereyaslav-Khmelnytsky,AS
+JDF	Kiev,Avtovokzal Kiev
+JDF	Budapest,Liszt Ferenc T2
+JDF	Budapest,Népliget aut.áll.
+JDF	Rajka,oh.ZOLL
+JDF	Chiasso,ZOLL
+JDF	Zürich,Carparkplatz am Sihlquai
+JDF	Thayngen,ZOLL
+JDF	Bietingen,ZOLL
+JDF	Hegyeshalom,ZOLL
+JDF	Nickelsdorf,ZOLL
+JDF	Wien,VIB Erdberg
+JDF	Běleč
+JDF	Mykolajiv,AS
+JDF	Odesa,žel.st.
+JDF	Odesa,AS
+JDF	Chop,ZOLL
+JDF	Záhony,ZOLL
+JDF	Snina,nám.
+JDF	Humenné,žel.st.
+JDF	Strážske,aut.st.
+JDF	Vranov n.Topľou,AS
+JDF	Hanušovce n.Topľou,nám.
+JDF	Prešov,AS MHD žel.st.
+JDF	Levoča,AS
+JDF	Spišská N.Ves,AS
+JDF	Poprad,Dom kultúry
+JDF	Ártánd,oh.ZOLL
+JDF	Bors,ZOLL
+JDF	Stanca,ZOLL
+JDF	Costesti,ZOLL
+JDF	Balti,aut.nádr.
+JDF	Chisinau,aut.nádr.NORD
+JDF	Kiev,AS Petlyury
+JDF	Pryluky,AS
+JDF	Romny,AS
+JDF	Sumy,AS
+JDF	München,Arnulfstr.
+JDF	Nürnberg,Zentraler Omnibusbahnhof (ZOB)
+JDF	Kiev,AS
+JDF	Berlin,ZOB am Funkturm
+JDF	Berlin,Bahnhof Südkreuz
+JDF	Dresden,Bahnhof-Bayerische Strasse
+JDF	Bautzen,August-Bebel-Pl
+JDF	Zittau,Bahnhof
+JDF	Zittau,ZOLL
+JDF	Záhony,ZOLL
+JDF	Chop,ZOLL
+JDF	Chop,AS
+JDF	Užhorod,AS-3
+JDF	Mukačevo,AS-2
+JDF	Iršava,AS-2
+JDF	Vynohradiv,I.Franka 137
+JDF	Chust,ul.Lvivska
+JDF	Buštyno
+JDF	Tjačiv,Polova 2
+JDF	Drahovo
+JDF	Wien,Flughafen Wien
+JDF	Wien,Hbf Wiedner Gürtel
+JDF	Turnov,aut.nádr.
+JDF	Užhorod,AS
+JDF	Mukačevo,AS
+JDF	Kaluš,AS
+JDF	Ivano-Frankovsk,AS
+JDF	Csanádpalota,ZOLL
+JDF	Albita,ZOLL
+JDF	Leušeny,ZOLL
+JDF	Berlin,Bahnhof Südkreuz
+JDF	Berlin,ZOB am Funkturm
+JDF	Berlin,Flughafen Tegel Fernbuslinien
+JDF	Rostock,ZOB am Hauptbahnhof
+JDF	Puttgarden,ZOLL
+JDF	Rodbyhavn,ZOLL
+JDF	Kobenhavn,Ingerslevsgade DGI-Byen
+JDF	Kobenhavn,ZOLL
+JDF	Malmö,ZOLL
+JDF	Malmö,Centralstation
+JDF	Helsingborg,Hamnplan
+JDF	Jönköping
+JDF	Linköping,Bussterminalen
+JDF	Norrköping
+JDF	Stockholm,Cityterminalen
+JDF	Arlanda,Airport Terminal 4 & 5
+JDF	Poltawa,AS
+JDF	Charkov,AS Haharina
+JDF	Budapest,Liszt Ferenc T2
+JDF	Budapest,Népliget aut.áll.
+JDF	Budapest,Kelenföld vasútállomás M
+JDF	Hegyeshalom,ZOLL
+JDF	Nickelsdorf,ZOLL
+JDF	Wien,Südtirolerplatz
+JDF	Győr,aut.áll.
+JDF	Helsingborg,Hamnplan
+JDF	Malmö,Centralstation
+JDF	Malmö,ZOLL
+JDF	Kobenhavn,ZOLL
+JDF	Kobenhavn,Busterminal
+JDF	Rodbyhavn,ZOLL
+JDF	Puttgarden,ZOLL
+JDF	Rostock,ZOB am Hauptbahnhof
+JDF	Zürich,Flughafen
+JDF	Kreuzlingen,ZOLL Autobahn A7
+JDF	Konstanz,ZOLL Autobahn B33
+JDF	Konstanz,Fernbusbahnhof
+JDF	Konstanz,Allmannsdorf
+JDF	Meersburg,Kirche
+JDF	Friedrichshafen,Stadtbahnhof
+JDF	Regensburg,Fernbushaltestelle am Hbf (Bahnhofstr.)
+JDF	Nagylak,ZOLL
+JDF	Nadlac,ZOLL
+JDF	Albita,ZOLL
+JDF	Leušeny,ZOLL
+JDF	Chisinau,aut.nádr.
+JDF	Orhei,aut.nádr.
+JDF	Albita,ZOLL
+JDF	Csanádpalota,ZOLL
+JDF	Novovolynsk,AS
+JDF	Volodymyr Volynskyj,AS
+JDF	Mukačevo,Lavkivská 1E
+JDF	Velyki Lazy,Aut.Zastav.ul.Skhidna 4
+JDF	Nitra,AS
+JDF	Zvolen,AS
+JDF	Banská Bystrica,AS
+JDF	Nadvirna,AS
+JDF	Deljatin,AS
+JDF	Lyon,Saint Exupéry Airport
+JDF	Dole,Parking du Péage de Dole
+JDF	Besancon,Avenue de Maréchal Foch
+JDF	Montbéliard,Acropole
+JDF	Belfort,Avenue Fauborg de Montbéliard
+JDF	Mulhouse,gare SNCF
+JDF	Ottmarsheim,ZOLL
+JDF	Steinenstadt,ZOLL
+JDF	Freiburg,Zentrale Omnibusbahnhof (ZOB)
+JDF	Luzhanka,ZOLL
+JDF	Lipt.Mikuláš,AS
+JDF	Ružomberok,AS
+JDF	Strasbourg,ZOLL
+JDF	Kehl,ZOLL
+JDF	KARLA
+JDF	Kurort Oberwiesenthal,Am Bahnhof
+JDF	Kurort Oberwiesenthal,Markt
+JDF	Kurort Oberwiesenthal,Penzion Herberger
+JDF	Kurort Oberwiesenthal,Hotel am Fichtelberg
+JDF	Kurort Oberwiesenthal,Neues Haus
+JDF	Rajka,oh.ZOLL E75
+JDF	Dnepropetrovsk,AS
+JDF	Kryvý Rih,AS
+JDF	Kropyvnytskyi,AS
+JDF	Goričan,ZOLL E65
+JDF	Roma,Largo Mazzoni (Autostaz.Tiburtina)
+JDF	Scandicci,Villa Costanza Park & Ride
+JDF	Bologna,Autostaz.Piazza XX Settembre
+JDF	Padova,Autostaz.VIALLE DELLA PACE
+JDF	Udine,Autostaz.Viale Europa Unita
+JDF	Tarvisio,Coccau,ZOLL
+JDF	Thörl Maglern,ZOLL
+JDF	Zaporožje,AS
+JDF	Kiev,žel.st.
+JDF	Talne,AS
+JDF	Zvenyhorodka,AS
+JDF	Špola,AS
+JDF	Venezia,MESTRE Viale Stazione 8C
+JDF	Tarvisio,ZOLL
+JDF	Arnoldstein,ZOLL
+JDF	Villach,Bahnhof
+JDF	Salzburg,Süd
+JDF	Linz,Industriezeile
+JDF	Maastricht,ZOLL
+JDF	Maastricht,Station
+JDF	Bocholtz,ZOLL
+JDF	Kiev,AS Dačnaja
+JDF	Černigov,AS
+JDF	Wien,VIB Erdberg
+JDF	Paris,Bercy Seine
+JDF	Strasbourg,Place de l'Étoile
+JDF	Strasbourg,ZOLL
+JDF	Kehl,ZOLL
+JDF	Stuttgart,Leonberg,Belforter Platz
+JDF	Venezia,MESTRE Via CaMarcello
+JDF	Valky,AS
+JDF	Charkov,AS
+JDF	Cherson,AS
+JDF	Mykolajiv,prosp.Bohojavlenskyy
+JDF	Hajsyn,AS
+JDF	Nemyriv,AS
+JDF	Voznesensk,AS
+JDF	Južnoukrajinsk,AS
+JDF	Pervomajsk,AS
+JDF	Skrbeň
+JDF	Horka n.Mor.,škola
+JDF	Horka n.Mor.
+JDF	Horka n.Mor.,U Přejezdu
+JDF	Milano,Autostazione Lampugnano via NATTA
+JDF	Como,Piazzale San Gottardo
+JDF	Como,ZOLL
+JDF	Lugano,Via Ciani
+JDF	Luzern,Landenberg
+JDF	St.Gallen,Lagerstrasse
+JDF	Diepoldsau,ZOLL
+JDF	Hohenems,ZOLL
+JDF	Au,ZOLL
+JDF	Lustenau,ZOLL
+JDF	Hörbranz,ZOLL
+JDF	Lindau,ZOLL
+JDF	München,ZOB Hackerbrücke
+JDF	München,Flughafen FJS
+JDF	Milano,Via Giulio Natta
+JDF	Bietingen,ZOLL
+JDF	Kornwestheim,Bahnhof
+JDF	Heilbronn,Hbf
+JDF	Žiar n.Hronom,AS
+JDF	Zlaté Moravce,AS
+JDF	Sereď,Nám.slobody
+JDF	Trnava,AS
+JDF	Pyryatyn,AS
+JDF	Charkov,AS Privokzalna
+JDF	De Lutte,ZOLL
+JDF	Enschede,Centraal Station
+JDF	Arnhem,Centr.St.Uitgang Sonsbeek
+JDF	Nijmegen,Centraal Station
+JDF	Eindhoven,JF Kennedylaan/Limbopad
+JDF	Bladel,ZOLL
+JDF	Lubny,AS
+JDF	Chorol,AS
+JDF	Tabanovce,ZOLL
+JDF	Budapest,Kelenföld aut.áll.
+JDF	Csengersima,ZOLL
+JDF	Petea,ZOLL
+JDF	Halmeu,ZOLL
+JDF	Ďiakovo,ZOLL
+JDF	Dubove,AS
+JDF	Bad Reichenhall,ZOLL
+JDF	Walserberg,ZOLL
+JDF	Röszke,ZOLL
+JDF	Horgoš,Röszke,ZOLL
+JDF	Preševo,ZOLL
+JDF	Skopje,AS
+JDF	Prilep
+JDF	Ohrid,AS
+JDF	Lyon,Gerland International Bus Station
+JDF	Mulhouse,gare rout.
+JDF	Nadlac,ZOLL
+JDF	Nagylak,ZOLL
+JDF	Ingolstadt,Am Nordbahnhof
+JDF	Vynohradiv,AS
+JDF	Chmilnik,AS
+JDF	Bern,Car-Terminal Neufeld
+JDF	St.Margrethen,ZOLL
+JDF	Höchst,ZOLL
+JDF	Bregenz,Hauptbahnhof/Busbf. Fritz-Mayer Platz
+JDF	K.-Podilskyy,AS
+JDF	Warszawa,dw.aut.
+JDF	Terespol,CLO
+JDF	Brest,ZOLL
+JDF	Minsk,centr.nádr.
+JDF	Letenye,ZOLL E65
+JDF	Bors,ZOLL
+JDF	Saint-Julien-en-Genevois,ZOLL
+JDF	Bardonnex,ZOLL
+JDF	Geneve,gare rout.-pl.Dorciere
+JDF	Lausanne,park.Velodrome
+JDF	Lindau,Blaukreuzstrasse
+JDF	Memmingen,ZOB
+JDF	Zagreb,aut.kolodvor
+JDF	Varaždin,aut.kolodvor
+JDF	Keszthely,Autóbuszállomás
+JDF	Hévíz,Autóbuszállomás
+JDF	Sárvár,Autóbuszállomás
+JDF	Sopron,Autóbuszállomás
+JDF	Sopron,ZOLL
+JDF	Klingenbach,ZOLL
+JDF	Černovcy,AS-1
+JDF	Černovcy,AS-2
+JDF	Tysa,ZOLL
+JDF	Baden-Baden,Bahnhof
+JDF	Karlsruhe,Hinterm Bahnhof
+JDF	Zwickau,Hbf
+JDF	Chemnitz,Hbf
+JDF	Dresden,Hbf
+JDF	Vyšné Nemecké,št.hr.
+JDF	Istanbul,Büyük Otogar Esenler
+JDF	Kapykule,ZOLL
+JDF	Kap.Andreevo,ZOLL
+JDF	Vidin,ZOLL
+JDF	Kalafat,ZOLL
+JDF	Pula,aut.kolodvor
+JDF	Rovinj,aut.kolodvor
+JDF	Poreč,aut.kolodvor
+JDF	Umag,aut.kolodvor
+JDF	Plovanija,ZOLL
+JDF	Sečovlje,ZOLL
+JDF	Portorož
+JDF	Koper,Banka
+JDF	Škofije,ZOLL
+JDF	Rabuiese,ZOLL
+JDF	Trieste,Autostaz.Via Flovio Gioia
+JDF	Fernetti,ZOLL
+JDF	Fernetiči,ZOLL
+JDF	Ljubljana,aut.kolodvor
+JDF	Jesenice,ZOLL Karavanke Tunel
+JDF	Rosenbach,ZOLL Karawankentunnel
+JDF	Charkov,AS Kinnyi Rynok
+JDF	Kosiv,AS
+JDF	Vyžnycja,AS
+JDF	Storožynec,AS
+JDF	Izmail,AS
+JDF	Tatarbunary,AS
+JDF	Ryškan,AS
+JDF	Vinnica,AS Zachidnij
+JDF	Letyčiv,AS
+JDF	Drosendorf,Schule
+JDF	Boryslav,AS
+JDF	Stebnyk,AS
+JDF	Slavonski Šamac,ZOLL
+JDF	Budapest,Kelenföld aut.áll.
+JDF	Paris,Gare Paris Bercy
+JDF	Köln,Köln/Bonn Airport Fernbusbahnhof
+JDF	Bonn,FBH Museumsmeile Joseph-Beuys-Allee
+JDF	Frankfurt am Main,Fernbusbahnhof Stuttgarter Str.
+JDF	Stuttgart,Airport Busterminal SAB
+JDF	Nürnberg,ZOB Käte-Strobel-Strasse (Adcom-Center)
+JDF	Zittau,Weinau
+JDF	Zittau,Abzweig zur Weinau
+JDF	Holíč,Kátovská
+JDF	Holíč,Sasinkova
+JDF	Mižhirja,AS
+JDF	Siněvir,AS
+JDF	Tirschenreuth,ZOB Großparkplatz
+JDF	Tirschenreuth,Murrschrottpl/BRK I
+JDF	Tirschenreuth,Gewerbeg.Süd
+JDF	Lodermühl
+JDF	Grün,Haus Nr.5
+JDF	Schwarzenbach b.Tirschenreuth
+JDF	Tännersreuth,Abzw
+JDF	Wendern,Abzw
+JDF	Heimhof (Ri Schwarzenbach)
+JDF	Bärnau,Post
+JDF	London,Victoria Coach Station
+JDF	Dover,Eastern Docks
+JDF	Dover,ZOLL
+JDF	Calais,ZOLL
+JDF	Calais,Car Ferry Terminal
+JDF	Lille,gare Lille Europe-Bld de Turin
+JDF	Camphin-en-Pévele,ZOLL
+JDF	Tournai,ZOLL
+JDF	Brussel,CCN Gare du Nord
+JDF	Veldwezelt,ZOLL
+JDF	Vetschau,ZOLL
+JDF	Baranovichi
+JDF	Brest,centr.nádr.
+JDF	Kielce,dw.PKS
+JDF	Beregsurány,ZOLL
+JDF	Kamjanske,AS
+JDF	Turka,AS
+JDF	Staryi Sambor,AS
+JDF	Židačiv,AS
+JDF	Novyj Rozdil,AS
+JDF	Čuhujiv,AS
+JDF	Izjum,AS
+JDF	Slavjansk,AS
+JDF	Kramatorsk,AS
+JDF	Tübingen,Busbahnhof
+JDF	Stuttgart,Airport Busterminal SAB
+JDF	Ulm,International Bus Stop at Eberhard-Finckh-Straße
+JDF	Augsburg,Fernbushaltestelle Biberbachstraße
+JDF	Aichach,Bäckerei Zametzer
+JDF	Regensburg,Fernbushaltestelle am Hbf (Bahnhofstr.)
+JDF	Pavlohrad,AS
+JDF	Pokrovsk,AS
+JDF	Bratislava,Jarovce,št.hr.CLO
+JDF	Kittsee,ZOLL
+JDF	Valea lui Mihai,ZOLL
+JDF	Ivano-Frankovsk,Zaliznychna 30
+JDF	London,Victoria Green Line Station
+JDF	Folkestone,ZOLL
+JDF	Dunkergue,ZOLL
+JDF	Veurne,ZOLL
+JDF	Brussel,Gare du Midi
+JDF	Sterpenich,ZOLL
+JDF	Windhof,ZOLL
+JDF	Luxembourg,P+R Bouillon
+JDF	Remerschen,ZOLL
+JDF	Perl,ZOLL dálnice
+JDF	Bremen,Fernbusterminal
+JDF	Hannover,ZOB
+JDF	Dnepropetrovsk,Bogdan Khmelnitsky Ave 29p
+JDF	Paris,Pershing-Porte Maillot
+JDF	Paris,Aéroport Charles de Gaulle (Terminal 3)
+JDF	Lille,Boulevard de Turin
+JDF	Neuville-en-Ferrain,CLO
+JDF	Mennen,CLO
+JDF	Mol,ZOLL
+JDF	Bad Bentheim,ZOLL
+JDF	Osnabrück,Busbahnhof
+JDF	Bad Oeynhausen,ZOB
+JDF	Braunschweig,ZOB
+JDF	Magdeburg,ZOB Bussteig 7
+JDF	Leipzig,FBT/Fernbusterminal
+JDF	Smolnica,ZOLL
+JDF	Chotyn,AS
+JDF	Berlin,Flughafen Schönefeld Parkplatz P3
+JDF	Berlin,Alexanderplatz
+JDF	Venlo,ZOLL
+JDF	Rotterdam,Centr.St.Conradstraat
+JDF	Den Haag,Central Station (Schedeldoekshaven)
+JDF	Amsterdam,Sloterdijk
+JDF	Dnipro,AS
+JDF	Reims,Bezannes,Gare TGV Champagne Ardennes
+JDF	Forbach,ZOLL
+JDF	Saarbrücken,ZOLL
+JDF	Saarbrücken,Fernbusbahnhof Dudweilerstrasse
+JDF	Mannheim,ZOB Heinrich-von-Stephan-Str.
+JDF	Heidelberg,Hbf
+JDF	Wolpertshausen
+JDF	Zittau,Ottokarplatz
+JDF	Zittau,Hochschule
+JDF	Užhorod,Haharina 38A
+JDF	Mukačevo,Lavkivská 1E
+JDF	Mukačevo,AS-2
+JDF	Bremen,ZOB International
+JDF	Hamburg,ZOB
+JDF	Udvar,ZOLL
+JDF	Kneževo,ZOLL
+JDF	Šamac,ZOLL
+JDF	Šamac,Autobuska stanica
+JDF	Modriča,Autobuska stanica
+JDF	Doboj,Autobuska stanica
+JDF	Maglaj,Autobuska stanica
+JDF	Žepče,Autobuska stanica
+JDF	Zenica,Autobuska stanica
+JDF	Kakanj,Autobuska stanica
+JDF	Visoko,Autobuska stanica
+JDF	Sarajevo,Autobuska stanica
+JDF	Marienberg,Gewerbegebiet
+JDF	Marienberg,Erzgebirgskasarne
+JDF	Horka n.Mor.,Sedlisko
+JDF	Horka n.Mor.,Obecní úřad
+JDF	Horka n.Mor.,areál Delta
+JDF	Užhorod,AS-3
+JDF	Mukačevo,AS-2
+JDF	Iršava,AS-2
+JDF	Kaldenkirchen,ZOLL
+JDF	Düsseldorf,Hbf Worringerstr.
+JDF	Frankfurt am Main,Flughafen Charterbusspur P32
+JDF	Hinterstoder,Gemeindehaus
+JDF	Nyírábrány,ZOLL
+JDF	Kehl,haltestelle Hbf
+JDF	Ingolstadt,OB Esplanade
+JDF	München,Busterminal Nord Fröttman.
+JDF	Augsburg,Fernbushaltestelle Biberbachstraße
+JDF	Ulm,International Bus Stop at Eberhard-Finckh-Straße
+JDF	Ludwigsburg,Bahnhofstraße 30
+JDF	Heilbronn,haltestelle Bahnhofstrasse
+JDF	Heidelberg,Alte Eppelheimer Str/E-M-Str
+JDF	Darmstadt,ZOB Zweifalltorweg
+JDF	Frankfurt am Main,Flughafen Terminal 1-P36
+JDF	Barcelona,est.de autobuses Norte
+JDF	La Jonquera,ZOLL
+JDF	Le Perthus,ZOLL
+JDF	Narbonne,gare rout.
+JDF	Beziers,face a la gare-blvd.de Verdun
+JDF	Montpellier,Sabines
+JDF	Grenoble,Condillac-Universités
+JDF	Annecy,gare rout.-rue de l'Industrie
+JDF	Basel,Meret Oppenheim-Strasse
+JDF	Basel,Weil am Rhein Autobahn ZOLL
+JDF	Weil am Rhein,Autobahn ZOLL
+JDF	Kittsee,ZOLL
+JDF	Bratislava,Jarovce,št.hr.CLO
+JDF	Bratislava,Mlynské nivy
+JDF	Stiring-Wendel,ZOLL
+JDF	Neckarsulm,Bhf
+JDF	Zalishchyky,AS
+JDF	Tovste,AS
+JDF	Chisinau,aut.nádr.SUD
+JDF	Hamburg,ZOB
+JDF	Leverkusen,Busbahnhof Leverkusen-Mitte
+JDF	Düsseldorf,Fernbushaltestelle Woringerstr.
+JDF	Essen,ZOB
+JDF	Bochum,Wittener Strasse unter der DB-Brücke am Hbf
+JDF	Dortmund,ZOB
+JDF	Halle,ZOB
+JDF	Mykolajiv,AS Pivdenna
+JDF	Nykobing Falster
+JDF	Gedser,Havn ZOLL
+JDF	Rostock,Fährhafen ZOLL
+JDF	Berlin,Alexanderplatz
+JDF	Berlin,Flughafen Schönefeld Parkplatz P3
+JDF	Boryspil,AS
+JDF	Wien,Erdbergstrasse
+JDF	Rostock,Fährhafen ZOLL
+JDF	Kobenhavn,Ingerslevsgade DGI-Byen
+JDF	Brugge,Rijselstraat-Spoorwegstraat
+JDF	Gent,Dampoort Station
+JDF	Leuven,Station
+JDF	Hasselt,Station
+JDF	Aachen,Henricistrasse
+JDF	Frankfurt am Main,Flughafen
+JDF	Würzburg,Hbf
+JDF	Erlangen,Zentraler Omnibusbahnhof
+JDF	Lityn,AS
+JDF	Charkov,AS Poltavsky Shlyakh
+JDF	Kušnitsja,AS
+JDF	Tulčyn,AS
+JDF	Yampil,AS
+JDF	Mohylew,Leninska 93
+JDF	Warszawa,dw.Wschodni
+JDF	Oslo,Bussterminal
+JDF	Svinesundhagen,ZOLL
+JDF	Svinesund,ZOLL
+JDF	Göteborg,Akareplatsen
+JDF	Halmstad,Regionbussterminalen
+JDF	Landskrona,Centralstation
+JDF	Lund,Busstationen
+JDF	Kastrup,lufthavn
+JDF	Puttgarden,Ferryterminal
+JDF	Rostock,Fährhafen Scandlines
+JDF	Schönefeld,Flughafen Berlin
+JDF	Chemnitz,Fernbusterminal
+JDF	Annaberg-Buchholz,Geyersdorfer Str
+JDF	Kurort Oberwiesenthal,Cityparkplatz
+JDF	Aschaffenburg,Busbahnhof
+JDF	Battonya,ZOLL
+JDF	Turnu,ZOLL
+JDF	Leušeny,ZOLL
+JDF	Žovkva,AS
+JDF	Červonohrad,AS
+JDF	Raděhiv
+JDF	Horohiv
+JDF	Lutsk,AS
+JDF	Botosani,autogara
+JDF	Suceava,autogara
+JDF	Cluj-Napoca,Autogara Sens Vest
+JDF	Oradea,autogara INTRANS
+JDF	Ártánd,oh.ZOLL
+JDF	Bánovce n.Bebravou,AS
+JDF	Prievidza,aut.st.
+JDF	Handlová,centrum
+JDF	Brezno,AS
+JDF	Tisovec,nám.
+JDF	Muráň,nám.
+JDF	Revúca,AS
+JDF	Jelšava,nám.
+JDF	Štítnik,nám.
+JDF	Rožňava,AS
+JDF	Košice,Šaca,Benzinol
+JDF	Jahotyn,AS
+JDF	Hlyboka Dolyna,AS
+JDF	Uhryniv,ZOLL
+JDF	Kroscienko,ZOLL
+JDF	Dolhobyczow,CLO
+JDF	Charkov,AS Centralnyj Rynok
+JDF	Praha,Újezd  LD
+JDF	Praha,Nebozízek LD
+JDF	Praha,Petřín LD

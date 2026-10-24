@@ -1,0 +1,11 @@
+https://overpass-api.de/api/interpreter HTTP 200 5651091
+řádků: 129814
+50.0762863	14.3326182	Malý Břevnov	
+50.0510701	14.3660158	Sídliště Jinonice	
+50.0306277	14.5295271	Háje	
+50.0550422	14.4538372	Michelská	
+50.0491034	14.4294762	Kavčí hory	
+50.0516381	14.4286087	Na Hřebenech	
+50.0570852	14.4378322	Vozovna Pankrác	
+50.0609014	14.4945296	Želivecká	
+50.0333
