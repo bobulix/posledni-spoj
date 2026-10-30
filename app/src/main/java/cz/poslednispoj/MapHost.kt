@@ -111,15 +111,16 @@ class MapHolder(private val ctx: Context, private val vm: AppViewModel) {
             m.addOnMapClickListener { ll ->
                 val pt = m.projection.toScreenLocation(ll)
                 val dens = ctx.resources.displayMetrics.density
+                val tick = { root.performHapticFeedback(android.view.HapticFeedbackConstants.CONTEXT_CLICK) }
                 val leg = if (vm.selected >= 0) layers.hitLeg(m, pt.x, pt.y, dens) else -1
                 when {
                     // klepnutí na cestu = jako klepnutí na spoj v detailu (rozbalí / sbalí jeho trasu)
-                    leg >= 0 -> vm.toggleRoute(leg)
+                    leg >= 0 -> { tick(); vm.toggleRoute(leg) }
                     // při rozbaleném detailu klepnutí do mapy jen sbalí detail, zastávka zůstává
                     vm.selected >= 0 && !vm.sheetMini -> vm.toggleMini()
                     else -> {
                         val id = layers.hitTest(m, pt.x, pt.y, dens)
-                        if (id >= 0) vm.select(id)
+                        if (id >= 0) { tick(); vm.select(id) }
                     }
                 }
                 true
@@ -157,6 +158,17 @@ class MapHolder(private val ctx: Context, private val vm: AppViewModel) {
         return true
     }
 
+    /** Plynulý přelet na oblast; dole se nechá místo pro detail. */
+    fun flyTo(b: DoubleArray, bottomDp: Int) {
+        val m = map ?: return
+        val d = ctx.resources.displayMetrics.density
+        val bounds = org.maplibre.android.geometry.LatLngBounds.Builder()
+            .include(LatLng(b[0], b[1])).include(LatLng(b[2], b[3])).build()
+        try {
+            m.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, (40 * d).toInt(), (110 * d).toInt(), (40 * d).toInt(), (bottomDp * d).toInt()), 700)
+        } catch (_: Exception) {}
+    }
+
     fun moveTo(lat: Double, lon: Double, zoom: Double) {
         map?.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(lat, lon), zoom))
     }
@@ -186,6 +198,15 @@ fun rememberMapHolder(vm: AppViewModel): MapHolder {
     // každá změna výsledku nebo výběru překreslí vrstvu
     LaunchedEffect(holder) {
         snapshotFlow { vm.renderTick to vm.expanded.size }.collect { holder.layers.update() }
+    }
+    LaunchedEffect(holder) {
+        snapshotFlow { vm.cameraFit }.collect { b ->
+            if (b != null) {
+                val hDp = (holder.root.height / holder.root.resources.displayMetrics.density).toInt()
+                holder.flyTo(b, if (vm.sheetMini) 110 else (hDp * 0.5).toInt() + 30)
+                vm.cameraFit = null
+            }
+        }
     }
     LaunchedEffect(holder) {
         snapshotFlow { vm.cameraRequest }.collect { r ->

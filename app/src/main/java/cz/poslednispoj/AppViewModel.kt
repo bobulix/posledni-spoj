@@ -101,6 +101,9 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         private set
     var sheetMini by mutableStateOf(false)
         private set
+    /** Detail roztažený přes skoro celou obrazovku. */
+    var sheetFull by mutableStateOf(false)
+        private set
     val expanded = mutableStateMapOf<Int, IntArray>() // úsek -> uzly celé trasy spoje
     var journey: List<Leg> = emptyList()
         private set
@@ -279,10 +282,10 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     }
     fun togglePanel() {
         panelCollapsed = !panelCollapsed; prefs.edit().putBoolean("collapsed", panelCollapsed).apply()
-        if (!panelCollapsed && selected >= 0) sheetMini = true // rozbalený panel a detail se nepřekrývají
+        if (!panelCollapsed && selected >= 0) { sheetMini = true; sheetFull = false } // rozbalený panel a detail se nepřekrývají
     }
     /** Psaní cíle: detail spoje se sbalí, aby nepřekážel. */
-    fun onDestinationFocus() { if (selected >= 0) sheetMini = true }
+    fun onDestinationFocus() { if (selected >= 0) { sheetMini = true; sheetFull = false } }
     private fun sheetExpanded() { if (!panelCollapsed) panelCollapsed = true }
     fun updateOpacity(v: Float) { opacity = v; prefs.edit().putFloat("opacity", v).apply(); renderTick++ }
     fun retry() { error = null; viewModelScope.launch { if (meta == null) load() else loadDayAndCompute() } }
@@ -340,8 +343,14 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             DoubleArray(n + 2) { when (it) { 0 -> m.lat[from]; n + 1 -> m.lat[to]; else -> la[a + it - 1] } },
             DoubleArray(n + 2) { when (it) { 0 -> m.lon[from]; n + 1 -> m.lon[to]; else -> lo[a + it - 1] } })
     }
-    fun toggleMini() { sheetMini = !sheetMini; if (!sheetMini) sheetExpanded() }
-    fun expandSheet() { sheetMini = false; sheetExpanded() }
+    fun toggleMini() { sheetMini = !sheetMini; sheetFull = false; if (!sheetMini) sheetExpanded() }
+    fun expandSheet() { sheetMini = false; sheetFull = false; sheetExpanded() }
+    /** 0 = jen hlavička, 1 = polovina, 2 = celá obrazovka. */
+    fun setSheetLevel(l: Int) { sheetMini = l == 0; sheetFull = l == 2; if (l > 0) sheetExpanded() }
+    fun shortDay(): String = if (dayKey == todayKey()) "dnes" else dayLabel(dayKey).substringBefore(" (")
+
+    /** Požadavek na přelet mapy na oblast [minLat, minLon, maxLat, maxLon]. */
+    var cameraFit by mutableStateOf<DoubleArray?>(null)
     fun toggleRoute(legIndex: Int) {
         if (expanded.containsKey(legIndex)) expanded.remove(legIndex)
         else {
@@ -350,6 +359,11 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             val nodes = Csa.tripRoute(d, l.trip).map { it.node }.toIntArray()
             expanded.clear() // rozbalený je vždy jen jeden spoj; předchozí se sbalí
             expanded[legIndex] = nodes
+            val m0 = meta
+            if (m0 != null && nodes.isNotEmpty()) {
+                // krátký přelet mapy na celou trasu rozbaleného spoje
+                cameraFit = doubleArrayOf(nodes.minOf { m0.lat[it] }, nodes.minOf { m0.lon[it] }, nodes.maxOf { m0.lat[it] }, nodes.maxOf { m0.lon[it] })
+            }
         }
         val m = meta
         expandedLines = if (m == null) emptyMap() else expanded.mapValues { (li, nodes) ->
@@ -365,7 +379,6 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         val g = meta?.generated ?: return "?"
         return if (g.length >= 8 && g[0].isDigit()) "${g.substring(6, 8).toInt()}. ${g.substring(4, 6).toInt()}. ${g.substring(0, 4)}" else g
     }
-    fun returnHere() { val m = meta ?: return; if (selected >= 0) setDestination(m.names[selected]) }
 
     // ---- pomocné ----
     fun binOf(dep: Int): Bin {

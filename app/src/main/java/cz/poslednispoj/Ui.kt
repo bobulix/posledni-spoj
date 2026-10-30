@@ -82,6 +82,25 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.PopupProperties
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideInVertically
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 
 private val Ink = Color(0xFF1C2620)
 private val Ink2 = Color(0xFF56625A)
@@ -98,7 +117,8 @@ private val AppColors = lightColorScheme(
 @Composable
 fun App(vm: AppViewModel, holder: MapHolder, onLocate: () -> Unit) {
     MaterialTheme(colorScheme = AppColors) {
-        Box(Modifier.fillMaxSize().background(Paper)) {
+        BoxWithConstraints(Modifier.fillMaxSize().background(Paper)) {
+            val screenH = maxHeight
             MapHost(holder, Modifier.fillMaxSize())
             if (BuildConfig.MAPY_API_KEY.isNotBlank()) {
                 MapyAttribution(Modifier.align(Alignment.BottomStart).navigationBarsPadding().padding(start = 8.dp, bottom = 6.dp))
@@ -111,11 +131,17 @@ fun App(vm: AppViewModel, holder: MapHolder, onLocate: () -> Unit) {
                 SideControls(
                     vm, holder, onLocate,
                     Modifier.align(Alignment.BottomEnd).navigationBarsPadding()
-                        .padding(end = 12.dp, bottom = if (sheetOpen) 84.dp else 24.dp)
+                        .padding(end = 12.dp, bottom = if (sheetOpen) 100.dp else 24.dp)
                 )
             }
-            if (sheetOpen) {
-                DetailSheet(vm, Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(12.dp))
+            // detail se plynule vysune zespodu
+            AnimatedVisibility(
+                visible = sheetOpen,
+                enter = slideInVertically(spring(dampingRatio = 0.85f, stiffness = Spring.StiffnessMediumLow)) { it } + fadeIn(),
+                exit = fadeOut(tween(120)),
+                modifier = Modifier.align(Alignment.BottomCenter),
+            ) {
+                DetailSheet(vm, screenH, Modifier.navigationBarsPadding().padding(12.dp))
             }
 
             val loading = vm.loading
@@ -143,32 +169,46 @@ fun App(vm: AppViewModel, holder: MapHolder, onLocate: () -> Unit) {
 @Composable
 private fun TopPanel(vm: AppViewModel, modifier: Modifier) {
     val collapsed = vm.panelCollapsed
+    if (collapsed) {
+        // sbalený panel: jeden řádek „Praha · do 19:00 · dnes“, klepnutím se rozbalí
+        Surface(
+            modifier.widthIn(max = 560.dp).fillMaxWidth().clip(RoundedCornerShape(28.dp)).clickable(onClickLabel = "Rozbalit panel") { vm.togglePanel() },
+            shape = RoundedCornerShape(28.dp), shadowElevation = 6.dp, color = Color.White
+        ) {
+            Row(Modifier.padding(start = 14.dp, end = 6.dp, top = 6.dp, bottom = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+                TrailMark()
+                Spacer(Modifier.width(10.dp))
+                val dest = if (vm.dest == PRAHA) "Praha" else vm.dest.removeSuffix(TOWN_SUFFIX)
+                Text(dest, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Ink, maxLines = 1, overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f, fill = false))
+                Text("  ·  do ${hm(vm.arriveBy)}  ·  ${vm.shortDay()}", fontSize = 15.sp, color = Ink2, maxLines = 1, softWrap = false)
+                Spacer(Modifier.weight(1f))
+                RoundButton("▾", "Rozbalit panel") { vm.togglePanel() }
+            }
+        }
+        return
+    }
     Surface(
         modifier.widthIn(max = 560.dp).fillMaxWidth(),
         shape = RoundedCornerShape(14.dp), shadowElevation = 6.dp, color = Color.White
     ) {
-        Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            if (!collapsed) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    TrailMark()
-                    Spacer(Modifier.width(10.dp))
-                    Text("Poslední spoj", fontFamily = Condensed, fontWeight = FontWeight.Bold, fontSize = 22.sp, color = Ink)
-                    Spacer(Modifier.weight(1f))
-                    RoundButton(if (collapsed) "▾" else "▴", "Sbalit panel") { vm.togglePanel() }
-                }
+        Column(Modifier.animateContentSize().padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                TrailMark()
+                Spacer(Modifier.width(10.dp))
+                Text("Poslední spoj", fontFamily = Condensed, fontWeight = FontWeight.Bold, fontSize = 22.sp, color = Ink)
+                Spacer(Modifier.weight(1f))
+                RoundButton("▴", "Sbalit panel") { vm.togglePanel() }
             }
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                DestinationField(vm, Modifier.weight(1.7f), showLabel = !collapsed)
-                TimeField(vm, Modifier.weight(1f), showLabel = !collapsed)
-                if (collapsed) RoundButton("▾", "Rozbalit panel") { vm.togglePanel() }
+                DestinationField(vm, Modifier.weight(1.7f), showLabel = true)
+                TimeField(vm, Modifier.weight(1f), showLabel = true)
             }
-            if (!collapsed) {
-                DayField(vm)
-                ModeChips(vm)
-                Legend(vm)
-                if (vm.status.isNotEmpty()) Text(vm.status, fontSize = 13.sp, color = Ink2)
-                Text("verze ${BuildConfig.VERSION_NAME}", fontSize = 11.sp, color = Ink2)
-            }
+            DayField(vm)
+            ModeChips(vm)
+            Legend(vm)
+            if (vm.status.isNotEmpty()) Text(vm.status, fontSize = 13.sp, color = Ink2)
+            Text("verze ${BuildConfig.VERSION_NAME}", fontSize = 11.sp, color = Ink2)
         }
     }
 }
@@ -334,19 +374,22 @@ private fun ModeChips(vm: AppViewModel) {
     }
 }
 
+/** Legenda jako souvislý barevný pruh: vlevo „musím odjet brzo“, vpravo čas příjezdu. */
 @Composable
 private fun Legend(vm: AppViewModel) {
-    FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Text("Poslední odjezd", fontSize = 12.sp, color = Ink2, modifier = Modifier.padding(end = 4.dp, top = 2.dp))
-        var prev = vm.arriveBy
-        BINS.forEachIndexed { i, b ->
-            val from = vm.arriveBy - b.hours * 60
-            val label = if (i == BINS.lastIndex) "před ${hm(prev)}" else "${hm(maxOf(from, 0))}–${hm(prev)}"
-            Text(
-                label, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = Color(b.fg),
-                modifier = Modifier.clip(RoundedCornerShape(4.dp)).background(Color(b.bg)).padding(horizontal = 6.dp, vertical = 1.dp)
-            )
-            prev = from
+    val bins = BINS.indices.reversed().toList()
+    Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
+        Text("Poslední odjezd", fontSize = 12.sp, color = Ink2)
+        Row(Modifier.fillMaxWidth().height(10.dp).clip(RoundedCornerShape(5.dp))) {
+            bins.forEach { i -> Box(Modifier.weight(1f).fillMaxHeight().background(Color(BINS[i].bg))) }
+        }
+        Row(Modifier.fillMaxWidth()) {
+            bins.forEach { i ->
+                // pod pravým okrajem každého úseku čas, kdy úsek končí
+                val end = vm.arriveBy - (if (i == 0) 0 else BINS[i - 1].hours) * 60
+                Text(hm(maxOf(end, 0)), fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = Ink2,
+                    textAlign = TextAlign.End, modifier = Modifier.weight(1f))
+            }
         }
     }
 }
@@ -403,7 +446,7 @@ private fun VerticalSlider(value: Float, onChange: (Float) -> Unit, modifier: Mo
 // ---------------- detail zastávky ----------------
 
 @Composable
-private fun DetailSheet(vm: AppViewModel, modifier: Modifier) {
+private fun DetailSheet(vm: AppViewModel, screenH: Dp, modifier: Modifier) {
     val m = vm.meta ?: return
     val p = vm.profile ?: return
     val trips = vm.trips ?: return
@@ -419,24 +462,61 @@ private fun DetailSheet(vm: AppViewModel, modifier: Modifier) {
     val timeColor = if (dep < 0 || missed) Ink2 else Color(vm.binOf(dep).bg)
     val ctx = LocalContext.current
 
+    // tři polohy: jen hlavička, polovina obrazovky, skoro celá obrazovka (nad sbaleným panelem)
+    val miniH = 80.dp
+    val halfH = (screenH * 0.5f).coerceAtLeast(miniH + 120.dp)
+    val fullH = (screenH - 150.dp).coerceAtLeast(halfH)
+    val levels = listOf(miniH, halfH, fullH)
+    val level = if (vm.sheetMini) 0 else if (vm.sheetFull) 2 else 1
+    var dragH by remember { mutableStateOf<Dp?>(null) }
+    val animH by animateDpAsState(levels[level], spring(dampingRatio = 0.85f, stiffness = Spring.StiffnessMediumLow), label = "sheet")
+    val h = dragH ?: animH
+    val density = LocalDensity.current
+    val dragMod = Modifier.pointerInput(Unit) {
+        detectVerticalDragGestures(
+            onDragEnd = {
+                val cur = dragH ?: return@detectVerticalDragGestures
+                // nejbližší poloha; malý pohyb stačí k přechodu o polohu výš/níž
+                val start = levels[if (vm.sheetMini) 0 else if (vm.sheetFull) 2 else 1]
+                val target = when {
+                    cur > start + 40.dp -> levels.firstOrNull { it > start } ?: start
+                    cur < start - 40.dp -> levels.lastOrNull { it < start } ?: start
+                    else -> start
+                }
+                vm.setSheetLevel(levels.indexOf(target))
+                dragH = null
+            },
+            onDragCancel = { dragH = null },
+        ) { change, dy ->
+            change.consume()
+            val base = dragH ?: levels[if (vm.sheetMini) 0 else if (vm.sheetFull) 2 else 1]
+            dragH = (base - with(density) { dy.toDp() }).coerceIn(miniH, fullH)
+        }
+    }
+    val mini = h < miniH + 24.dp
+
     Surface(
-        modifier.widthIn(max = 560.dp).fillMaxWidth()
-            .then(if (vm.sheetMini) Modifier.clickable { vm.expandSheet() } else Modifier),
-        shape = RoundedCornerShape(14.dp), shadowElevation = 8.dp, color = Color.White
+        modifier.widthIn(max = 560.dp).fillMaxWidth().height(h),
+        shape = RoundedCornerShape(18.dp), shadowElevation = 8.dp, color = Color.White
     ) {
+      Column {
         Column(
-            Modifier.heightIn(max = if (vm.sheetMini) 64.dp else 420.dp)
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp, vertical = if (vm.sheetMini) 10.dp else 14.dp)
+            dragMod.fillMaxWidth()
+                .then(if (vm.sheetMini) Modifier.clickable(onClickLabel = "Rozbalit detail") { vm.expandSheet() } else Modifier)
+                .padding(start = 16.dp, end = 16.dp, bottom = 6.dp)
         ) {
+            // úchyt pro tažení
+            Box(Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 6.dp), contentAlignment = Alignment.Center) {
+                Box(Modifier.size(36.dp, 4.dp).clip(RoundedCornerShape(2.dp)).background(Hair))
+            }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     m.names[i], fontFamily = Condensed, fontWeight = FontWeight.Bold,
-                    fontSize = if (vm.sheetMini) 19.sp else 23.sp, color = Ink,
-                    maxLines = if (vm.sheetMini) 1 else 3, overflow = TextOverflow.Ellipsis,
+                    fontSize = if (mini) 19.sp else 23.sp, color = Ink,
+                    maxLines = if (mini) 1 else 2, overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f)
                 )
-                if (vm.sheetMini) {
+                if (mini) {
                     Text(hm(dep), fontFamily = Condensed, fontWeight = FontWeight.Bold, fontSize = 22.sp, color = timeColor)
                     Spacer(Modifier.width(8.dp))
                 }
@@ -444,7 +524,11 @@ private fun DetailSheet(vm: AppViewModel, modifier: Modifier) {
                 Spacer(Modifier.width(6.dp))
                 RoundButton("×", "Zavřít") { vm.closeSheet() }
             }
-            if (vm.sheetMini) return@Column
+        }
+        if (mini) return@Column
+        Column(
+            Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(start = 16.dp, end = 16.dp, bottom = 14.dp)
+        ) {
 
             if (entry == null) {
                 Text("Odsud se do cíle včas nedostaneš.", color = Ink2)
@@ -493,11 +577,14 @@ private fun DetailSheet(vm: AppViewModel, modifier: Modifier) {
                                 )
                                 Text((if (lbl.isNotEmpty()) " ${m.routeName[ri]} ·" else "") + " směr ${trips.head.getOrElse(leg.trip) { "" }}", fontSize = 14.sp, color = Ink2,
                                     maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f, fill = false))
-                                Text(if (open) " ▴" else " ▾", fontSize = 13.sp, color = Ink2)
+                                val rot by animateFloatAsState(if (open) 180f else 0f, label = "chev")
+                                Text(" ▾", fontSize = 13.sp, color = Ink2, modifier = Modifier.rotate(rot))
                             }
                             Text("${m.names[leg.from]} → ${m.names[leg.to]}  ·  příjezd ${hm(leg.arr)}", fontSize = 14.sp, color = Ink)
                             vm.alertsForRoute(ri).forEach { AlertBox(it) }
-                            if (open) RouteList(vm, day, leg, col)
+                            AnimatedVisibility(open, enter = expandVertically() + fadeIn(), exit = shrinkVertically() + fadeOut()) {
+                                RouteList(vm, day, leg, col)
+                            }
                         }
                     }
                 }
@@ -506,7 +593,6 @@ private fun DetailSheet(vm: AppViewModel, modifier: Modifier) {
             LegRow(time = lastArr, end = true) { Text("v cíli · ${m.names[endNode]}", fontSize = 14.sp, color = Ink) }
 
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.padding(top = 8.dp)) {
-                Button(onClick = { vm.returnHere() }, colors = ButtonDefaults.buttonColors(containerColor = Ink)) { Text("Vracet se sem") }
                 OutlinedButton(onClick = {
                     // ověření přesně tohoto spojení v IDOS (výluky a mimořádnosti)
                     openIdos(ctx, m.idosName[i], m.idosName[endNode], vm.dayKey, dep)
@@ -520,6 +606,7 @@ private fun DetailSheet(vm: AppViewModel, modifier: Modifier) {
                 fontSize = 12.sp, color = Ink2, modifier = Modifier.padding(top = 10.dp)
             )
         }
+      }
     }
 }
 
