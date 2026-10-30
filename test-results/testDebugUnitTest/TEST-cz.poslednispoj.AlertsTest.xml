@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="cz.poslednispoj.AlertsTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-10-30T15:46:00" hostname="runnervmnwato" time="0.725">
+  <properties/>
+  <testcase name="parsesLiveAlerts" classname="cz.poslednispoj.AlertsTest" time="0.725"/>
+  <system-out><![CDATA[mimořádností: 9
+- Dálnice D4 (směr z Prahy) | linky [L395, L450, L472, L471, L393, L392] | https://pid.cz/mimoradnost/?uuid=6b63300d-beb8-45f2-9828-acc3f69cec56 | období 1
+- Univerzitní | linky [L155] | https://pid.cz/mimoradnost/?uuid=ee725a0f-25a5-43f0-ac7b-c3a7e30b9bef | období 1
+- Omezení kapacity vybraných osobních vlaků (30.10.2026) | linky [L1009, L1006, L1145, L1001, L1141, L1022] | https://pid.cz/mimoradnost/?uuid=716aeefa-ec80-4c3e-9975-72f4adf3c932 | období 1
+- Lažany | linky [L733] | https://pid.cz/mimoradnost/?uuid=4aa3eab0-776f-498b-91e5-8a69f64c97e8 | období 1
+- Hrejkovice, Pechova Lhota | linky [L420] | https://pid.cz/mimoradnost/?uuid=8b811313-44ed-4752-a035-26ce74f00575 | období 1
+- Satalice | linky [L186, L953] | https://pid.cz/mimoradnost/?uuid=cb07e117-18d6-4635-8922-dfe8e5dae187 | období 1
+- Smíchovské nádraží | linky [L241, L395, L392, L420, L232, L907] | https://pid.cz/mimoradnost/?uuid=25c41fe6-b10f-46bd-9b4c-3c5d3df1a515 | období 1
+- Jesenice – Sibřina | linky [L765] | https://pid.cz/mimoradnost/?uuid=3129bd77-294b-4f87-b66f-a48f59731944 | období 1
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
