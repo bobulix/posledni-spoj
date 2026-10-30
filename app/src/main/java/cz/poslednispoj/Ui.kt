@@ -85,6 +85,9 @@ import androidx.compose.ui.window.PopupProperties
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.VectorConverter
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
@@ -169,46 +172,63 @@ fun App(vm: AppViewModel, holder: MapHolder, onLocate: () -> Unit) {
 @Composable
 private fun TopPanel(vm: AppViewModel, modifier: Modifier) {
     val collapsed = vm.panelCollapsed
-    if (collapsed) {
-        // sbalený panel: jeden řádek „Praha · do 19:00 · dnes“, klepnutím se rozbalí
-        Surface(
-            modifier.widthIn(max = 560.dp).fillMaxWidth().clip(RoundedCornerShape(28.dp)).clickable(onClickLabel = "Rozbalit panel") { vm.togglePanel() },
-            shape = RoundedCornerShape(28.dp), shadowElevation = 6.dp, color = Color.White
-        ) {
-            Row(Modifier.padding(start = 14.dp, end = 6.dp, top = 6.dp, bottom = 6.dp), verticalAlignment = Alignment.CenterVertically) {
-                TrailMark()
-                Spacer(Modifier.width(10.dp))
-                val dest = if (vm.dest == PRAHA) "Praha" else vm.dest.removeSuffix(TOWN_SUFFIX)
-                Text(dest, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Ink, maxLines = 1, overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f, fill = false))
-                Text("  ·  do ${hm(vm.arriveBy)}  ·  ${vm.shortDay()}", fontSize = 15.sp, color = Ink2, maxLines = 1, softWrap = false)
-                Spacer(Modifier.weight(1f))
-                RoundButton("▾", "Rozbalit panel") { vm.togglePanel() }
-            }
-        }
-        return
+    val density = LocalDensity.current
+    var pull by remember { mutableStateOf(0f) }
+    // tažení dolů rozbalí, tažení nahoru sbalí (jako u spodního detailu)
+    val dragMod = Modifier.pointerInput(Unit) {
+        detectVerticalDragGestures(
+            onDragStart = { pull = 0f },
+            onDragEnd = {
+                val d = with(density) { pull.toDp() }
+                if (d > 24.dp && vm.panelCollapsed) vm.togglePanel()
+                else if (d < (-24).dp && !vm.panelCollapsed) vm.togglePanel()
+                pull = 0f
+            },
+        ) { change, dy -> change.consume(); pull += dy }
     }
     Surface(
-        modifier.widthIn(max = 560.dp).fillMaxWidth(),
-        shape = RoundedCornerShape(14.dp), shadowElevation = 6.dp, color = Color.White
+        modifier.widthIn(max = 560.dp).fillMaxWidth().then(dragMod),
+        shape = RoundedCornerShape(20.dp), shadowElevation = 6.dp, color = Color.White
     ) {
-        Column(Modifier.animateContentSize().padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                TrailMark()
-                Spacer(Modifier.width(10.dp))
-                Text("Poslední spoj", fontFamily = Condensed, fontWeight = FontWeight.Bold, fontSize = 22.sp, color = Ink)
-                Spacer(Modifier.weight(1f))
-                RoundButton("▴", "Sbalit panel") { vm.togglePanel() }
+        Column(Modifier.animateContentSize(spring(dampingRatio = 0.9f, stiffness = Spring.StiffnessMediumLow))) {
+            if (collapsed) {
+                // sbalený panel: jeden řádek „Praha · do 19:00 · dnes“, klepnutím nebo tažením dolů se rozbalí
+                Row(
+                    Modifier.fillMaxWidth().clickable(onClickLabel = "Rozbalit panel") { vm.togglePanel() }
+                        .padding(start = 14.dp, end = 14.dp, top = 12.dp, bottom = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    TrailMark()
+                    Spacer(Modifier.width(10.dp))
+                    val dest = if (vm.dest == PRAHA) "Praha" else vm.dest.removeSuffix(TOWN_SUFFIX)
+                    Text(dest, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Ink, maxLines = 1, overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f, fill = false))
+                    Text("  ·  do ${hm(vm.arriveBy)}  ·  ${vm.shortDay()}", fontSize = 15.sp, color = Ink2, maxLines = 1, softWrap = false)
+                }
+            } else {
+                Column(Modifier.padding(start = 12.dp, end = 12.dp, top = 12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        TrailMark()
+                        Spacer(Modifier.width(10.dp))
+                        Text("Poslední spoj", fontFamily = Condensed, fontWeight = FontWeight.Bold, fontSize = 22.sp, color = Ink)
+                    }
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        DestinationField(vm, Modifier.weight(1.7f), showLabel = true)
+                        TimeField(vm, Modifier.weight(1f), showLabel = true)
+                    }
+                    DayField(vm)
+                    ModeChips(vm)
+                    Legend(vm)
+                    if (vm.status.isNotEmpty()) Text(vm.status, fontSize = 13.sp, color = Ink2)
+                    Text("verze ${BuildConfig.VERSION_NAME}", fontSize = 11.sp, color = Ink2)
+                }
             }
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                DestinationField(vm, Modifier.weight(1.7f), showLabel = true)
-                TimeField(vm, Modifier.weight(1f), showLabel = true)
-            }
-            DayField(vm)
-            ModeChips(vm)
-            Legend(vm)
-            if (vm.status.isNotEmpty()) Text(vm.status, fontSize = 13.sp, color = Ink2)
-            Text("verze ${BuildConfig.VERSION_NAME}", fontSize = 11.sp, color = Ink2)
+            // úchyt dole: klepnutím přepne, tažením se panel vytáhne / zasune
+            Box(
+                Modifier.fillMaxWidth().clickable(onClickLabel = if (collapsed) "Rozbalit panel" else "Sbalit panel") { vm.togglePanel() }
+                    .padding(top = 6.dp, bottom = 8.dp),
+                contentAlignment = Alignment.Center
+            ) { Box(Modifier.size(36.dp, 4.dp).clip(RoundedCornerShape(2.dp)).background(Hair)) }
         }
     }
 }
@@ -468,29 +488,38 @@ private fun DetailSheet(vm: AppViewModel, screenH: Dp, modifier: Modifier) {
     val fullH = (screenH - 150.dp).coerceAtLeast(halfH)
     val levels = listOf(miniH, halfH, fullH)
     val level = if (vm.sheetMini) 0 else if (vm.sheetFull) 2 else 1
-    var dragH by remember { mutableStateOf<Dp?>(null) }
-    val animH by animateDpAsState(levels[level], spring(dampingRatio = 0.85f, stiffness = Spring.StiffnessMediumLow), label = "sheet")
-    val h = dragH ?: animH
+    // výška panelu: při tažení sleduje prst, po puštění plynule dojede do nejbližší polohy (bez skoku zpět)
+    val anim = remember { Animatable(levels[level], Dp.VectorConverter) }
+    var dragging by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+    LaunchedEffect(level, levels) {
+        if (!dragging) anim.animateTo(levels[level], spring(dampingRatio = 0.85f, stiffness = Spring.StiffnessMediumLow))
+    }
+    val h = anim.value
     val density = LocalDensity.current
-    val dragMod = Modifier.pointerInput(Unit) {
+    val dragMod = Modifier.pointerInput(levels) {
+        var startH = miniH
         detectVerticalDragGestures(
+            onDragStart = { dragging = true; startH = anim.value },
             onDragEnd = {
-                val cur = dragH ?: return@detectVerticalDragGestures
-                // nejbližší poloha; malý pohyb stačí k přechodu o polohu výš/níž
-                val start = levels[if (vm.sheetMini) 0 else if (vm.sheetFull) 2 else 1]
+                val cur = anim.value
                 val target = when {
-                    cur > start + 40.dp -> levels.firstOrNull { it > start } ?: start
-                    cur < start - 40.dp -> levels.lastOrNull { it < start } ?: start
-                    else -> start
+                    cur > startH + 40.dp -> levels.firstOrNull { it > startH + 1.dp } ?: levels.last()
+                    cur < startH - 40.dp -> levels.lastOrNull { it < startH - 1.dp } ?: levels.first()
+                    else -> levels.minByOrNull { kotlin.math.abs((it - cur).value) }!!
                 }
-                vm.setSheetLevel(levels.indexOf(target))
-                dragH = null
+                val idx = levels.indexOf(target)
+                vm.setSheetLevel(idx)
+                scope.launch {
+                    anim.animateTo(target, spring(dampingRatio = 0.85f, stiffness = Spring.StiffnessMediumLow))
+                    dragging = false
+                }
             },
-            onDragCancel = { dragH = null },
+            onDragCancel = { dragging = false },
         ) { change, dy ->
             change.consume()
-            val base = dragH ?: levels[if (vm.sheetMini) 0 else if (vm.sheetFull) 2 else 1]
-            dragH = (base - with(density) { dy.toDp() }).coerceIn(miniH, fullH)
+            val nv = (anim.value - with(density) { dy.toDp() }).coerceIn(miniH, fullH)
+            scope.launch { anim.snapTo(nv) }
         }
     }
     val mini = h < miniH + 24.dp
@@ -520,8 +549,6 @@ private fun DetailSheet(vm: AppViewModel, screenH: Dp, modifier: Modifier) {
                     Text(hm(dep), fontFamily = Condensed, fontWeight = FontWeight.Bold, fontSize = 22.sp, color = timeColor)
                     Spacer(Modifier.width(8.dp))
                 }
-                RoundButton(if (vm.sheetMini) "▴" else "▾", if (vm.sheetMini) "Rozbalit detail" else "Sbalit detail") { vm.toggleMini() }
-                Spacer(Modifier.width(6.dp))
                 RoundButton("×", "Zavřít") { vm.closeSheet() }
             }
         }
