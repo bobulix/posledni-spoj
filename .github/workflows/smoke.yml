@@ -82,7 +82,8 @@ jobs:
             adb shell input swipe 540 1150 540 300 400
             sleep 2
             adb exec-out screencap -p > out/5b-full.png
-            adb shell input swipe 540 520 540 1600 400
+            # tažení dolů za obsah (obsah je nahoře) má posunout celé okno
+            adb shell input swipe 540 1200 540 2000 500
             sleep 2
             adb exec-out screencap -p > out/5c-down.png
             # horní panel tažením dolů rozbalit

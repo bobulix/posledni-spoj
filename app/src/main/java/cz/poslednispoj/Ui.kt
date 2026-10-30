@@ -104,6 +104,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 
 private val Ink = Color(0xFF1C2620)
 private val Ink2 = Color(0xFF56625A)
@@ -497,29 +498,56 @@ private fun DetailSheet(vm: AppViewModel, screenH: Dp, modifier: Modifier) {
     }
     val h = anim.value
     val density = LocalDensity.current
+    var startH by remember { mutableStateOf(miniH) }
+    /** Po puštění prstu dojede do nejbližší polohy; stačí táhnout kus, rychlé švihnutí počítá směr. */
+    fun settle(velocityDp: Float) {
+        val cur = anim.value
+        val target = when {
+            cur > startH + 40.dp || velocityDp < -800f -> levels.firstOrNull { it > startH + 1.dp } ?: levels.last()
+            cur < startH - 40.dp || velocityDp > 800f -> levels.lastOrNull { it < startH - 1.dp } ?: levels.first()
+            else -> levels.minByOrNull { kotlin.math.abs((it - cur).value) }!!
+        }
+        vm.setSheetLevel(levels.indexOf(target))
+        scope.launch {
+            anim.animateTo(target, spring(dampingRatio = 0.85f, stiffness = Spring.StiffnessMediumLow))
+            dragging = false
+        }
+    }
+    fun moveBy(dyPx: Float) {
+        if (!dragging) { dragging = true; startH = anim.value }
+        val nv = (anim.value - with(density) { dyPx.toDp() }).coerceIn(miniH, fullH)
+        scope.launch { anim.snapTo(nv) }
+    }
     val dragMod = Modifier.pointerInput(levels) {
-        var startH = miniH
         detectVerticalDragGestures(
             onDragStart = { dragging = true; startH = anim.value },
-            onDragEnd = {
-                val cur = anim.value
-                val target = when {
-                    cur > startH + 40.dp -> levels.firstOrNull { it > startH + 1.dp } ?: levels.last()
-                    cur < startH - 40.dp -> levels.lastOrNull { it < startH - 1.dp } ?: levels.first()
-                    else -> levels.minByOrNull { kotlin.math.abs((it - cur).value) }!!
+            onDragEnd = { settle(0f) },
+            onDragCancel = { settle(0f) },
+        ) { change, dy -> change.consume(); moveBy(dy) }
+    }
+    // Obsah detailu: táhne-li prst dolů a obsah je už posunutý úplně nahoru, posouvá se celé okno;
+    // tažení nahoru nejdřív vytáhne okno na celou obrazovku, teprve pak posouvá obsah.
+    val nested = remember(levels) {
+        object : androidx.compose.ui.input.nestedscroll.NestedScrollConnection {
+            override fun onPreScroll(available: Offset, source: androidx.compose.ui.input.nestedscroll.NestedScrollSource): Offset {
+                if (source != androidx.compose.ui.input.nestedscroll.NestedScrollSource.UserInput) return Offset.Zero
+                // když okno už táhneme, pokračujeme oběma směry
+                if (dragging || (available.y < 0 && anim.value < fullH - 1.dp)) {
+                    moveBy(available.y); return Offset(0f, available.y)
                 }
-                val idx = levels.indexOf(target)
-                vm.setSheetLevel(idx)
-                scope.launch {
-                    anim.animateTo(target, spring(dampingRatio = 0.85f, stiffness = Spring.StiffnessMediumLow))
-                    dragging = false
+                return Offset.Zero
+            }
+            override fun onPostScroll(consumed: Offset, available: Offset, source: androidx.compose.ui.input.nestedscroll.NestedScrollSource): Offset {
+                if (source == androidx.compose.ui.input.nestedscroll.NestedScrollSource.UserInput && available.y > 0) {
+                    moveBy(available.y); return Offset(0f, available.y)
                 }
-            },
-            onDragCancel = { dragging = false },
-        ) { change, dy ->
-            change.consume()
-            val nv = (anim.value - with(density) { dy.toDp() }).coerceIn(miniH, fullH)
-            scope.launch { anim.snapTo(nv) }
+                return Offset.Zero
+            }
+            override suspend fun onPreFling(available: androidx.compose.ui.unit.Velocity): androidx.compose.ui.unit.Velocity {
+                if (!dragging) return androidx.compose.ui.unit.Velocity.Zero
+                settle(with(density) { available.y.toDp().value })
+                return available
+            }
         }
     }
     val mini = h < miniH + 24.dp
@@ -554,7 +582,7 @@ private fun DetailSheet(vm: AppViewModel, screenH: Dp, modifier: Modifier) {
         }
         if (mini) return@Column
         Column(
-            Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(start = 16.dp, end = 16.dp, bottom = 14.dp)
+            Modifier.weight(1f).nestedScroll(nested).verticalScroll(rememberScrollState()).padding(start = 16.dp, end = 16.dp, bottom = 14.dp)
         ) {
 
             if (entry == null) {
