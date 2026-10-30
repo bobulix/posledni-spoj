@@ -530,6 +530,7 @@ private fun DetailSheet(vm: AppViewModel, screenH: Dp, modifier: Modifier) {
     val nested = remember(levels) {
         object : androidx.compose.ui.input.nestedscroll.NestedScrollConnection {
             override fun onPreScroll(available: Offset, source: androidx.compose.ui.input.nestedscroll.NestedScrollSource): Offset {
+                android.util.Log.d("PSSHEET", "pre ${available.y} src=$source dragging=$dragging h=${anim.value}")
                 if (source != androidx.compose.ui.input.nestedscroll.NestedScrollSource.UserInput) return Offset.Zero
                 // když okno už táhneme, pokračujeme oběma směry
                 if (dragging || (available.y < 0 && anim.value < fullH - 1.dp)) {
@@ -538,6 +539,7 @@ private fun DetailSheet(vm: AppViewModel, screenH: Dp, modifier: Modifier) {
                 return Offset.Zero
             }
             override fun onPostScroll(consumed: Offset, available: Offset, source: androidx.compose.ui.input.nestedscroll.NestedScrollSource): Offset {
+                android.util.Log.d("PSSHEET", "post c=${consumed.y} a=${available.y} src=$source")
                 if (source == androidx.compose.ui.input.nestedscroll.NestedScrollSource.UserInput && available.y > 0) {
                     moveBy(available.y); return Offset(0f, available.y)
                 }
