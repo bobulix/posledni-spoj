@@ -78,6 +78,17 @@ jobs:
             adb shell input tap 300 2150
             sleep 2
             adb exec-out screencap -p > out/5-detail.png
+            # tažení detailu: nahoru na celou obrazovku, pak dolů
+            adb shell input swipe 540 1150 540 300 400
+            sleep 2
+            adb exec-out screencap -p > out/5b-full.png
+            adb shell input swipe 540 520 540 1600 400
+            sleep 2
+            adb exec-out screencap -p > out/5c-down.png
+            # horní panel tažením dolů rozbalit
+            adb shell input swipe 540 250 540 700 300
+            sleep 2
+            adb exec-out screencap -p > out/5d-panel.png
             # cesta s přestupy: zastávka vybraná parametrem spuštění, rozbalený 1. a pak 5. úsek
             adb shell am force-stop cz.poslednispoj
             adb shell "am start -n cz.poslednispoj/.MainActivity --es ps_select 'Obora (Boskovice)' --es ps_legs 0 --es ps_zoom 8.3" || true
