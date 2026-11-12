@@ -43,7 +43,10 @@ class CsaTest {
         val by = 19 * 60
         val p = Csa.profile(day, walk, n, target, by, change, null)
         println("jízd ${tt.nTrip}, spojů dne ${day.n}, čtení ${t1 - t0} ms, sestavení dne ${t2 - t1} ms, výpočet ${System.currentTimeMillis() - t2} ms")
-        for (k in 1 until day.n) assertTrue("spoje nejsou seřazené", day.dep[k] <= day.dep[k - 1])
+        for (k in 1 until day.n) {
+            assertTrue("spoje nejsou seřazené", day.dep[k] <= day.dep[k - 1])
+            if (day.dep[k] == day.dep[k - 1]) assertTrue("příjezdy nejsou seřazené", day.arr[k] <= day.arr[k - 1])
+        }
         // časy po zahřátí a pro pracovní den (víc spojů)
         for (di in 0 until minOf(4, tt.days.size)) {
             val ta = System.currentTimeMillis(); val dd = tt.buildDay(di); val tb = System.currentTimeMillis()

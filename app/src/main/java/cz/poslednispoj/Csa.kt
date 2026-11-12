@@ -38,26 +38,38 @@ class Timetable(
     fun buildDay(di: Int): Day {
         var n = 0
         for (t in 0 until nTrip) if (runs(di, t)) n += patLen[profPat[tProf[t]]] - 1
-        require(n < (1 shl 23)) { "příliš mnoho spojů" }
-        val key = LongArray(n)
+        val sd = IntArray(n); val sa = IntArray(n)
         val su = IntArray(n); val sv = IntArray(n); val sr = IntArray(n); val sf = ByteArray(n)
-        var c = 0
+        var c = 0; var maxT = 0
         for (t in 0 until nTrip) {
             if (!runs(di, t)) continue
             val q = tProf[t]; val p = profPat[q]; val s0 = patStart[p]; val len = patLen[p]; val o0 = profStart[q]; val st = tStart[t]
             for (k in 0 until len - 1) {
                 su[c] = patNodes[s0 + k]; sv[c] = patNodes[s0 + k + 1]
                 val d = st + profOff[o0 + 2 * k + 1]; val a = st + profOff[o0 + 2 * k + 2]
+                sd[c] = d; sa[c] = a; if (a > maxT) maxT = a; if (d > maxT) maxT = d
                 sr[c] = t; sf[c] = ((patFlags[s0 + k].toInt() and 1) or (patFlags[s0 + k + 1].toInt() and 2)).toByte()
-                key[c] = ((d.toLong() * 4096 + a) shl 23) or c.toLong()
                 c++
             }
         }
-        key.sort()
+        // Řazení sestupně podle odjezdu, pak příjezdu, pak pořadí v jízdě. Časy jsou malá čísla (minuty),
+        // takže stačí dvakrát přihrádkové řazení – několikrát rychlejší než obecné.
+        fun pass(src: IntArray?, keyOf: IntArray): IntArray {
+            val cnt = IntArray(maxT + 2)
+            for (i in 0 until n) cnt[keyOf[i]]++
+            // začátky přihrádek: největší klíč první
+            var pos = 0
+            for (k in maxT downTo 0) { val x = cnt[k]; cnt[k] = pos; pos += x }
+            val out = IntArray(n)
+            if (src == null) { for (i in n - 1 downTo 0) out[cnt[keyOf[i]]++] = i }
+            else for (j in 0 until n) { val i = src[j]; out[cnt[keyOf[i]]++] = i }
+            return out
+        }
+        val order = pass(pass(null, sa), sd)
         val u = IntArray(n); val v = IntArray(n); val dep = IntArray(n); val arr = IntArray(n); val trip = IntArray(n); val flag = ByteArray(n)
         for (j in 0 until n) {
-            val kk = key[n - 1 - j]; val i = (kk and 0x7FFFFF).toInt(); val da = (kk ushr 23).toInt()
-            u[j] = su[i]; v[j] = sv[i]; dep[j] = da / 4096; arr[j] = da % 4096; trip[j] = sr[i]; flag[j] = sf[i]
+            val i = order[j]
+            u[j] = su[i]; v[j] = sv[i]; dep[j] = sd[i]; arr[j] = sa[i]; trip[j] = sr[i]; flag[j] = sf[i]
         }
         return Day(n, u, v, dep, arr, trip, flag, nTrip, this)
     }
