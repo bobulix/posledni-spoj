@@ -156,7 +156,7 @@ class MapHolder(private val ctx: Context, private val vm: AppViewModel) {
     private var centered = false
     /** Po startu mapu jednou vystředí na moji polohu (když jsem v Česku a s mapou jsem ještě nehýbal). */
     private fun centerOnMeOnce(attempt: Int) {
-        if (centered || userMoved || attempt > 15) return
+        if (centered || userMoved || attempt > 60) return
         val loc = myLocation()
         if (loc == null) { root.postDelayed({ centerOnMeOnce(attempt + 1) }, 1000); return }
         centered = true

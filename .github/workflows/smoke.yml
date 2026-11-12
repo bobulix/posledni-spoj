@@ -106,10 +106,13 @@ jobs:
             sleep 3
             adb exec-out screencap -p > out/6-legB-map.png
             # start na mé poloze a seznam nejbližších zastávek
-            adb emu geo fix 14.42 49.95
             adb shell am force-stop cz.poslednispoj
             adb shell am start -n cz.poslednispoj/.MainActivity
-            sleep 45
+            sleep 20
+            adb emu geo fix 14.42 49.95 || true
+            sleep 5
+            adb emu geo fix 14.4201 49.9501 || true
+            sleep 25
             adb exec-out screencap -p > out/7-start.png
             adb shell input tap 988 1807
             sleep 4
