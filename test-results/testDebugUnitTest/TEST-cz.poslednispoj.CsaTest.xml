@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="cz.poslednispoj.CsaTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-11-12T19:42:57" hostname="runnervmwuk1x" time="5.917">
+  <properties/>
+  <testcase name="profileIsConsistent" classname="cz.poslednispoj.CsaTest" time="5.917"/>
+  <system-out><![CDATA[jízd 274756, spojů dne 2625822, čtení 133 ms, sestavení dne 266 ms, výpočet 881 ms
+den 0: spojů 2625822, sestavení 247 ms, výpočet 683 ms
+den 1: spojů 2627011, sestavení 256 ms, výpočet 1206 ms
+den 2: spojů 1294593, sestavení 55 ms, výpočet 307 ms
+den 3: spojů 1305543, sestavení 96 ms, výpočet 265 ms
+dosažitelných zastávek: 36075
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

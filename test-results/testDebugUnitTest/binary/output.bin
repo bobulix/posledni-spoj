@@ -1,0 +1,11 @@
+mimořádností: 4
+�- Omezení kapacity vybraných osobních vlaků (13. 11. 2026) | linky [L1001, L1141] | https://pid.cz/mimoradnost/?uuid=751684b6-fef9-4c4b-951d-2d50317c608a | období 1
+�- V Zápolí (směr Kačerov) | linky [L138] | https://pid.cz/mimoradnost/?uuid=1e00c5dd-58b1-42cd-8c23-e4bb95ca6019 | období 1
+�- Náměstí Míru: dočasná změna trasy a zastávek autobusů | linky [L135] | https://pid.cz/mimoradnost/?uuid=aa46b34a-55ee-44a4-9cb7-277eba45107c | období 1
+~- Stochov,Slovanka I | linky [L590, L415] | https://pid.cz/mimoradnost/?uuid=159153ed-880f-44a9-828f-660711af2b4d | období 1
+Zjízd 274756, spojů dne 2625822, čtení 133 ms, sestavení dne 266 ms, výpočet 881 ms
+;den 0: spojů 2625822, sestavení 247 ms, výpočet 683 ms
+<den 1: spojů 2627011, sestavení 256 ms, výpočet 1206 ms
+:den 2: spojů 1294593, sestavení 55 ms, výpočet 307 ms
+:den 3: spojů 1305543, sestavení 96 ms, výpočet 265 ms
+!dosažitelných zastávek: 36075
