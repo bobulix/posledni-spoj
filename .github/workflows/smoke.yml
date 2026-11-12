@@ -105,6 +105,15 @@ jobs:
             adb shell input tap 540 900
             sleep 3
             adb exec-out screencap -p > out/6-legB-map.png
+            # start na mé poloze a seznam nejbližších zastávek
+            adb emu geo fix 14.42 49.95
+            adb shell am force-stop cz.poslednispoj
+            adb shell am start -n cz.poslednispoj/.MainActivity
+            sleep 45
+            adb exec-out screencap -p > out/7-start.png
+            adb shell input tap 988 1807
+            sleep 4
+            adb exec-out screencap -p > out/7-nearby.png
             sleep 1
             adb logcat -d > out/logcat.txt
             adb logcat -d -b crash > out/crash.txt || true
