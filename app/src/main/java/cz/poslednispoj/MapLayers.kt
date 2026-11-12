@@ -22,6 +22,10 @@ import org.maplibre.geojson.Feature
 import org.maplibre.geojson.FeatureCollection
 import org.maplibre.geojson.LineString
 import org.maplibre.geojson.Point
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.floor
@@ -177,19 +181,31 @@ class MapLayers(private val vm: AppViewModel) {
         return w * TEXT_SIZE + 8
     }
 
-    /** Přepočítá data vrstev; drahé části jen při změně výsledku výpočtu. */
+    private var buildGen = 0
+
+    /** Přepočítá data vrstev; drahé části jen při změně výsledku výpočtu a mimo hlavní vlákno (aplikace se nezasekne). */
     fun update() {
         val st = style ?: return
         if (!st.isFullyLoaded) return
         val m = vm.meta ?: return
         val p = vm.profile
         if (p !== builtFor || vm.nowMin != builtNow || vm.arriveBy != builtBy) {
-            buildStopsAndLabels(st, m, p)
             builtFor = p; builtNow = vm.nowMin; builtBy = vm.arriveBy
+            val gen = ++buildGen
+            val tgt = vm.target; val imp = vm.importance; val now = vm.nowMin; val by = vm.arriveBy
+            vm.viewModelScope.launch {
+                val built = withContext(Dispatchers.Default) { buildStopsAndLabels(m, p, tgt, imp, now, by) }
+                if (gen != buildGen || style !== st) return@launch
+                st.getSourceAs<GeoJsonSource>("stops-on")?.setGeoJson(built.stops)
+                st.getSourceAs<GeoJsonSource>("stops-off")?.setGeoJson(built.stopsOff)
+                for (z in MIN_Z..MAX_Z) st.getSourceAs<GeoJsonSource>("labels-$z")?.setGeoJson(built.labels[z - MIN_Z])
+            }
         }
         buildSelection(st, m)
         applyOpacity(st)
     }
+
+    private class Built(val stops: FeatureCollection, val stopsOff: FeatureCollection, val labels: List<FeatureCollection>)
 
     private fun binIdx(dep: Int): Int =
         if (vm.nowMin >= 0 && dep < vm.nowMin) MISSED else BINS.indexOf(vm.binOf(dep))
@@ -200,46 +216,48 @@ class MapLayers(private val vm: AppViewModel) {
         return hex(b.bg) to hex(b.fg)
     }
 
-    private fun buildStopsAndLabels(st: Style, m: Meta, p: Profile?) {
-        val tgt = vm.target
+    private fun buildStopsAndLabels(m: Meta, p: Profile?, tgt: BooleanArray, imp: IntArray, now: Int, by: Int): Built {
         val stops = ArrayList<Feature>(m.size)
         val stopsOff = ArrayList<Feature>()
         val labels = (MIN_Z..MAX_Z).map { ArrayList<Feature>() }
-        fun publish() {
-            st.getSourceAs<GeoJsonSource>("stops-on")?.setGeoJson(FeatureCollection.fromFeatures(stops))
-            st.getSourceAs<GeoJsonSource>("stops-off")?.setGeoJson(FeatureCollection.fromFeatures(stopsOff))
-            for (z in MIN_Z..MAX_Z) st.getSourceAs<GeoJsonSource>("labels-$z")?.setGeoJson(FeatureCollection.fromFeatures(labels[z - MIN_Z]))
+        fun done() = Built(FeatureCollection.fromFeatures(stops), FeatureCollection.fromFeatures(stopsOff), labels.map { FeatureCollection.fromFeatures(it) })
+        if (p == null || tgt.size != m.size) return done()
+        fun bin(dep: Int): Int {
+            if (now >= 0 && dep < now) return MISSED
+            val h = (by - dep) / 60.0
+            val k = BINS.indexOfFirst { h <= it.hours }
+            return if (k < 0) BINS.lastIndex else k
         }
-        if (p == null || tgt.size != m.size) { publish(); return }
-        val imp = vm.importance
-        val mx = DoubleArray(m.size) { mercX(m.lon[it]) }
-        val my = DoubleArray(m.size) { mercY(m.lat[it]) }
-        val reach = (0 until m.size).filter { p.latest[it] >= 0 && !tgt[it] }
-        val texts = HashMap<Int, String>()
-        val widths = HashMap<Int, Double>()
-        for (i in reach) {
+        val n = m.size
+        val mx = DoubleArray(n) { mercX(m.lon[it]) }
+        val my = DoubleArray(n) { mercY(m.lat[it]) }
+        val texts = arrayOfNulls<String>(n)
+        val widths = DoubleArray(n)
+        val reach0 = ArrayList<Int>()
+        for (i in 0 until n) {
+            if (p.latest[i] < 0 || tgt[i]) continue
+            reach0.add(i)
             val t = hm(p.latest[i]); texts[i] = t
-            val nPrev = min(3, p.prof[i].size - 1)
-            widths[i] = labelWidth(t) + (if (nPrev > 0) 9.0 else 0.0)
+            widths[i] = labelWidth(t) + (if (p.prof[i].size > 1) 9.0 else 0.0)
         }
-        val prio = compareByDescending<Int> { p.latest[it] }.thenByDescending { if (it < imp.size) imp[it] else 0 }
+        // pořadí podle priority (nejpozdější odjezd, pak frekventovanější zastávka) se určí jednou pro všechny úrovně
+        var cand = reach0.sortedWith(compareByDescending<Int> { p.latest[it] }.thenByDescending { if (it < imp.size) imp[it] else 0 }).toIntArray()
 
-        // z0 = nejnižší úroveň, od které se štítek ukazuje (a ukazuje se i na všech vyšších)
-        val z0 = IntArray(m.size) { MAX_Z + 1 }
+        // z0 = nejnižší úroveň, od které se štítek ukazuje (a ukazuje se i na všech vyšších);
+        // na nižší úroveň postupují jen štítky viditelné o úroveň výš, takže práce rychle ubývá
+        val z0 = IntArray(n) { MAX_Z + 1 }
         for (z in MAX_Z downTo MIN_Z) {
             val world = 512.0 * 2.0.pow(z) // dp na celou šířku světa
-            val best = HashMap<Long, Int>()
-            for (i in reach) {
-                val key = (floor(mx[i] * world / CLUSTER_DP).toLong() shl 32) xor (floor(my[i] * world / CLUSTER_DP).toLong() and 0xFFFFFFFFL)
-                val cur = best[key]
-                if (cur == null || prio.compare(i, cur) < 0) best[key] = i
-            }
-            // vyloučení překryvů na této úrovni (deterministicky, podle priority)
+            val cells = HashSet<Long>(cand.size * 2)
             val grid = HashMap<Long, MutableList<DoubleArray>>()
-            val shown = HashSet<Int>()
-            for (i in best.values.sortedWith(prio)) {
+            val shown = ArrayList<Int>(cand.size)
+            for (i in cand) {
                 val x = mx[i] * world; val y = my[i] * world
-                val b = doubleArrayOf(x + 1, y - 23, x + 1 + widths[i]!!, y - 2)
+                // v každém čtverci jen první (nejdůležitější) štítek
+                val key = (floor(x / CLUSTER_DP).toLong() shl 32) xor (floor(y / CLUSTER_DP).toLong() and 0xFFFFFFFFL)
+                if (!cells.add(key)) continue
+                // vyloučení překryvů na této úrovni
+                val b = doubleArrayOf(x + 1, y - 23, x + 1 + widths[i], y - 2)
                 val gx0 = floor(b[0] / 100).toLong(); val gx1 = floor(b[2] / 100).toLong()
                 val gy0 = floor(b[1] / 100).toLong(); val gy1 = floor(b[3] / 100).toLong()
                 var hit = false
@@ -248,20 +266,20 @@ class MapLayers(private val vm: AppViewModel) {
                     for (o in l) if (b[0] < o[2] && b[2] > o[0] && b[1] < o[3] && b[3] > o[1]) { hit = true; break@loop }
                 }
                 if (hit) continue
-                shown.add(i)
+                shown.add(i); z0[i] = z
                 grid.getOrPut((gx0 shl 32) xor (gy0 and 0xFFFFFFFFL)) { ArrayList() }.add(b)
             }
-            for (i in reach) if (i in shown && z0[i] == z + 1) z0[i] = z
+            cand = shown.toIntArray()
         }
 
-        for (i in 0 until m.size) {
+        for (i in 0 until n) {
             if (tgt[i]) continue
             val pt = Point.fromLngLat(m.lon[i], m.lat[i])
             val f = Feature.fromGeometry(pt)
             f.addNumberProperty("id", i)
             val l = p.latest[i]
             if (l < 0) { stopsOff.add(f); continue }
-            val b = binIdx(l)
+            val b = bin(l)
             f.addNumberProperty("b", b)
             stops.add(f)
             val lf = Feature.fromGeometry(pt)
@@ -270,10 +288,10 @@ class MapLayers(private val vm: AppViewModel) {
             lf.addNumberProperty("w", texts[i]!!.length - 1) // počet číslic: 3 nebo 4
             // tečky dřívějších spojů (pásma)
             val nPrev = min(3, p.prof[i].size - 1)
-            for (k in 0 until nPrev) lf.addNumberProperty("d$k", binIdx(p.prof[i][k + 1].dep))
+            for (k in 0 until nPrev) lf.addNumberProperty("d$k", bin(p.prof[i][k + 1].dep))
             labels[z0[i].coerceAtMost(MAX_Z) - MIN_Z].add(lf)
         }
-        publish()
+        return done()
     }
 
     private fun buildSelection(st: Style, m: Meta) {

@@ -610,6 +610,14 @@ for t in alltr:
     labs = routes[ridx[(int(T_src[lab]), T_rid[lab])]][0] if lab is not None else ''
     trows.append((int(t), qi, st0, ridx[(si, T_rid[t])], sid_(pretty(str(T_head[t]))), shidx.get((si, T_shape[t]), -1), sid_(labs) if labs else -1))
 TT = pd.DataFrame(trows, columns=['g', 'prof', 'start', 'route', 'head', 'shape', 'label']).sort_values(['route', 'prof', 'start']).reset_index(drop=True)
+# linky: jen použité a bez opakování (stejné označení, druh, barva a zdroj = jedna položka) – menší meta.json
+_new = {}; routes_out = []
+def _rmap(r):
+    key = tuple(routes[r])
+    if key not in _new: _new[key] = len(routes_out); routes_out.append(routes[r])
+    return _new[key]
+TT['route'] = TT.route.map(_rmap)
+log('linek v datech', len(routes_out), 'z', len(routes))
 pos_of = dict(zip(TT.g, TT.index))
 log('vzorů', len(pats), 'profilů', len(profs), 'jízd', len(TT))
 
@@ -639,12 +647,13 @@ log('timetable.bin', len(raw) // 1024, 'KB nekomprimovaně,', os.path.getsize(os
 
 meta = {'format': 3,
         'nodes': [[info[r][0], round(info[r][1], 5), round(info[r][2], 5), int(info[r][3]), int(modes[i]), info[r][4]] for i, r in enumerate(used_roots)],
-        'routes': routes, 'sources': [s['desc'] for s in srcs],
+        'routes': routes_out, 'sources': [s['desc'] for s in srcs],
         'walk': np.array(walk, np.int32).flatten().tolist(),
         'days': [[d, WD[datetime.datetime.strptime(d, '%Y%m%d').weekday()]] for d in dates],
         'generated': datetime.datetime.now(datetime.timezone.utc).strftime('%Y%m%dT%H%M%SZ'), 'stats': stats}
 with open(os.path.join(OUT, 'meta.json'), 'w') as f: json.dump(meta, f, ensure_ascii=False, separators=(',', ':'))
 with gzip.open(os.path.join(OUT, 'meta.json.gz'), 'wb', 9) as f: f.write(json.dumps(meta, ensure_ascii=False, separators=(',', ':')).encode())
+with open(os.path.join(OUT, 'version.txt'), 'w') as f: f.write(meta['generated'])
 log('meta KB', os.path.getsize(os.path.join(OUT, 'meta.json')) // 1024, 'gzip', os.path.getsize(os.path.join(OUT, 'meta.json.gz')) // 1024, 'hotovo')
 
 # ---------- podkladová síť pro webový prototyp (base.json) ----------

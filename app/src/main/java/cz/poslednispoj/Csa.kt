@@ -153,13 +153,30 @@ object Csa {
         return if (r < 0) null else list[r]
     }
 
-    private fun insert(list: ArrayList<Entry>, e: Entry): Boolean {
-        for (x in list) if (x.dep >= e.dep && x.eta <= e.eta) return false
+    /**
+     * Je odjezd [dep] s příjezdem [eta] zbytečný (seznam už má aspoň stejně pozdní odjezd, který dorazí nejpozději stejně)?
+     * Seznam je seřazený sestupně podle odjezdu a příjezdy v něm klesají, takže většinou stačí poslední položka.
+     */
+    private fun dominated(list: ArrayList<Entry>, dep: Int, eta: Int): Boolean {
+        val n = list.size
+        if (n == 0) return false
+        val last = list[n - 1]
+        if (last.dep >= dep) return last.eta <= eta
+        for (k in 0 until n) { val x = list[k]; if (x.dep >= dep && x.eta <= eta) return true }
+        return false
+    }
+
+    /** Vloží položku, o které už víme, že není zbytečná. Spoje jdou sestupně podle odjezdu, takže se většinou jen přidá na konec. */
+    private fun put(list: ArrayList<Entry>, e: Entry) {
+        val n = list.size
+        if (n == 0) { list.add(e); return }
+        val last = list[n - 1]
+        if (last.dep > e.dep) { list.add(e); return }
+        if (last.dep == e.dep) { list[n - 1] = e; return }
         list.removeAll { it.dep <= e.dep && it.eta >= e.eta }
         var pos = list.indexOfFirst { it.dep < e.dep }
         if (pos < 0) pos = list.size
         list.add(pos, e)
-        return true
     }
 
     /**
@@ -176,9 +193,11 @@ object Csa {
         val tripEta = IntArray(day.nTrips) { INF }
         val tripExit = IntArray(day.nTrips) { -1 }
         val tripNext = arrayOfNulls<Entry>(day.nTrips)
-        for (i in 0 until day.n) {
+        // spoje jsou seřazené sestupně podle odjezdu: ty po času příjezdu přeskočíme najednou
+        var first = 0
+        run { var lo = 0; var hi = day.n; while (lo < hi) { val m = (lo + hi) ushr 1; if (day.dep[m] > arriveBy) lo = m + 1 else hi = m }; first = lo }
+        for (i in first until day.n) {
             val d = day.dep[i]
-            if (d > arriveBy) continue
             val t = day.trip[i]
             if (allowed != null && !allowed[t]) continue
             val f = day.flag[i].toInt()
@@ -196,12 +215,20 @@ object Csa {
             if ((f and 1) == 0 || tripEta[t] > arriveBy) continue
             val s = day.u[i]
             if (target[s]) continue
-            val e = Entry(d, tripEta[t], i, tripExit[t], -1, tripNext[t])
-            insert(own[s], e)
-            if (!insert(prof[s], e)) continue
+            val eta = tripEta[t]
+            // nejdřív levná kontrola, objekt vzniká jen pro odjezdy, které se opravdu uloží
+            val domOwn = dominated(own[s], d, eta)
+            val domProf = dominated(prof[s], d, eta)
+            if (domOwn && domProf) continue
+            val e = Entry(d, eta, i, tripExit[t], -1, tripNext[t])
+            if (!domOwn) put(own[s], e)
+            if (domProf) continue
+            put(prof[s], e)
             for (k in walk.start[s] until walk.start[s + 1]) {
                 val w = walk.to[k]
-                if (!target[w]) insert(prof[w], Entry(d - walk.dur[k], e.eta, -1, -1, s, e))
+                if (target[w]) continue
+                val wd = d - walk.dur[k]
+                if (!dominated(prof[w], wd, eta)) put(prof[w], Entry(wd, eta, -1, -1, s, e))
             }
         }
         val latest = IntArray(nNodes) { if (own[it].isEmpty()) -1 else own[it][0].dep }

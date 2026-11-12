@@ -152,10 +152,24 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         return alerts.filter { id in it.routeIds && it.activeIn(from, to) }
     }
 
+    private var refreshed = false
+    /** Nová data jsou stažená; použijí se, jakmile se zavře detail. */
+    private var updateReady = false
+
     private suspend fun load() {
         try {
             loading = "Načítám jízdní řády…"
-            val m = withRetry { repo.loadMeta() }
+            // nejdřív naposledy stažená data (hned), aktualizace se stáhne na pozadí
+            val today0 = todayKey()
+            val cached = repo.loadMetaCached()?.takeIf { c -> c.days.any { it.first == today0 } }
+            val m = cached ?: withRetry { repo.loadMeta() }
+            if (cached != null && !refreshed) {
+                refreshed = true
+                viewModelScope.launch {
+                    val updated = try { repo.refresh(m) } catch (e: Exception) { false }
+                    if (updated) { if (selected < 0) { shapes = null; load() } else updateReady = true }
+                }
+            }
             withContext(Dispatchers.Default) {
                 walk = Csa.buildWalk(m.size, m.walkFlat)
                 change = IntArray(m.size) { if ((m.modes[it] and 4) != 0) 4 else 2 }
@@ -180,7 +194,8 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             }
             meta = m
             val today = todayKey()
-            dayKey = m.days.firstOrNull { it.first == today }?.first
+            dayKey = dayKey.takeIf { k -> m.days.any { it.first == k } } // při obnově dat zůstane zvolený den
+                ?: m.days.firstOrNull { it.first == today }?.first
                 ?: m.days.firstOrNull { it.first > today }?.first
                 ?: m.days.first().first
             loadDayAndCompute()
@@ -315,7 +330,10 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         expandedLines = emptyMap()
         renderTick++
     }
-    fun closeSheet() { selected = -1; journey = emptyList(); journeyPaths = emptyList(); expanded.clear(); expandedLines = emptyMap(); renderTick++ }
+    fun closeSheet() {
+        selected = -1; journey = emptyList(); journeyPaths = emptyList(); expanded.clear(); expandedLines = emptyMap(); renderTick++
+        if (updateReady) { updateReady = false; shapes = null; viewModelScope.launch { load() } }
+    }
 
     private fun pathOfNodes(m: Meta, walk: Boolean, nodes: IntArray) =
         GeoPath(walk, DoubleArray(nodes.size) { m.lat[nodes[it]] }, DoubleArray(nodes.size) { m.lon[nodes[it]] })

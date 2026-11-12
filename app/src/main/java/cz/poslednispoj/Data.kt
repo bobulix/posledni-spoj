@@ -62,6 +62,16 @@ class Shapes(private val enc: Array<String>) {
 class DataRepo(private val ctx: Context) {
     private val root = File(ctx.filesDir, "data")
 
+    private fun readMeta(f: File): Meta =
+        parseMeta(GZIPInputStream(f.inputStream().buffered()).use { String(it.readBytes(), Charsets.UTF_8) })
+
+    /** Naposledy stažená data – bez čekání na síť. Vrací null, když žádná nejsou nebo nejdou přečíst. */
+    suspend fun loadMetaCached(): Meta? = withContext(Dispatchers.IO) {
+        val f = File(root, "meta.json.gz")
+        if (!f.exists()) null else try { readMeta(f) } catch (e: Exception) { null }
+    }
+
+    /** Stáhne aktuální data (první spuštění nebo příliš stará data). */
     suspend fun loadMeta(): Meta = withContext(Dispatchers.IO) {
         root.mkdirs()
         val f = File(root, "meta.json.gz")
@@ -70,7 +80,36 @@ class DataRepo(private val ctx: Context) {
         } catch (e: Exception) {
             if (!f.exists()) throw e // bez signálu použijeme naposledy stažená data
         }
-        parseMeta(GZIPInputStream(f.inputStream().buffered()).use { String(it.readBytes(), Charsets.UTF_8) })
+        readMeta(f)
+    }
+
+    /**
+     * Na pozadí zjistí, jestli jsou na serveru novější data, a když ano, stáhne je (jízdní řád, trasy, popis).
+     * Vrací true, když jsou nová data připravená k použití.
+     */
+    suspend fun refresh(current: Meta): Boolean = withContext(Dispatchers.IO) {
+        val ver = String(fetchSmall(Config.DATA_URL + "version.txt")).trim()
+        if (ver.isEmpty() || ver == current.generated) return@withContext false
+        val nf = File(root, "meta.json.gz.new")
+        download(Config.DATA_URL + "meta.json.gz", nf)
+        val gen = readMeta(nf).generated
+        if (gen == current.generated) { nf.delete(); return@withContext false }
+        val dir = File(root, gen); dir.mkdirs()
+        val tf = File(dir, "timetable.bin")
+        if (!tf.exists()) download(Config.DATA_URL + "timetable.bin", tf)
+        try { val sf = File(dir, "shapes.bin"); if (!sf.exists()) download(Config.DATA_URL + "shapes.bin", sf) } catch (_: Exception) {}
+        val f = File(root, "meta.json.gz")
+        if (!nf.renameTo(f)) { nf.copyTo(f, overwrite = true); nf.delete() }
+        true
+    }
+
+    private fun fetchSmall(url: String): ByteArray {
+        val c = URL(url).openConnection() as HttpURLConnection
+        c.connectTimeout = 10000; c.readTimeout = 15000
+        try {
+            if (c.responseCode != 200) throw IOException("HTTP ${c.responseCode} pro $url")
+            return c.inputStream.use { it.readBytes() }
+        } finally { c.disconnect() }
     }
 
     private var tt: Timetable? = null
