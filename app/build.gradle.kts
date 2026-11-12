@@ -31,6 +31,9 @@ android {
     }
     buildTypes {
         release {
+            // Rozdávaná verze: bez ladicího režimu (výpočty běží několikrát rychleji), podepsaná stejným klíčem jako dřív,
+            // takže jde nainstalovat přes starší verze.
+            signingConfig = signingConfigs.getByName("debug")
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
