@@ -163,10 +163,11 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             val today0 = todayKey()
             val cached = repo.loadMetaCached()?.takeIf { c -> c.days.any { it.first == today0 } }
             val m = cached ?: withRetry { repo.loadMeta() }
+            if (cached == null) offline = repo.usedOldData
             if (cached != null && !refreshed) {
                 refreshed = true
                 viewModelScope.launch {
-                    val updated = try { repo.refresh(m) } catch (e: Exception) { false }
+                    val updated = try { repo.refresh(m).also { offline = false } } catch (e: Exception) { offline = true; false }
                     if (updated) { if (selected < 0) { shapes = null; load() } else updateReady = true }
                 }
             }
@@ -226,12 +227,42 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    fun recompute() {
+    /** Právě se přepočítává (staré časy na mapě mezitím zešednou). */
+    var computing by mutableStateOf(false)
+        private set
+    /** Aplikace běží z uložených dat, protože se nepodařilo spojit se serverem. */
+    var offline by mutableStateOf(false)
+        private set
+    /** Naposledy použité cíle (nejnovější první). */
+    var recent by mutableStateOf(prefs.getString("recent", "")!!.split('\n').filter { it.isNotBlank() })
+        private set
+    /** Nejbližší zastávky k mé poloze (indexy) a poloha, ke které se počítaly. */
+    var nearby by mutableStateOf<List<Int>?>(null)
+        private set
+    var nearbyFrom = doubleArrayOf(0.0, 0.0)
+        private set
+
+    fun distanceM(i: Int, lat: Double, lon: Double): Double {
+        val m = meta ?: return 0.0
+        val dy = (m.lat[i] - lat) * 111320.0; val dx = (m.lon[i] - lon) * 111320.0 * Math.cos(Math.toRadians(lat))
+        return Math.hypot(dx, dy)
+    }
+    /** Seznam nejbližších zastávek, ze kterých se dá do cíle včas dostat. */
+    fun showNearby(lat: Double, lon: Double) {
+        val m = meta ?: return; val p = profile ?: return
+        nearbyFrom = doubleArrayOf(lat, lon)
+        nearby = (0 until m.size).filter { p.latest[it] >= 0 && !target[it] }
+            .sortedBy { distanceM(it, lat, lon) }.take(8)
+    }
+    fun hideNearby() { nearby = null }
+
+    fun recompute(debounceMs: Long = 0) {
         val m = meta ?: return
         val d = day ?: return
         val w = walk ?: return
         computeJob?.cancel()
         computeJob = viewModelScope.launch {
+            if (debounceMs > 0) kotlinx.coroutines.delay(debounceMs) // při rychlém klepání počítáme až po poslední změně
             val tgt = BooleanArray(m.size)
             val label: String
             if (dest == PRAHA || dest.equals("praha", true)) {
@@ -244,6 +275,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             if ((modeMask and 15) == 0) {
                 profile = null; status = "Zapni aspoň jeden způsob dopravy."; renderTick++; return@launch
             }
+            computing = true; renderTick++
             status = "Počítám…"
             val mask = modeMask or Modes.OTHER
             val by = arriveBy
@@ -253,7 +285,8 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
                 Csa.profile(d, w, m.size, tgt, by, change, allowed)
             }
             val ms = System.currentTimeMillis() - t0
-            target = tgt; profile = p
+            target = tgt; profile = p; computing = false
+            if (nearby != null) showNearby(nearbyFrom[0], nearbyFrom[1])
             nowMin = if (dayKey == todayKey()) Calendar.getInstance().let { it.get(Calendar.HOUR_OF_DAY) * 60 + it.get(Calendar.MINUTE) } else -1
             val c = p.latest.count { it >= 0 }
             status = "$c zastávek, odkud se dostaneš do $label do ${hm(by)} · výpočet $ms ms"
@@ -283,8 +316,16 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     // ---- akce z UI ----
-    fun setDestination(name: String) { dest = name; closeSheet(); recompute() }
+    fun setDestination(name: String) {
+        dest = name
+        recent = (listOf(name) + recent.filter { it != name }).take(4)
+        prefs.edit().putString("recent", recent.joinToString("\n")).apply()
+        closeSheet(); recompute()
+    }
     fun setArrival(min: Int) { arriveBy = min; recompute() }
+    /** Posun času příjezdu o [delta] minut (tlačítka −30 / +30). */
+    fun shiftArrival(delta: Int) { arriveBy = (arriveBy + delta).coerceIn(4 * 60, 23 * 60 + 59); recompute(350) }
+
     fun setDay(key: String) {
         if (key == dayKey) return
         dayKey = key; closeSheet()

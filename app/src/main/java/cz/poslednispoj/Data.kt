@@ -62,6 +62,10 @@ class Shapes(private val enc: Array<String>) {
 class DataRepo(private val ctx: Context) {
     private val root = File(ctx.filesDir, "data")
 
+    /** Poslední pokus o stažení selhal a použila se starší uložená data. */
+    @Volatile var usedOldData = false
+        private set
+
     private fun readMeta(f: File): Meta =
         parseMeta(GZIPInputStream(f.inputStream().buffered()).use { String(it.readBytes(), Charsets.UTF_8) })
 
@@ -76,9 +80,10 @@ class DataRepo(private val ctx: Context) {
         root.mkdirs()
         val f = File(root, "meta.json.gz")
         try {
-            download(Config.DATA_URL + "meta.json.gz", f)
+            download(Config.DATA_URL + "meta.json.gz", f); usedOldData = false
         } catch (e: Exception) {
             if (!f.exists()) throw e // bez signálu použijeme naposledy stažená data
+            usedOldData = true
         }
         readMeta(f)
     }

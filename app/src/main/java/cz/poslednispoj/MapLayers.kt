@@ -320,7 +320,8 @@ class MapLayers(private val vm: AppViewModel) {
     }
 
     private fun applyOpacity(st: Style) {
-        val a = vm.opacity
+        // během přepočtu staré časy zešednou (zprůhlední), dokud nejsou nové
+        val a = vm.opacity * (if (vm.computing) 0.35f else 1f)
         for (id in labelLayerIds) st.getLayerAs<SymbolLayer>(id)?.setProperties(PropertyFactory.textOpacity(a), PropertyFactory.iconOpacity(a))
         for (id in dotLayerIds) st.getLayerAs<SymbolLayer>(id)?.setProperties(PropertyFactory.iconOpacity(a))
         st.getLayerAs<CircleLayer>("stops-on")?.setProperties(PropertyFactory.circleOpacity(a))

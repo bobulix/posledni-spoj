@@ -145,6 +145,26 @@ assert any(s['key'] == 'CZPTT' for s in srcs) and any(s['key'] == 'JDF' for s in
 # --- doplnění chybějících souřadnic zastávek (CIS JŘ je u části zastávek nemá) ---
 # 1) stejný název zastávky v jiném zdroji nebo v OpenStreetMap (zastávky), 2) obec z OSM,
 # 3) odhad z polohy sousedních zastávek na trasách. Víc kandidátů = ten nejblíž odhadu.
+ABBR = [(r'\bn\.\s*', 'nad '), (r'\bp\.\s*', 'pod '), (r'aut\.\s*nádr\.', 'autobusové nádraží'), (r'aut\.\s*st\.', 'autobusová stanice'),
+        (r'žel\.\s*st\.', 'železniční stanice'), (r'žel\.\s*zast\.', 'železniční zastávka'), (r'hl\.\s*nádr\.', 'hlavní nádraží'),
+        (r'nám\.', 'náměstí'), (r'\bLD\b', ''), (r'rozc\.', 'rozcestí')]
+def norm_x(s_):
+    """Název s rozepsanými zkratkami CIS JŘ („Horka n.Mor.“ → „Horka nad Mor.“ se v OSM hledá přes začátek slova)."""
+    for a_, b_ in ABBR: s_ = re.sub(a_, b_, s_)
+    return norm(s_)
+def lookup(d_, nm_):
+    r = d_.get(norm(nm_), [])
+    if r: return r
+    k = norm_x(nm_)
+    r = d_.get(k, [])
+    if r: return r
+    # zkrácené slovo na konci názvu obce („Horka nad Mor.“): jediný klíč, který takhle začíná
+    if nm_.rstrip().endswith('.') and len(k) >= 8:
+        ks = PREFIX.get(k[:8], [])
+        ks = [x for x in ks if x.startswith(k)]
+        if len(ks) == 1: return d_.get(ks[0], [])
+    return []
+PREFIX = defaultdict(list)
 def valid(la, lo): return np.isfinite(la) & np.isfinite(lo) & (la > 47.5) & (la < 51.5) & (lo > 11.8) & (lo < 19.2)
 ref_stop = defaultdict(list); ref_place = defaultdict(list)
 osmf = os.path.join(SRC, 'osm_stops.csv')
@@ -154,6 +174,7 @@ if os.path.exists(osmf):
     o = o[valid(o.la.values, o.lo.values) & (o.name != '')]
     for nm_, la, lo, pl in zip(o.name.values, o.la.values, o.lo.values, o.place.values):
         (ref_place if pl else ref_stop)[norm(nm_)].append((la, lo))
+    for k_ in ref_place: PREFIX[k_[:8]].append(k_)
     log('OSM: zastávek', sum(o.place == ''), 'obcí', sum(o.place != ''))
 else:
     log('OSM zastávky nejsou k dispozici')
@@ -192,21 +213,24 @@ for s in srcs:
             est = (np.mean([la[j] for j in kn]), np.mean([lo[j] for j in kn])) if kn else None
             def pick(cands, maxd):
                 if not cands: return None
-                if est is None: return cands[0] if len(cands) == 1 else None
+                if est is None:
+                    # bez odhadu jen když je místo jednoznačné (všichni kandidáti do 3 km od sebe)
+                    ok_ = all(math.hypot((c[0] - cands[0][0]) * KY, (c[1] - cands[0][1]) * KX) < 3000 for c in cands)
+                    return cands[0] if ok_ else None
                 d = [math.hypot((c[0] - est[0]) * KY, (c[1] - est[1]) * KX) for c in cands]
                 k = int(np.argmin(d)); return cands[k] if d[k] <= maxd else None
             nm_ = names_[i]
-            c = pick(ref_stop.get(norm(nm_), []), 15000)
+            c = pick(lookup(ref_stop, nm_), 15000)
             how = 'název'
             if c is None and ',' in nm_:
                 # „Obec,část“ → zastávka „část“ v OSM do 6 km od obce
-                town_ = ref_place.get(norm(nm_.split(',')[0]), [])
-                part_ = ref_stop.get(norm(nm_.split(',', 1)[1]), [])
+                town_ = lookup(ref_place, nm_.split(',')[0])
+                part_ = lookup(ref_stop, nm_.split(',', 1)[1])
                 near_ = [q for q in part_ if any(math.hypot((q[0] - t_[0]) * KY, (q[1] - t_[1]) * KX) < 6000 for t_ in town_)]
                 c = pick(near_, 15000); how = 'část'
                 if c is None and est is None and len({(round(q[0], 3), round(q[1], 3)) for q in near_}) == 1: c = near_[0]
             if c is None and it >= 1:
-                c = pick(ref_place.get(norm(nm_.split(',')[0]), []), 15000); how = 'obec'
+                c = pick(lookup(ref_place, nm_.split(',')[0]), 15000); how = 'obec'
             if c is None and it >= 2 and est is not None and len(kn) >= 2:
                 c = est; how = 'sousedé'
             if c is not None:

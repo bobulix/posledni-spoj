@@ -128,10 +128,13 @@ fun App(vm: AppViewModel, holder: MapHolder, onLocate: () -> Unit) {
                 MapyAttribution(Modifier.align(Alignment.BottomStart).navigationBarsPadding().padding(start = 8.dp, bottom = 6.dp))
             }
 
-            TopPanel(vm, Modifier.align(Alignment.TopCenter).statusBarsPadding().padding(12.dp))
+            Column(Modifier.align(Alignment.TopCenter).statusBarsPadding().padding(12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                TopPanel(vm, Modifier)
+                StatusStrip(vm)
+            }
 
             val sheetOpen = vm.selected >= 0
-            if (!sheetOpen || vm.sheetMini) {
+            if ((!sheetOpen && vm.nearby == null) || (sheetOpen && vm.sheetMini)) {
                 SideControls(
                     vm, holder, onLocate,
                     Modifier.align(Alignment.BottomEnd).navigationBarsPadding()
@@ -148,9 +151,13 @@ fun App(vm: AppViewModel, holder: MapHolder, onLocate: () -> Unit) {
                 DetailSheet(vm, screenH, Modifier.navigationBarsPadding().padding(12.dp))
             }
 
-            val loading = vm.loading
+            if (!sheetOpen && vm.nearby != null) {
+                NearbyCard(vm, holder, Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(12.dp))
+            }
+
+            val loading: String? = null // průběh načítání ukazuje proužek pod horní lištou, mapa zůstává vidět
             val error = vm.error
-            if (loading != null || error != null) {
+            if (error != null) {
                 Surface(
                     Modifier.align(Alignment.Center).padding(24.dp),
                     shape = RoundedCornerShape(14.dp), shadowElevation = 6.dp, color = Color.White
@@ -213,11 +220,12 @@ private fun TopPanel(vm: AppViewModel, modifier: Modifier) {
                         Spacer(Modifier.width(10.dp))
                         Text("Poslední spoj", fontFamily = Condensed, fontWeight = FontWeight.Bold, fontSize = 22.sp, color = Ink)
                     }
-                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        DestinationField(vm, Modifier.weight(1.7f), showLabel = true)
-                        TimeField(vm, Modifier.weight(1f), showLabel = true)
+                    DestinationField(vm, Modifier.fillMaxWidth(), showLabel = true)
+                    RecentChips(vm)
+                    Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        TimeField(vm, Modifier.weight(1.25f), showLabel = true)
+                        Box(Modifier.weight(1f)) { DayField(vm) }
                     }
-                    DayField(vm)
                     ModeChips(vm)
                     Legend(vm)
                     if (vm.status.isNotEmpty()) Text(vm.status, fontSize = 13.sp, color = Ink2)
@@ -230,6 +238,60 @@ private fun TopPanel(vm: AppViewModel, modifier: Modifier) {
                     .padding(top = 6.dp, bottom = 8.dp),
                 contentAlignment = Alignment.Center
             ) { Box(Modifier.size(36.dp, 4.dp).clip(RoundedCornerShape(2.dp)).background(Hair)) }
+        }
+    }
+}
+
+/** Tenký proužek pod horní lištou: co se právě děje, a upozornění, že aplikace běží z uložených dat. */
+@Composable
+private fun StatusStrip(vm: AppViewModel) {
+    val busy = vm.loading ?: if (vm.computing) "Počítám poslední spoje…" else null
+    val text = busy ?: if (vm.offline) "Bez připojení · jízdní řády z ${vm.dataDate()}" else null
+    AnimatedVisibility(text != null, enter = fadeIn() + expandVertically(), exit = fadeOut() + shrinkVertically()) {
+        Surface(Modifier.padding(top = 6.dp), shape = RoundedCornerShape(14.dp), shadowElevation = 3.dp, color = Color.White) {
+            Column(Modifier.widthIn(max = 320.dp)) {
+                Text(text ?: "", fontSize = 13.sp, color = if (busy == null) Accent else Ink2,
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 5.dp))
+                if (busy != null) androidx.compose.material3.LinearProgressIndicator(
+                    Modifier.fillMaxWidth().height(3.dp), color = Ink, trackColor = Hair)
+            }
+        }
+    }
+}
+
+/** Nejbližší zastávky k mé poloze s posledním odjezdem; klepnutím se zastávka vybere. */
+@Composable
+private fun NearbyCard(vm: AppViewModel, holder: MapHolder, modifier: Modifier) {
+    val m = vm.meta ?: return
+    val p = vm.profile ?: return
+    val list = vm.nearby ?: return
+    Surface(modifier.widthIn(max = 560.dp).fillMaxWidth(), shape = RoundedCornerShape(18.dp), shadowElevation = 8.dp, color = Color.White) {
+        Column(Modifier.padding(start = 16.dp, end = 8.dp, top = 8.dp, bottom = 10.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("Nejbližší zastávky", fontFamily = Condensed, fontWeight = FontWeight.Bold, fontSize = 19.sp, color = Ink, modifier = Modifier.weight(1f))
+                RoundButton("×", "Zavřít") { vm.hideNearby() }
+            }
+            if (list.isEmpty()) Text("V okolí není zastávka, odkud se do cíle včas dostaneš.", fontSize = 14.sp, color = Ink2)
+            Column(Modifier.heightIn(max = 300.dp).verticalScroll(rememberScrollState())) {
+                list.forEach { i ->
+                    val dep = p.latest.getOrElse(i) { -1 }
+                    val d = vm.distanceM(i, vm.nearbyFrom[0], vm.nearbyFrom[1])
+                    val missed = vm.nowMin >= 0 && dep in 0 until vm.nowMin
+                    Row(
+                        Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp))
+                            .clickable { holder.moveTo(m.lat[i], m.lon[i], 13.0); vm.hideNearby(); vm.select(i) }
+                            .padding(vertical = 7.dp, horizontal = 2.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(Modifier.weight(1f)) {
+                            Text(m.names[i], fontSize = 15.sp, fontWeight = FontWeight.SemiBold, color = Ink, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                            Text(if (d < 950) "${(d / 50).toInt() * 50 + 50} m" else String.format("%.1f km", d / 1000).replace('.', ','), fontSize = 12.sp, color = Ink2)
+                        }
+                        Text(hm(dep), fontFamily = Condensed, fontWeight = FontWeight.Bold, fontSize = 20.sp,
+                            color = if (missed || dep < 0) Ink2 else Color(vm.binOf(dep).bg), modifier = Modifier.padding(end = 8.dp))
+                    }
+                }
+            }
         }
     }
 }
@@ -351,15 +413,45 @@ private fun DestinationField(vm: AppViewModel, modifier: Modifier, showLabel: Bo
     }
 }
 
+/** Naposledy použité cíle jako rychlé volby. */
+@Composable
+private fun RecentChips(vm: AppViewModel) {
+    val items = vm.recent.filter { it != vm.dest }.take(3)
+    if (items.isEmpty()) return
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        items.forEach { d ->
+            Text(
+                if (d == PRAHA) "Praha" else d.removeSuffix(TOWN_SUFFIX), fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = Ink,
+                maxLines = 1, overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.widthIn(max = 180.dp).clip(RoundedCornerShape(14.dp)).border(1.dp, Hair, RoundedCornerShape(14.dp))
+                    .clickable(onClickLabel = "Vracet se do $d") { vm.setDestination(d) }.padding(horizontal = 10.dp, vertical = 5.dp)
+            )
+        }
+    }
+}
+
 @Composable
 private fun TimeField(vm: AppViewModel, modifier: Modifier, showLabel: Boolean) {
     val ctx = LocalContext.current
     Column(modifier) {
         if (showLabel) FieldLabel("Nejpozději v")
-        FieldBox(hm(vm.arriveBy)) {
-            TimePickerDialog(ctx, { _, h, m -> vm.setArrival(h * 60 + m) }, vm.arriveBy / 60, vm.arriveBy % 60, true).show()
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            StepButton("−", "O půl hodiny dřív") { vm.shiftArrival(-30) }
+            FieldBox(hm(vm.arriveBy), Modifier.weight(1f)) {
+                TimePickerDialog(ctx, { _, h, m -> vm.setArrival(h * 60 + m) }, vm.arriveBy / 60, vm.arriveBy % 60, true).show()
+            }
+            StepButton("+", "O půl hodiny později") { vm.shiftArrival(30) }
         }
     }
+}
+
+@Composable
+private fun StepButton(label: String, description: String, onClick: () -> Unit) {
+    Box(
+        Modifier.size(40.dp, 46.dp).clip(RoundedCornerShape(8.dp)).background(Paper).border(1.dp, Hair, RoundedCornerShape(8.dp))
+            .clickable(onClickLabel = description) { onClick() },
+        contentAlignment = Alignment.Center
+    ) { Text(label, fontSize = 20.sp, fontWeight = FontWeight.SemiBold, color = Ink) }
 }
 
 @Composable
@@ -425,6 +517,10 @@ private fun SideControls(vm: AppViewModel, holder: MapHolder, onLocate: () -> Un
                 VerticalSlider(vm.opacity, { vm.updateOpacity(it) }, Modifier.size(32.dp, 130.dp))
                 Text("${(vm.opacity * 100).toInt()} %", fontSize = 10.sp, color = Ink2, fontWeight = FontWeight.SemiBold)
             }
+        }
+        SquareButton("≡", "Nejbližší zastávky") {
+            val loc = holder.myLocation()
+            if (loc != null) vm.showNearby(loc.first, loc.second) else onLocate()
         }
         SquareButton("◎", "Moje poloha") { onLocate() }
         SquareButton("+", "Přiblížit") { holder.zoomBy(1.0) }
