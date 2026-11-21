@@ -1,0 +1,104 @@
+den 20261123
+
+=== priorita 2: kandidátů 283, zahozeno 0, částečná shoda (ponecháno) 72
+zahozeno kvůli zdroji: 
+  ČÁST  2/18  IDZK:304 Uherské Hradiště, Jarošov, náves 14:28 → Uherské Hradiště, Štěpnice, Zahrádky  ≈  JMK:xS6 Uherské Hradiště 14:48 → Veselí nad Moravou, železniční stanice
+  ČÁST  2/24  IDZK:900 Staré Hutě, Obecní úřad 07:00 → Kyjov, aut.st.  ≈  JMK:671 Kyjov, nemocnice 07:35 → Kyjov, Boršov, horní zastávka
+  ČÁST  3/12  IDZK:983 Vyškov, aut.nádr. 16:50 → Morkovice-Slížany, Morkovice, nám.  ≈  JMK:750 Vyškov, Autobusové nádraží 16:50 → Nové Sady
+  ČÁST  2/16  IDZK:301 Uherské Hradiště, Východ, Derflanská 09:14 → Uherské Hradiště, Štěpnice, Za Alejí  ≈  JMK:xS6 Veselí nad Moravou, železniční stanice 09:02 → Staré Město u Uherského Hradiště
+  ČÁST  2/18  IDZK:300 Kunovice, Petříkovec 18:20 → Staré Město, žel.st.  ≈  JMK:xS6 Veselí nad Moravou, železniční stanice 18:03 → Staré Město u Uherského Hradiště
+  ČÁST  2/16  IDZK:301 Uherské Hradiště, Východ, Derflanská 13:48 → Uherské Hradiště, Štěpnice, Za Alejí  ≈  JMK:xS6 Uherské Hradiště 14:07 → Veselí nad Moravou, železniční stanice
+  ČÁST  2/6  IDZK:955 Zlín, aut.nádr. 17:05 → Brno, ÚAN Zvonařka  ≈  JMK:77 Brno, Letiště Tuřany - terminál 18:12 → Brno, Úzká
+  ČÁST  2/15  IDZK:356 Uherské Hradiště, aut.nádr. 15:25 → Hluk, hostinec  ≈  JMK:xS6 Uherské Hradiště 15:23 → Veselí nad Moravou, železniční stanice
+  ČÁST  2/26  IDZK:990 Valašské Klobouky, aut.st. 05:08 → Brno, ÚAN Zvonařka  ≈  JMK:77 Brno, Slatinka 07:40 → Brno, Úzká
+  ČÁST  2/20  IDZK:981 Vyškov, aut.nádr. 05:15 → Kroměříž, aut.nádr.  ≈  JMK:752 Vyškov, Autobusové nádraží 05:16 → Vážany
+  ČÁST  2/6  IDZK:955 Zlín, aut.nádr. 07:05 → Brno, ÚAN Zvonařka  ≈  JMK:702 Pozořice, Jezera 08:06 → Brno, Úzká
+  ČÁST  2/24  IDZK:990 Luhačovice, aut.st. 04:45 → Brno, ÚAN Zvonařka  ≈  JMK:77 Brno, Areál Slatina 06:41 → Brno, Úzká
+
+=== priorita 4: kandidátů 202, zahozeno 0, částečná shoda (ponecháno) 36
+zahozeno kvůli zdroji: 
+  ČÁST  2/23  PMDP:17 Plzeň, Nová Hospoda 14:06 → Plzeň, Doubravka  ≈  PID:523 Rožmitál p.Tř., aut.st. 13:04 → Plzeň, Terminál Hlavní nádraží
+  ČÁST  2/21  PMDP:16 Plzeň, Sídliště Bory 08:09 → Plzeň, Doubravka  ≈  PID:523 Rožmitál p.Tř., aut.st. 06:55 → Plzeň, Terminál Hlavní nádraží
+  ČÁST  2/21  PMDP:16 Plzeň, Sídliště Bory 07:26 → Plzeň, Doubravka  ≈  PID:523 Plzeň, Terminál Hlavní nádraží 07:45 → Rožmitál p.Tř., aut.st.
+  ČÁST  2/16  PMDP:33 Plzeň, Hlavní nádraží 14:26 → Plzeň, Sídliště Košutka  ≈  PID:523 Rožmitál p.Tř., aut.st. 13:04 → Plzeň, Terminál Hlavní nádraží
+  ČÁST  2/21  PMDP:11 Plzeň, Malesice 17:05 → Plzeň, Ústřední hřbitov  ≈  PID:523 Plzeň, Terminál Hlavní nádraží 17:27 → Rožmitál p.Tř., aut.st.
+  ČÁST  2/27  PMDP:13 Plzeň, NC Černice 08:01 → Plzeň, Na Dlouhých  ≈  PID:523 Rožmitál p.Tř., aut.st. 06:55 → Plzeň, Terminál Hlavní nádraží
+  ČÁST  2/26  PMDP:13 Plzeň, Na Dlouhých 05:14 → Plzeň, Černice  ≈  PID:523 Plzeň, Terminál Hlavní nádraží 05:30 → Rožmitál p.Tř., aut.st.
+  ČÁST  2/22  PMDP:11 Plzeň, Křimice 05:03 → Plzeň, Ústřední hřbitov  ≈  PID:523 Rožmitál p.Tř., aut.st. 04:10 → Plzeň, Terminál Hlavní nádraží
+  ČÁST  2/21  PMDP:16 Plzeň, Sídliště Bory 05:10 → Plzeň, Doubravka  ≈  PID:523 Rožmitál p.Tř., aut.st. 04:10 → Plzeň, Terminál Hlavní nádraží
+  ČÁST  2/21  PMDP:11 Plzeň, Malesice 14:05 → Plzeň, Ústřední hřbitov  ≈  PID:523 Rožmitál p.Tř., aut.st. 13:04 → Plzeň, Terminál Hlavní nádraží
+  ČÁST  2/19  PMDP:16 Plzeň, Doubravka 14:15 → Plzeň, Sídliště Bory  ≈  PID:523 Rožmitál p.Tř., aut.st. 13:04 → Plzeň, Terminál Hlavní nádraží
+  ČÁST  2/24  PMDP:22 Plzeň, Malvíny 06:55 → Plzeň, Koterov  ≈  PID:523 Rožmitál p.Tř., aut.st. 06:00 → Plzeň, Terminál Hlavní nádraží
+
+=== priorita 100: kandidátů 2830, zahozeno 2815, částečná shoda (ponecháno) 0
+zahozeno kvůli zdroji: CZPTT 2815
+  ZAHOZ 3/3  PID:S20 Kolín 07:30 → Kutná Hora hl.n.  ≈  CZPTT:Os 5953 Kolín 07:30 → Kutná Hora hl. n.
+  ZAHOZ 2/2  PID:S20 Kutná Hora hl.n. 13:56 → Kolín  ≈  CZPTT:Os 19256 Kutná Hora město 13:47 → Kolín
+  ZAHOZ 8/8  PID:S61 Úvaly 19:12 → Praha hlavní nádraží  ≈  CZPTT:Os 28256 Úvaly 19:12 → Praha hl. n.
+  ZAHOZ 4/5  PID:R10 Chlumec nad Cidlinou 12:29 → Praha hlavní nádraží  ≈  CZPTT:R 928 Hradec Král. hl. n. 12:08 → Praha hl. n.
+  ZAHOZ 19/19  PID:S9 Benešov u Prahy 04:05 → Praha hlavní nádraží  ≈  CZPTT:Os 2502 Benešov u Prahy 04:05 → Praha hl. n.
+  ZAHOZ 4/5  PID:R10 Praha hlavní nádraží 05:14 → Chlumec nad Cidlinou  ≈  CZPTT:R 941 Praha hl. n. 05:14 → Hradec Král. hl. n.
+  ZAHOZ 7/8  PID:R45 Kladno-Ostrovec 19:06 → Praha-Bubny  ≈  CZPTT:Sp 1581 Kladno-Ostrovec 19:06 → Praha-Bubny
+  ZAHOZ 11/11  PID:S1 Praha Masarykovo nádr. 17:00 → Český Brod  ≈  CZPTT:Os 8641 Praha Masaryk. n. 17:00 → Český Brod
+  ZAHOZ 9/10  PID:S31 Mladá Boleslav město 06:25 → Nymburk hl.n.  ≈  CZPTT:Os 8503 Mladějov v Čechách 05:31 → Poděbrady
+  ZAHOZ 24/25  PID:S8 Čerčany 16:17 → Praha hlavní nádraží  ≈  CZPTT:Os 9018 Čerčany 16:17 → Praha hl. n.
+  ZAHOZ 11/11  PID:S11 Kouřim 17:10 → Pečky  ≈  CZPTT:Os 19325 Kouřim 17:10 → Pečky
+  ZAHOZ 6/6  PID:S43 Kralupy nad Vltavou 06:27 → Neratovice  ≈  CZPTT:Os 18301 Kralupy n.V. 06:27 → Neratovice
+
+=== priorita 101: kandidátů 1138, zahozeno 1070, částečná shoda (ponecháno) 0
+zahozeno kvůli zdroji: CZPTT 1070
+  ZAHOZ 16/16  JMK:S41 Brno, Hlavní nádraží 19:55 → Hrušovany nad Jevišovkou, žel. st.  ≈  CZPTT:Os 4416 Brno hl. n. 19:55 → Hrušovany nad Jevišovkou-Šanov
+  ZAHOZ 9/10  JMK:R13 Brno, Hlavní nádraží 15:33 → Staré Město u Uherského Hradiště  ≈  CZPTT:R 825 Brno hl. n. 15:33 → St. Město u U.H.
+  ZAHOZ 17/19  JMK:S3 Hustopeče, autobusové nádraží 08:04 → Tišnov, železniční stanice  ≈  CZPTT:Os 4640 Hustopeče u Brna 08:04 → Tišnov
+  ZAHOZ 3/3  JMK:S5 Staré Město u Uherského Hradiště 15:39 → Kunovice  ≈  CZPTT:Os 4343 St. Město u U.H. 15:39 → Bojkovice
+  ZAHOZ 5/6  JMK:S51 Břeclav, autobusové nádraží 12:33 → Šakvice, železniční stanice  ≈  CZPTT:Os 14612 Břeclav 12:33 → Šakvice
+  ZAHOZ 10/11  JMK:S31 Rovné-Divišov 07:13 → Tišnov, železniční stanice  ≈  CZPTT:Os 14903 Žďár n.S. 06:40 → Tišnov
+  ZAHOZ 14/16  JMK:S3 Tišnov, železniční stanice 05:14 → Židlochovice, železniční stanice  ≈  CZPTT:Os 4905 Tišnov 05:14 → Židlochovice
+  ZAHOZ 16/19  JMK:S91 Myjava 08:07 → Hodonín, autobusové nádraží  ≈  CZPTT:Os 2706 Myjava 08:07 → Hodonín
+  ZAHOZ 21/23  JMK:S2 Holubice, žel.st. 05:53 → Letovice, železniční stanice  ≈  CZPTT:Os 4706 Holubice 05:53 → Letovice
+  ZAHOZ 16/18  JMK:S2 Sokolnice, železniční stanice 06:40 → Letovice, železniční stanice  ≈  CZPTT:Os 4708 Sokolnice-Telnice 06:40 → Letovice
+  ZAHOZ 5/6  JMK:S51 Břeclav, autobusové nádraží 05:33 → Šakvice, železniční stanice  ≈  CZPTT:Os 14602 Břeclav 05:33 → Šakvice
+  ZAHOZ 3/4  JMK:S82 Znojmo, autobusové nádraží 12:57 → Retz  ≈  CZPTT:Os 2241 Znojmo 12:57 → Retz
+
+=== priorita 102: kandidátů 517, zahozeno 517, částečná shoda (ponecháno) 0
+zahozeno kvůli zdroji: CZPTT 517
+  ZAHOZ 13/13  IDZK:Ex2 Vsetín 04:52 → Praha hl.n.  ≈  CZPTT:IC 520 Vsetín 04:52 → Praha hl. n.
+  ZAHOZ 20/20  IDZK:S9 Hodonín 21:45 → Přerov  ≈  CZPTT:Os 4247 Hodonín 21:45 → Přerov
+  ZAHOZ 15/15  IDZK:Ex2 Praha hl.n. 15:08 → Lúky pod Makytou  ≈  CZPTT:EC 221 Praha hl. n. 15:08 → Lúky pod Makytou
+  ZAHOZ 14/14  IDZK:S23 Vsetín 17:05 → Velké Karlovice  ≈  CZPTT:Os 13277 Vsetín 17:05 → Velké Karlovice
+  ZAHOZ 14/14  IDZK:S23 Velké Karlovice 20:00 → Vsetín  ≈  CZPTT:Os 13282 Velké Karlovice 20:00 → Vsetín
+  ZAHOZ 12/12  IDZK:S9 Staré Město u Uherského Hradiště 04:29 → Přerov  ≈  CZPTT:Os 4231 St. Město u U.H. 04:29 → Přerov
+  ZAHOZ 15/15  IDZK:R18 Staré Město u Uherského Hradiště 04:12 → Praha-Vršovice  ≈  CZPTT:R 896 St. Město u U.H. 04:12 → Praha-Vršovice
+  ZAHOZ 23/23  IDZK:S4 Kojetín 05:03 → Rožnov pod Radhoštěm  ≈  CZPTT:Os 3903 Kojetín 05:03 → Rožnov p.R.
+  ZAHOZ 12/12  IDZK:R13 Olomouc hlavní nádraží 11:05 → Brno hlavní nádraží  ≈  CZPTT:R 810 Olomouc hl. n. 11:05 → Brno hl. n.
+  ZAHOZ 7/7  IDZK:S5 Bojkovice město 15:00 → Uherský Brod  ≈  CZPTT:Os 4362 Bojkovice město 15:00 → Uherský Brod
+  ZAHOZ 6/6  IDZK:S4 Hulín 10:04 → Bystřice pod Hostýnem  ≈  CZPTT:Os 3945 Hulín 10:04 → Bystřice pod Hostýnem
+  ZAHOZ 24/24  IDZK:S9 Přerov 14:34 → Břeclav  ≈  CZPTT:Os 4216 Přerov 14:34 → Břeclav
+
+=== priorita 200: kandidátů 43043, zahozeno 32142, částečná shoda (ponecháno) 4219
+zahozeno kvůli zdroji: PID 18596, JMK 8544, IDZK 4942, PMDP 35, DPMO 25
+  ZAHOZ 13/13  JDF:270433 Nymburk, hl.nádr. 05:34 → Nymburk, Zálabí  ≈  PID:433 Nymburk, hl.nádr. 05:34 → Nymburk, Zálabí
+  ZAHOZ 20/20  JDF:199993 Praha, Háje 08:48 → Praha, Letňany  ≈  PID:C Praha, Háje 08:48 → Praha, Letňany
+  ZAHOZ 20/20  JDF:100368 Kojetice, Tůmovka 07:53 → Praha, Ládví  ≈  PID:368 Kojetice, Tůmovka 07:53 → Ládví
+  ZAHOZ 28/29  JDF:728104 Brno, ÚAN Zvonařka 13:10 → Hevlín, škola  ≈  JMK:104 Brno, ÚAN Zvonařka 13:10 → Laa an der Thaya, Therme
+  ZAHOZ 22/23  JDF:726822 Hrušovany n.Jev., žel.st. 15:30 → Znojmo, aut.nádr.  ≈  JMK:822 Hrušovany nad Jevišovkou, žel. st. 15:30 → Znojmo, autobusové nádraží
+  ZAHOZ 28/28  JDF:240687 Ledeč n.Sáz., Podolí 15:04 → Uhlířské Janovice, nám.  ≈  PID:687 Ledeč n.Sáz., Podolí 15:04 → Uhlířské Janovice, nám.
+  ZAHOZ 27/27  JDF:100331 Dolní Břežany, Zálepy 09:47 → Praha, Opatov  ≈  PID:331 Dolní Břežany, Zálepy 09:47 → Opatov
+  ZAHOZ 12/13  JDF:729152 Blansko, aut.st. 13:30 → Kuřim, žel.st.  ≈  JMK:152 Blansko, aut. st. 13:30 → Kuřim, železniční stanice
+  ZAHOZ 12/12  JDF:823425 Zlín, aut.nádr. 16:40 → Ostrata, horní zast.  ≈  IDZK:425 Zlín, aut.nádr. 16:40 → Ostrata, horní zast.
+  ZAHOZ 19/19  JDF:540721 Český Dub, nám. 13:35 → Mnichovo Hradiště, dopravní terminál  ≈  PID:721 Český Dub, nám. 13:35 → Mnichovo Hradiště, dopravní terminál
+  ZAHOZ 16/16  JDF:947140 Vsetín, dopravní terminál 11:10 → Hošťálková, Pod horou  ≈  IDZK:140 Vsetín, dopravní terminál 11:10 → Hošťálková, Pod horou
+  ZAHOZ 15/15  JDF:300518 Sedlčany, aut.st. 13:15 → Prosenická Lhota, Klimětice  ≈  PID:518 Sedlčany, aut.st. 13:15 → Prosenická Lhota, Klimětice
+  ČÁST  2/7  JDF:890302 Litovel, aut.nádr. 14:05 → Olomouc, tržnice  ≈  DPMO:1 Olomouc, Nová Ulice 14:24 → Olomouc, Fibichova
+  ČÁST  2/19  JDF:53 Tábor, Zárybničná Lhota 08:00 → Tábor, Větrovy  ≈  PID:453 Louňovice p.Blaníkem 07:14 → Tábor, aut.nádr.
+  ČÁST  3/19  JDF:891364 Štěpánov, Novoveská 18:28 → Olomouc, aut.nádr.  ≈  DPMO:4 Olomouc, Nová Ulice 18:44 → Olomouc, Pavlovičky
+  ČÁST  3/9  JDF:100346 Brandýs n.L.-St.Bol., Pražská 05:14 → Praha, Černý Most  ≈  PID:346 Brandýs n.L.-St.Bol., Pražská 05:19 → Černý Most
+  ČÁST  2/17  JDF:130 Řepov, prodejna 16:40 → Mladá Boleslav, Modrá hvězda  ≈  PID:737 Bělá p.Bezd., Atmos 16:30 → Mladá Boleslav, aut.st.
+  ČÁST  2/5  JDF:820823 Zlín, aut.nádr. 05:50 → Brno, Benešova tř.hotel GRAND  ≈  IDZK:273 Kroměříž, aut.nádr. 06:30 → Zborovice, Medlov
+  ČÁST  3/38  JDF:102 Mladá Boleslav, Václava Klementa 15:15 → Mladá Boleslav, aut.st.  ≈  PID:315 Černý Most 15:10 → Mnichovo Hradiště, dopravní terminál
+  ČÁST  4/16  JDF:47 Tábor, Klokoty, točna 13:25 → Sezimovo Ústí, Kovosvit  ≈  PID:454 Střezimíř, žel.zast. 13:05 → Tábor, aut.nádr.
+  ČÁST  4/11  JDF:10 Tábor, nem.hl.vchod 17:34 → Tábor, sídl.Nad Lužnicí střed  ≈  PID:459 Olbramovice, žel.st. 16:50 → Tábor, aut.nádr.
+  ČÁST  15/34  JDF:100363 Velké Popovice, Todice 05:38 → Praha, Opatov  ≈  PID:363 Velké Popovice, Todice 05:38 → Opatov
+  ČÁST  3/15  JDF:601 Kladno, Okrsek 0 09:15 → Kladno, Smečenská  ≈  PID:600 Kladno, autobusové nádraží 09:25 → Louny, aut.nádr.
+  ČÁST  2/8  JDF:210384 Králův Dvůr, Levín 06:53 → Králův Dvůr, škola  ≈  PID:825 Beroun, nemocnice 06:40 → Králův Dvůr, Popovice
+linky s částečnou shodou: 606×137, 602×126, 603×120, 605×113, 601×84, 614×78, 604×76, 890302×66, 104×63, 101×53, 609×49, 2×47, 1×45, 450421×41, 891364×41, 105×41, 10×40, 210384×39, 13×39, 440055×39, 16×35, 610×34, 891340×34, 11×32, 440321×32, 100394×31, 100384×30, 30×29, 440066×29, 100328×28, 891370×28, 100303×28, 891392×27, 53×26, 460521×26, 100343×24, 440332×23, 100363×23, 171×23, 100380×23
